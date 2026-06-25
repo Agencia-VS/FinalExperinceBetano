@@ -23,23 +23,6 @@
   justify-content: flex-end;
 }
 
-.top-icons { display: flex; gap: 0.25rem; }
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--bone);
-  cursor: pointer;
-  padding: 0.45rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.85;
-  transition: opacity 0.18s ease;
-  border-radius: 6px;
-}
-.icon-btn:hover { opacity: 1; }
-.icon-btn svg  { width: 22px; height: 22px; }
 
 /* ── Hero layout ─────────────────────────────────── */
 .hero-wrap {
@@ -125,6 +108,7 @@
   z-index: -1;
   pointer-events: none;
   display: block;
+  clip-path: inset(8% 0 0 0);
 }
 
 .exp-text {
@@ -290,6 +274,8 @@
 
 @media (max-width: 900px) {
   .landing {
+    height: auto;
+    overflow: visible;
     background: var(--ash);
   }
 
@@ -302,9 +288,9 @@
   }
 
   .hero-copy {
-    flex: 0 0 42vh;
+    flex: 0 0 50vh;
     background: url('/Estadio.png') center 40% / cover no-repeat;
-    padding: 2rem 1.5rem 1rem;
+    padding: 2rem 0.5rem 1rem;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -315,9 +301,7 @@
 
   .hero-form {
     flex: 1;
-    overflow-y: auto;
-    padding: 1rem 1.5rem 1.5rem;
-    padding-right: 1.5rem;
+    padding: 1rem 0.5rem 3rem;
     background: var(--ash);
     position: relative;
     z-index: 2;
