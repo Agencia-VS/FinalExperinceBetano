@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Oswald, Inter } from "next/font/google";
+import { preload } from "react-dom";
 import "./globals.css";
 
 // Display: Oswald condensado evoca el lettering deportivo del mockup.
@@ -29,6 +30,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  preload("/Estadio.png", { as: "image", fetchPriority: "high" });
   return (
     <html lang="es" className={`${display.variable} ${body.variable}`}>
       <body suppressHydrationWarning>{children}</body>
