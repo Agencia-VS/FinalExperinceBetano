@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import { createAdmin } from "@/lib/supabase";
 import { isValidRut } from "@/lib/rut";
+import { rateLimit } from "@/lib/rate-limit";
 
 const DOC_TYPES = ["RUT", "DNI_EXTRANJERO", "PASAPORTE"];
 
 export async function POST(req: Request) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (!rateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos. Espera un momento e intenta de nuevo." },
+      { status: 429 }
+    );
+  }
+
   let body: any;
   try {
     body = await req.json();
@@ -44,12 +54,11 @@ export async function POST(req: Request) {
   });
 
   if (error) {
-    // 23505 = violación de índice único (documento ya inscrito)
     if (error.code === "23505") {
-      return NextResponse.json(
-        { error: "Este documento ya está inscrito en el concurso." },
-        { status: 409 }
-      );
+      const msg = error.message?.includes("email")
+        ? "Este correo ya está inscrito en el concurso."
+        : "Este documento ya está inscrito en el concurso.";
+      return NextResponse.json({ error: msg }, { status: 409 });
     }
     return NextResponse.json(
       { error: "No pudimos registrar tu inscripción." },

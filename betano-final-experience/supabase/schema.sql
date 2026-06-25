@@ -22,10 +22,21 @@ create table if not exists public.participantes (
 create unique index if not exists participantes_documento_unico
   on public.participantes (tipo_doc, documento);
 
+-- Un email sólo puede inscribirse una vez (evita múltiples inscripciones por persona).
+create unique index if not exists participantes_email_unico
+  on public.participantes (email);
+
+-- Índice para exportar/consultar por fecha sin scan completo.
+create index if not exists participantes_created_at_idx
+  on public.participantes (created_at desc);
+
 -- Sólo aceptamos mayores de edad y que aceptaron las bases.
-alter table public.participantes
-  add constraint chk_mayor_edad check (mayor_edad = true),
-  add constraint chk_acepta_bases check (acepta_bases = true);
+do $$ begin
+  alter table public.participantes add constraint chk_mayor_edad check (mayor_edad = true);
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter table public.participantes add constraint chk_acepta_bases check (acepta_bases = true);
+exception when duplicate_object then null; end $$;
 
 -- 2. Tabla del sorteo (1 fila por ejecución, semilla guardada = auditable)
 create table if not exists public.sorteos (

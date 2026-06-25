@@ -19,6 +19,8 @@ export default async function AdminPage() {
     .limit(1)
     .maybeSingle();
 
+  // Solo necesitamos los primeros 50: 10 ganadores + 40 suplentes por si alguno declina.
+  // Cargar 1M de filas aquí reventaría el servidor y el browser del admin.
   let resultados: any[] = [];
   if (sorteo) {
     const { data } = await supabase
@@ -27,7 +29,8 @@ export default async function AdminPage() {
         "id, posicion, es_ganador, premio_tomado, notificado_at, participante_id, participantes(nombre, email, telefono, tipo_doc, documento)"
       )
       .eq("sorteo_id", sorteo.id)
-      .order("posicion", { ascending: true });
+      .order("posicion", { ascending: true })
+      .limit(50);
     resultados = data ?? [];
   }
 
