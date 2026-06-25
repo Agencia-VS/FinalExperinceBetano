@@ -1,0 +1,110 @@
+:root {
+  /* Paleta derivada del mockup Final Experience */
+  --ember:      #FF4D00;  /* naranja Betano, CTA y acentos */
+  --ember-deep: #C2350A;  /* naranja quemado, hovers/sombras */
+  --ash:        #0B0705;  /* negro humo, fondo base */
+  --char:       #1A0F0A;  /* carbón, paneles e inputs */
+  --smoke:      #2A1B12;  /* borde tenue sobre carbón */
+  --bone:       #F5EFE8;  /* texto principal, hueso cálido */
+  --bone-dim:   #B8A99C;  /* texto secundario, placeholders */
+
+  --maxw: 1280px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ash);
+  color: var(--bone);
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; }
+
+/* Foco visible — quality floor */
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utilidad de campo de formulario reutilizada en landing y admin */
+.field-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  margin-bottom: 0.4rem;
+}
+
+.field-input,
+.field-textarea,
+.field-select {
+  width: 100%;
+  background: var(--char);
+  border: 1px solid var(--smoke);
+  color: var(--bone);
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  border-radius: 6px;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.field-input::placeholder,
+.field-textarea::placeholder { color: var(--bone-dim); }
+
+.field-input:focus,
+.field-textarea:focus,
+.field-select:focus {
+  border-color: var(--ember);
+  background: #20130c;
+  outline: none;
+}
+
+.field-input[aria-invalid="true"],
+.field-select[aria-invalid="true"] {
+  border-color: #ff6b4a;
+}
+
+.field-error {
+  color: #ff8a6a;
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+}
+
+.btn-ember {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--ember);
+  color: #fff;
+  border: none;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.06s ease;
+}
+.btn-ember:hover { background: var(--ember-deep); }
+.btn-ember:active { transform: translateY(1px); }
+.btn-ember:disabled { opacity: 0.55; cursor: not-allowed; }

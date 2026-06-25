@@ -1,0 +1,61 @@
+.admin {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+.admin-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
+}
+.admin-title {
+  font-family: var(--font-display); text-transform: uppercase;
+  letter-spacing: 0.06em; font-size: 1.5rem;
+}
+.admin-sub { color: var(--bone-dim); font-size: 0.9rem; margin-top: 0.25rem; }
+
+.ghost-btn {
+  background: transparent; border: 1px solid var(--smoke); color: var(--bone);
+  padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+}
+.ghost-btn:hover { border-color: var(--ember); }
+
+.panel {
+  background: var(--char); border: 1px solid var(--smoke);
+  border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.panel-h { font-family: var(--font-display); text-transform: uppercase;
+  letter-spacing: 0.05em; font-size: 1.05rem; margin-bottom: 0.75rem; }
+.panel-head-row { display: flex; justify-content: space-between;
+  align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+.muted { color: var(--bone-dim); font-size: 0.85rem; }
+.seed { background: var(--ash); padding: 0.1rem 0.4rem; border-radius: 4px;
+  font-size: 0.8rem; }
+
+.seed-row { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+.seed-row .field-input { flex: 1; min-width: 220px; }
+
+.table-scroll { overflow-x: auto; }
+.rank-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.rank-table th, .rank-table td {
+  text-align: left; padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--smoke); white-space: nowrap;
+}
+.rank-table th { color: var(--bone-dim); text-transform: uppercase;
+  font-size: 0.7rem; letter-spacing: 0.06em; }
+.row-winner { background: rgba(255, 77, 0, 0.06); }
+
+.tag { padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.7rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.tag-win { background: var(--ember); color: #fff; }
+.tag-sub { background: var(--smoke); color: var(--bone-dim); }
+.tag-out { background: #3a1410; color: #ff8a6a; }
+
+.prize-cell { display: flex; gap: 0.4rem; }
+.mini-btn {
+  background: var(--smoke); border: none; color: var(--bone);
+  padding: 0.3rem 0.6rem; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+}
+.mini-btn.ok:hover { background: #1f5130; }
+.mini-btn.no:hover { background: #5a1e16; }
+.mini-btn:hover { background: var(--ember-deep); }
