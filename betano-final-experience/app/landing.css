@@ -265,6 +265,12 @@
 }
 .foot-sep { opacity: 0.5; }
 
+.footer-logo {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
   .hero-wrap { grid-template-columns: 1.7fr 1fr; }

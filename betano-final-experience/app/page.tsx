@@ -44,8 +44,15 @@ export default function Home() {
       </div>
 
       <footer className="landing-foot">
-        <a href="/bases-legales" className="link-ember">Bases legales</a>
-        <span className="foot-sep">·</span>
+        <div className="footer-logo">
+          <Image
+            src="/isoBetano.png"
+            alt="Betano"
+            width={40}
+            height={40}
+            style={{ width: "40px", height: "auto" }}
+          />
+        </div>
         <span>Concurso válido en Chile. Mayores de 18 años.</span>
       </footer>
     </main>

@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Final Experience Betano | Inscríbete",
   description:
     "Inscríbete y participa por vivir la final del Mundial 2026 junto a tus amigos. Concurso Final Experience Betano.",
+  icons: {
+    icon: "/isoBetano.png",
+  },
 };
 
 export default function RootLayout({
