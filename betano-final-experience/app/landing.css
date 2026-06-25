@@ -332,7 +332,7 @@
 
   .hero-form {
     flex: 1;
-    padding: 0 0 2.5rem;
+    padding: 0 1.5rem 2.5rem;
     background: var(--ash);
     position: relative;
     z-index: 2;
@@ -340,7 +340,7 @@
 
   .form-card {
     border-radius: 0;
-    padding: 1.5rem 1.25rem;
+    padding: 1.5rem 1.5rem;
     box-shadow: none;
     border-left: none;
     border-right: none;
@@ -353,14 +353,34 @@
   .form-title-dim {
     font-size: 0.72rem;
   }
+
+  .landing-foot {
+    padding: 0.75rem 1.5rem;
+    gap: 0.8rem;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 0.3rem;
+  }
 }
 
 @media (max-width: 480px) {
   .top-bar   { padding: 0.75rem 1rem; }
   .doc-row   { grid-template-columns: 1fr; }
-  .form-card { padding: 1.25rem 1rem; }
+  .form-card { padding: 1.25rem 1.25rem; }
   .word-final { font-size: clamp(3rem, 15vw, 5rem); }
   .word-exp   { font-size: clamp(1.6rem, 8vw, 2.8rem); }
+
+  .landing-foot {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.7rem;
+  }
+
+  .footer-logo {
+    margin-right: 0.4rem;
+  }
 }
 
 /* ── Accesibilidad: sin animaciones ─────────────── */
