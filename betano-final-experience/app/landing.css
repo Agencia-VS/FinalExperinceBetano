@@ -162,6 +162,21 @@
     logo-glow     3.2s ease-in-out 1.5s infinite;
 }
 
+/* ── Entrada de página (staggered fade-up) ───────── */
+/* Sin bloque `to`: cada elemento se asienta en su
+   valor natural (la lede en 0.88, el título con su rotate). */
+@keyframes enter-fade {
+  from { opacity: 0; }
+}
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(18px); }
+}
+
+.hero-title { animation: enter-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards; }
+.hero-brand { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.18s backwards; }
+.hero-lede  { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.30s backwards; }
+.form-card  { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.42s backwards; }
+
 /* ── Lede ────────────────────────────────────────── */
 .hero-lede {
   font-family: var(--font-display);
@@ -385,5 +400,9 @@
 
 /* ── Accesibilidad: sin animaciones ─────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .combo-logo { animation: none; }
+  .combo-logo,
+  .hero-title,
+  .hero-brand,
+  .hero-lede,
+  .form-card { animation: none; }
 }
