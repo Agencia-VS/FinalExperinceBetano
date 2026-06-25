@@ -60,7 +60,7 @@ function emailHtml(nombre: string) {
       Final Experience Betano. Vivirás la final del Mundial 2026 como nunca antes.
     </p>
     <p style="font-size:16px;line-height:1.6">
-      Nuestro equipo se pondrá en contacto contigo a este mismo correo con los pasos
+      Nuestro equipo se pondrá en contacto contigo por este mismo correo con los pasos
       para coordinar la entrega de tu premio. Mantente atento.
     </p>
     <p style="font-size:13px;color:#B8A99C;margin-top:24px">

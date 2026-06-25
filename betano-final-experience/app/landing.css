@@ -275,6 +275,7 @@
 @media (max-width: 900px) {
   .landing {
     height: auto;
+    min-height: 100dvh;
     overflow: visible;
     background: var(--ash);
   }
@@ -288,32 +289,72 @@
   }
 
   .hero-copy {
-    flex: 0 0 50vh;
-    background: url('/Estadio.png') center 40% / cover no-repeat;
-    padding: 2rem 0.5rem 1rem;
+    flex: none;
+    min-height: 44dvh;
+    display: flex;
+    flex-direction: column;
+    background: url('/Estadio.png') center 35% / cover no-repeat;
+    padding: 2.5rem 1.5rem 2rem;
     align-items: center;
     justify-content: center;
     text-align: center;
     position: relative;
     z-index: 2;
-    gap: 0.75rem;
+    gap: 1rem;
+  }
+
+  .hero-title {
+    transform: rotate(-2deg);
+  }
+
+  .word-final {
+    font-size: clamp(3.5rem, 13vw, 6rem);
+  }
+
+  .word-exp {
+    font-size: clamp(1.8rem, 7vw, 3.2rem);
+  }
+
+  .hero-lede {
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-brand img {
+    max-width: 180px !important;
   }
 
   .hero-form {
     flex: 1;
-    padding: 1rem 0.5rem 3rem;
+    padding: 0 0 2.5rem;
     background: var(--ash);
     position: relative;
     z-index: 2;
   }
+
+  .form-card {
+    border-radius: 0;
+    padding: 1.5rem 1.25rem;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .form-title-main {
+    font-size: 1.6rem;
+  }
+
+  .form-title-dim {
+    font-size: 0.72rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .top-bar   { padding: 1rem 1.25rem; }
+  .top-bar   { padding: 0.75rem 1rem; }
   .doc-row   { grid-template-columns: 1fr; }
-  .form-card { padding: 1.5rem 1.25rem; }
-  .word-final { font-size: clamp(3.5rem, 18vw, 5.5rem); }
-  .word-exp   { font-size: clamp(2rem,   11vw, 3.5rem); }
+  .form-card { padding: 1.25rem 1rem; }
+  .word-final { font-size: clamp(3rem, 15vw, 5rem); }
+  .word-exp   { font-size: clamp(1.6rem, 8vw, 2.8rem); }
 }
 
 /* ── Accesibilidad: sin animaciones ─────────────── */

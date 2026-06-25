@@ -121,7 +121,7 @@ export default function InscriptionForm() {
       <h2 className="form-title">
         <span className="form-title-main">Inscríbete</span>
         <span className="form-title-dim">
-          Y participa junto a tus amigos a la{" "}
+          Y participa junto a tus amigos en la{" "}
           <span className="form-title-em">Final Experience Betano.</span>
         </span>
       </h2>
