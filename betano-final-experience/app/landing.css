@@ -119,8 +119,8 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translateX(-50%) translateY(-50%) rotate(7deg);
-  width: 160%;
+  transform: translateX(-50%) translateY(-50%) rotate(8deg);
+  width: 165%;
   height: auto;
   z-index: -1;
   pointer-events: none;
