@@ -6,3 +6,8 @@ node_modules
 *.log
 .vercel
 next-env.d.ts
+
+# Large design files
+*.psd
+*.ai
+*.sketch
