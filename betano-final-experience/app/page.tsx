@@ -13,7 +13,11 @@ export default function Home() {
         <section className="hero-copy">
           <h1 className="hero-title">
             <span className="word-final">FINAL</span>
-            <span className="word-exp"><span className="exp-text">EXPERIENCE</span></span>
+            <span className="word-exp">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/trazo.svg" className="trazo-bg" alt="" aria-hidden="true" />
+              <span className="exp-text">EXPERIENCE</span>
+            </span>
           </h1>
 
           <div className="hero-brand">

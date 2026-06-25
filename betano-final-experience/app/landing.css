@@ -115,17 +115,16 @@
   margin-top: -0.25em;
 }
 
-.word-exp::before {
-  content: '';
+.trazo-bg {
   position: absolute;
-  inset: -5% -55% -15% -55%;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(7deg);
+  width: 160%;
+  height: auto;
   z-index: -1;
-  background-image: url('/trazo.svg');
-  background-size: 178.6% 326.3%;
-  background-position: 51.6% 51%;
-  background-repeat: no-repeat;
-  transform: rotate(7deg);
-  transform-origin: center center;
+  pointer-events: none;
+  display: block;
 }
 
 .exp-text {
