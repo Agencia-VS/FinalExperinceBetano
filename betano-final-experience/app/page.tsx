@@ -5,8 +5,6 @@ import "./landing.css";
 export default function Home() {
   return (
     <main className="landing">
-      <div className="bg-overlay" aria-hidden="true" />
-
       <header className="top-bar">
       </header>
 
@@ -15,7 +13,7 @@ export default function Home() {
         <section className="hero-copy">
           <h1 className="hero-title">
             <span className="word-final">FINAL</span>
-            <span className="word-exp">EXPERIENCE</span>
+            <span className="word-exp"><span className="exp-text">EXPERIENCE</span></span>
           </h1>
 
           <div className="hero-brand">

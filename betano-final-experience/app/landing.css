@@ -2,31 +2,11 @@
 .landing {
   position: relative;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: url('/hero-bg.jpg') center center / cover no-repeat var(--ash);
-}
-
-/* Overlay oscuro gradiente sobre la imagen de fondo */
-.bg-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background:
-    linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.65) 0%,
-      rgba(0, 0, 0, 0.25) 50%,
-      rgba(0, 0, 0, 0.85) 100%
-    ),
-    radial-gradient(120% 80% at 15% 0%, rgba(58, 21, 5, 0.8) 0%, transparent 55%),
-    radial-gradient(80%  60% at 50% 100%, rgba(120, 30, 5, 0.45) 0%, transparent 60%);
-}
-
-/* Fallback atmosférico cuando no hay hero-bg.jpg */
-.landing:not(:has(+ *)) {
-  background-color: var(--ash);
+  background: url('/Estadio.png') center center / cover no-repeat var(--ash);
 }
 
 /* ── Top bar ─────────────────────────────────────── */
@@ -93,34 +73,65 @@
   flex-direction: column;
   justify-content: center;
   padding-right: clamp(0rem, 2vw, 1.5rem);
+  position: relative;
+  z-index: 3;
 }
 
 .hero-title {
-  font-family: var(--font-display);
-  line-height: 0.82;
+  position: relative;
+  font-family: 'Edo', var(--font-display);
+  line-height: 0.9;
   text-transform: uppercase;
-  font-style: italic;
   margin: 0;
+  transform: rotate(-4deg);
+  transform-origin: center center;
+  isolation: isolate;
 }
 
 .word-final {
   display: block;
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(3rem, 8.5vw, 7rem);
-  color: var(--bone);
+  font-style: italic;
+  font-size: clamp(4rem, 13vw, 11rem);
+  color: var(--ember);
   text-shadow:
-    0 2px 0 rgba(0, 0, 0, 0.4),
-    0 4px 40px rgba(255, 77, 0, 0.3);
+    0 2px 0 rgba(0, 0, 0, 0.5),
+    0 5px 18px rgba(0, 0, 0, 0.4),
+    0 0 2px rgba(40, 20, 10, 0.5);
   letter-spacing: -0.01em;
 }
 
 .word-exp {
   display: block;
-  font-weight: 700;
-  font-size: clamp(1.6rem, 4.2vw, 3.5rem);
-  color: var(--bone);
-  letter-spacing: 0.04em;
-  margin-top: 0.05em;
+  font-family: 'Edo', var(--font-display);
+  font-weight: normal;
+  font-size: clamp(1.8rem, 5vw, 4.2rem);
+  color: white;
+  position: relative;
+  isolation: isolate;
+  padding: 0.2em 0.5em;
+  letter-spacing: 0.05em;
+  margin-top: -0.25em;
+}
+
+.word-exp::before {
+  content: '';
+  position: absolute;
+  inset: -5% -55% -15% -55%;
+  z-index: -1;
+  background-image: url('/trazo.svg');
+  background-size: 178.6% 326.3%;
+  background-position: 51.6% 51%;
+  background-repeat: no-repeat;
+  transform: rotate(7deg);
+  transform-origin: center center;
+}
+
+.exp-text {
+  display: inline-block;
+  transform: rotate(2deg);
+  transform-origin: center center;
 }
 
 /* ── Hero brand (combo logo) ─────────────────────── */
@@ -274,26 +285,43 @@
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
   .hero-wrap { grid-template-columns: 1.7fr 1fr; }
-  .word-final { font-size: clamp(4rem, 11vw, 8rem); }
-  .word-exp   { font-size: clamp(2.2rem, 5.5vw, 4.5rem); }
+  .word-final { font-size: clamp(4rem, 12vw, 10rem); }
+  .word-exp   { font-size: clamp(2rem, 6vw, 5rem); }
 }
 
 @media (max-width: 900px) {
+  .landing {
+    background: var(--ash);
+  }
+
   .hero-wrap {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 1rem 1.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
     min-height: unset;
   }
+
   .hero-copy {
+    flex: 0 0 42vh;
+    background: url('/Estadio.png') center 40% / cover no-repeat;
+    padding: 2rem 1.5rem 1rem;
     align-items: center;
+    justify-content: center;
     text-align: center;
+    position: relative;
+    z-index: 2;
+    gap: 0.75rem;
   }
-  .hero-form { padding-right: 0; }
-  .bg-overlay {
-    background:
-      linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 100%),
-      rgba(11, 7, 5, 0.4);
+
+  .hero-form {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.5rem 1.5rem;
+    padding-right: 1.5rem;
+    background: var(--ash);
+    position: relative;
+    z-index: 2;
   }
 }
 
