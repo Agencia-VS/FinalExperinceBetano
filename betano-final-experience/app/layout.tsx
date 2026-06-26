@@ -30,7 +30,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  preload("/Estadio.png", { as: "image", fetchPriority: "high" });
+  preload("/FONDO.png", { as: "image", fetchPriority: "high" });
+  preload("/EXPERIENCE%20TEXTO.png", { as: "image", fetchPriority: "high" });
   return (
     <html lang="es" className={`${display.variable} ${body.variable}`}>
       <body suppressHydrationWarning>{children}</body>

@@ -11,14 +11,14 @@ export default function Home() {
       <div className="hero-wrap">
         {/* ── Sección izquierda 2/3 ── */}
         <section className="hero-copy">
-          <h1 className="hero-title">
-            <span className="word-final">FINAL</span>
-            <span className="word-exp">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/trazo.svg" className="trazo-bg" alt="" aria-hidden="true" />
-              <span className="exp-text">EXPERIENCE</span>
-            </span>
-          </h1>
+          <Image
+            src="/EXPERIENCE%20TEXTO.png"
+            alt="Final Experience"
+            className="hero-experience"
+            width={3295}
+            height={2463}
+            priority
+          />
 
           <div className="hero-brand">
             <Image
@@ -30,11 +30,6 @@ export default function Home() {
               priority
             />
           </div>
-
-          <p className="hero-lede">
-            Vive la final como nunca antes.<br />
-            Un evento único. Una experiencia inolvidable.
-          </p>
         </section>
 
         {/* ── Sección derecha 1/3 ── */}

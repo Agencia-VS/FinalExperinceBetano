@@ -6,7 +6,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: url('/Estadio.png') center center / cover no-repeat var(--ash);
+  background: url('/FONDO.png') center center / cover no-repeat var(--ash);
 }
 
 /* ── Top bar ─────────────────────────────────────── */
@@ -23,11 +23,10 @@
   justify-content: flex-end;
 }
 
-
 /* ── Hero layout ─────────────────────────────────── */
 .hero-wrap {
   position: relative;
-  z-index: 1;
+  z-index: 4;
   flex: 1;
   min-height: 0;
   max-width: var(--maxw);
@@ -58,63 +57,15 @@
   padding-right: clamp(0rem, 2vw, 1.5rem);
   position: relative;
   z-index: 3;
+  overflow-y: auto;
 }
 
-.hero-title {
-  position: relative;
-  font-family: 'Edo', var(--font-display);
-  line-height: 0.9;
-  text-transform: uppercase;
-  margin: 0;
-  transform: rotate(-4deg);
-  transform-origin: center center;
-  isolation: isolate;
-}
-
-.word-final {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-style: italic;
-  font-size: clamp(4rem, 13vw, 11rem);
-  color: var(--ember);
-  text-shadow:
-    0 2px 0 rgba(0, 0, 0, 0.5),
-    0 5px 18px rgba(0, 0, 0, 0.4),
-    0 0 2px rgba(40, 20, 10, 0.5);
-  letter-spacing: -0.01em;
-}
-
-.word-exp {
-  display: block;
-  font-family: 'Edo', var(--font-display);
-  font-weight: normal;
-  font-size: clamp(1.8rem, 5vw, 4.2rem);
-  color: white;
-  position: relative;
-  isolation: isolate;
-  padding: 0.2em 0.5em;
-  letter-spacing: 0.05em;
-  margin-top: -0.25em;
-}
-
-.trazo-bg {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%) rotate(8deg);
-  width: 165%;
+/* ── Experience image ────────────────────────────── */
+.hero-experience {
+  width: 100%;
+  max-width: 400px;
   height: auto;
-  z-index: -1;
-  pointer-events: none;
-  display: block;
-  clip-path: inset(8% 0 0 0);
-}
-
-.exp-text {
-  display: inline-block;
-  transform: rotate(2deg);
-  transform-origin: center center;
+  animation: enter-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards;
 }
 
 /* ── Hero brand (combo logo) ─────────────────────── */
@@ -163,8 +114,6 @@
 }
 
 /* ── Entrada de página (staggered fade-up) ───────── */
-/* Sin bloque `to`: cada elemento se asienta en su
-   valor natural (la lede en 0.88, el título con su rotate). */
 @keyframes enter-fade {
   from { opacity: 0; }
 }
@@ -172,22 +121,8 @@
   from { opacity: 0; transform: translateY(18px); }
 }
 
-.hero-title { animation: enter-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards; }
-.hero-brand { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.18s backwards; }
-.hero-lede  { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.30s backwards; }
-.form-card  { animation: enter-up   0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.42s backwards; }
-
-/* ── Lede ────────────────────────────────────────── */
-.hero-lede {
-  font-family: var(--font-display);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  line-height: 1.55;
-  color: var(--bone);
-  font-size: clamp(0.78rem, 1.2vw, 0.95rem);
-  opacity: 0.88;
-}
+.hero-brand { animation: enter-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.18s backwards; }
+.form-card  { animation: enter-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.42s backwards; }
 
 /* ── Form card ───────────────────────────────────── */
 .form-card {
@@ -288,9 +223,8 @@
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
-  .hero-wrap { grid-template-columns: 1.7fr 1fr; }
-  .word-final { font-size: clamp(4rem, 12vw, 10rem); }
-  .word-exp   { font-size: clamp(2rem, 6vw, 5rem); }
+  .hero-wrap       { grid-template-columns: 1.7fr 1fr; }
+  .hero-experience { max-width: 340px; }
 }
 
 @media (max-width: 900px) {
@@ -314,7 +248,7 @@
     min-height: 44dvh;
     display: flex;
     flex-direction: column;
-    background: url('/Estadio.png') center 35% / cover no-repeat;
+    background: url('/FONDO.png') center 35% / cover no-repeat;
     padding: 2.5rem 1.5rem 2rem;
     align-items: center;
     justify-content: center;
@@ -324,50 +258,24 @@
     gap: 1rem;
   }
 
-  .hero-title {
-    transform: rotate(-2deg);
-  }
+  .hero-experience { max-width: 220px; }
 
-  .word-final {
-    font-size: clamp(3.5rem, 13vw, 6rem);
-  }
-
-  .word-exp {
-    font-size: clamp(1.8rem, 7vw, 3.2rem);
-  }
-
-  .hero-lede {
-    font-size: 0.82rem;
-    letter-spacing: 0.05em;
-  }
-
-  .hero-brand img {
-    max-width: 180px !important;
-  }
+  .hero-brand img { max-width: 180px !important; }
 
   .hero-form {
     flex: 1;
-    padding: 0 1.5rem 2.5rem;
+    padding: 1.5rem 1.5rem 2.5rem;
     background: var(--ash);
     position: relative;
     z-index: 2;
   }
 
   .form-card {
-    border-radius: 0;
     padding: 1.5rem 1.5rem;
-    box-shadow: none;
-    border-left: none;
-    border-right: none;
   }
 
-  .form-title-main {
-    font-size: 1.6rem;
-  }
-
-  .form-title-dim {
-    font-size: 0.72rem;
-  }
+  .form-title-main { font-size: 1.6rem; }
+  .form-title-dim  { font-size: 0.72rem; }
 
   .landing-foot {
     padding: 0.75rem 1.5rem;
@@ -382,27 +290,23 @@
 }
 
 @media (max-width: 480px) {
-  .top-bar   { padding: 0.75rem 1rem; }
-  .doc-row   { grid-template-columns: 1fr; }
-  .form-card { padding: 1.25rem 1.25rem; }
-  .word-final { font-size: clamp(3rem, 15vw, 5rem); }
-  .word-exp   { font-size: clamp(1.6rem, 8vw, 2.8rem); }
+  .top-bar          { padding: 0.75rem 1rem; }
+  .doc-row          { grid-template-columns: 1fr; }
+  .form-card        { padding: 1.25rem 1.25rem; }
+  .hero-experience  { max-width: 190px; }
 
   .landing-foot {
     padding: 0.6rem 1.25rem;
     font-size: 0.7rem;
   }
 
-  .footer-logo {
-    margin-right: 0.4rem;
-  }
+  .footer-logo { margin-right: 0.4rem; }
 }
 
 /* ── Accesibilidad: sin animaciones ─────────────── */
 @media (prefers-reduced-motion: reduce) {
   .combo-logo,
-  .hero-title,
+  .hero-experience,
   .hero-brand,
-  .hero-lede,
   .form-card { animation: none; }
 }

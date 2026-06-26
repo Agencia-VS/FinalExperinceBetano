@@ -106,6 +106,7 @@ export default function InscriptionForm() {
           Mucha suerte.
         </p>
         <button
+          type="button"
           className="btn-ember"
           style={{ marginTop: "1.5rem" }}
           onClick={() => setStatus("idle")}
@@ -229,6 +230,7 @@ export default function InscriptionForm() {
         )}
 
         <button
+          type="button"
           className="btn-ember" style={{ width: "100%", marginTop: "0.5rem" }}
           onClick={handleSubmit} disabled={status === "sending"}
         >
