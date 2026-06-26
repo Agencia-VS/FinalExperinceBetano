@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowser } from "@/lib/supabase-browser";
+import Image from "next/image";
 
 interface Resultado {
   id: string;
@@ -32,13 +33,12 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
-  // Top 10 efectivos: ganadores que aún no han rechazado el premio.
-  // Si alguien rechaza (premio_tomado=false), el siguiente suplente sube.
   const aceptadosORevocados = resultados.filter((r) => r.premio_tomado === false).length;
   const ganadoresEfectivos = resultados
     .filter((r) => r.premio_tomado !== false)
     .slice(0, 10);
   const ganadoresIds = new Set(ganadoresEfectivos.map((r) => r.id));
+  const notificados = resultados.filter((r) => r.notificado_at).length;
 
   async function logout() {
     await createBrowser().auth.signOut();
@@ -93,44 +93,93 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
 
   return (
     <main className="admin">
-      <header className="admin-head">
-        <div>
-          <h1 className="admin-title">Final Experience · Panel</h1>
-          <p className="admin-sub">{totalParticipantes} inscritos en total</p>
+
+      {/* ── Header ── */}
+      <header className="admin-header">
+        <div className="admin-brand">
+          <Image src="/isoBetano.png" alt="Betano" width={36} height={36} />
+          <div>
+            <h1 className="admin-title">Final Experience</h1>
+            <p className="admin-sub">Panel de administración</p>
+          </div>
         </div>
-        <button className="ghost-btn" onClick={logout}>Cerrar sesión</button>
+        <button type="button" className="ghost-btn" onClick={logout}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Cerrar sesión
+        </button>
       </header>
 
+      {/* ── Stats bar ── */}
+      <div className="stats-bar">
+        <div className="stat-card">
+          <span className="stat-num">{totalParticipantes}</span>
+          <span className="stat-label">Inscritos</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-num">{ganadoresEfectivos.length}</span>
+          <span className="stat-label">Ganadores efectivos</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-num">{aceptadosORevocados}</span>
+          <span className="stat-label">Declinaron</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-num">{notificados}</span>
+          <span className="stat-label">Notificados</span>
+        </div>
+      </div>
+
+      {/* ── Sorteo panel ── */}
       <section className="panel">
-        <h2 className="panel-h">Sorteo</h2>
-        {sorteo ? (
-          <p className="muted">
-            Último sorteo: {new Date(sorteo.created_at).toLocaleString("es-CL")} ·
-            semilla <code className="seed">{sorteo.semilla}</code>
-          </p>
-        ) : (
-          <p className="muted">Aún no se ha ejecutado ningún sorteo.</p>
-        )}
+        <div className="panel-head-row">
+          <div>
+            <h2 className="panel-h">Sorteo</h2>
+            {sorteo ? (
+              <p className="muted">
+                Último: {new Date(sorteo.created_at).toLocaleString("es-CL")} ·
+                semilla <code className="seed">{sorteo.semilla}</code>
+              </p>
+            ) : (
+              <p className="muted">Aún no se ha ejecutado ningún sorteo.</p>
+            )}
+          </div>
+        </div>
         <div className="seed-row">
           <input
-            className="field-input" placeholder="Semilla (opcional, se genera una si la dejas vacía)"
-            value={seed} onChange={(e) => setSeed(e.target.value)}
+            className="field-input"
+            placeholder="Semilla personalizada (opcional)"
+            value={seed}
+            onChange={(e) => setSeed(e.target.value)}
           />
-          <button className="btn-ember" onClick={ejecutarSorteo} disabled={busy}>
+          <button type="button" className="btn-ember" onClick={ejecutarSorteo} disabled={busy}>
             {sorteo ? "Re-ejecutar sorteo" : "Ejecutar sorteo"}
           </button>
         </div>
-        {msg && <p className="muted" style={{ marginTop: "0.75rem" }}>{msg}</p>}
+        {msg && <p className="panel-msg" role="status">{msg}</p>}
       </section>
 
+      {/* ── Resultados ── */}
       {resultados.length > 0 && (
         <section className="panel">
           <div className="panel-head-row">
-            <h2 className="panel-h">
-              Ranking del sorteo · {ganadoresEfectivos.length} ganadores efectivos
-              {aceptadosORevocados > 0 && ` · ${aceptadosORevocados} declinaron`}
-            </h2>
-            <button className="btn-ember" onClick={notificarGanadores} disabled={busy}>
+            <div>
+              <h2 className="panel-h">
+                Ranking del sorteo
+              </h2>
+              <p className="muted">
+                {ganadoresEfectivos.length} ganadores efectivos
+                {aceptadosORevocados > 0 && ` · ${aceptadosORevocados} declinaron`}
+              </p>
+            </div>
+            <button type="button" className="btn-ember" onClick={notificarGanadores} disabled={busy}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
               Notificar ganadores
             </button>
           </div>
@@ -139,8 +188,14 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
             <table className="rank-table">
               <thead>
                 <tr>
-                  <th>#</th><th>Nombre</th><th>Correo</th><th>Teléfono</th>
-                  <th>Documento</th><th>Estado</th><th>Notificado</th><th>Premio</th>
+                  <th>#</th>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
+                  <th>Documento</th>
+                  <th>Estado</th>
+                  <th>Notificado</th>
+                  <th>Premio</th>
                 </tr>
               </thead>
               <tbody>
@@ -148,11 +203,14 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
                   const esGanadorEfectivo = ganadoresIds.has(r.id);
                   return (
                     <tr key={r.id} className={esGanadorEfectivo ? "row-winner" : ""}>
-                      <td>{r.posicion}</td>
-                      <td>{r.participantes.nombre}</td>
+                      <td className="pos-cell">{r.posicion}</td>
+                      <td className="name-cell">{r.participantes.nombre}</td>
                       <td>{r.participantes.email}</td>
                       <td>{r.participantes.telefono}</td>
-                      <td>{r.participantes.tipo_doc} {r.participantes.documento}</td>
+                      <td className="doc-cell">
+                        <span className="doc-type">{r.participantes.tipo_doc}</span>
+                        {r.participantes.documento}
+                      </td>
                       <td>
                         {r.premio_tomado === false ? (
                           <span className="tag tag-out">Declinó</span>
@@ -162,23 +220,29 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
                           <span className="tag tag-sub">Suplente</span>
                         )}
                       </td>
-                      <td>{r.notificado_at ? "Sí" : "—"}</td>
+                      <td>
+                        {r.notificado_at ? (
+                          <span className="notif-yes">✓ Sí</span>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                      </td>
                       <td className="prize-cell">
                         {esGanadorEfectivo && r.premio_tomado !== true && (
-                          <button className="mini-btn ok"
+                          <button type="button" className="mini-btn ok"
                             onClick={() => marcarPremio(r.id, true)} disabled={busy}>
                             Tomó
                           </button>
                         )}
                         {(esGanadorEfectivo || r.premio_tomado === false) &&
                           r.premio_tomado !== false && (
-                          <button className="mini-btn no"
+                          <button type="button" className="mini-btn no"
                             onClick={() => marcarPremio(r.id, false)} disabled={busy}>
                             Declinó
                           </button>
                         )}
                         {r.premio_tomado === false && (
-                          <button className="mini-btn"
+                          <button type="button" className="mini-btn"
                             onClick={() => marcarPremio(r.id, true)} disabled={busy}>
                             Reactivar
                           </button>
@@ -190,9 +254,8 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
               </tbody>
             </table>
           </div>
-          <p className="muted" style={{ marginTop: "0.75rem" }}>
-            Si un ganador declina, el primer suplente disponible pasa
-            automáticamente a ganador efectivo.
+          <p className="muted" style={{ marginTop: "1rem", fontSize: "0.78rem" }}>
+            Si un ganador declina, el primer suplente disponible pasa automáticamente a ganador efectivo.
           </p>
         </section>
       )}

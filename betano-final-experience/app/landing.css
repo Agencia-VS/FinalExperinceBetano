@@ -57,7 +57,6 @@
   padding-right: clamp(0rem, 2vw, 1.5rem);
   position: relative;
   z-index: 3;
-  overflow-y: auto;
 }
 
 /* ── Experience image ────────────────────────────── */
@@ -256,6 +255,7 @@
     position: relative;
     z-index: 2;
     gap: 1rem;
+    margin: 0 1rem;
   }
 
   .hero-experience { max-width: 220px; }
@@ -264,14 +264,14 @@
 
   .hero-form {
     flex: 1;
-    padding: 1.5rem 1.5rem 2.5rem;
+    padding: 0.75rem 1rem 2.5rem;
     background: var(--ash);
     position: relative;
     z-index: 2;
   }
 
   .form-card {
-    padding: 1.5rem 1.5rem;
+    padding: 1.5rem;
   }
 
   .form-title-main { font-size: 1.6rem; }
