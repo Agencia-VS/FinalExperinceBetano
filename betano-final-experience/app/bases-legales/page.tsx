@@ -25,7 +25,7 @@ export default function BasesLegales() {
         <p>
           El concurso “Final Experience Betano” (en adelante, el “Concurso”) es
           organizado por <strong>AGENCIA VS SPA</strong>, RUT
-          <strong>77.043.073-9</strong>, con domicilio en
+          <strong>77.043.073-9</strong>, con domicilio en 
           <strong>Diagonal Oriente 1850, Providencia</strong> (en adelante, el "Organizador"). El
           Organizador actúa como <strong>responsable del tratamiento</strong> de
           los datos personales recolectados en el Concurso, conforme a la Ley
