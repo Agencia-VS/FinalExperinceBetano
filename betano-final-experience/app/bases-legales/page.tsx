@@ -24,9 +24,9 @@ export default function BasesLegales() {
         <h2>1. Organizador y responsable</h2>
         <p>
           El concurso “Final Experience Betano” (en adelante, el “Concurso”) es
-          organizado por <strong>[RAZÓN SOCIAL DEL ORGANIZADOR]</strong>, RUT
-          <strong> [RUT ORGANIZADOR]</strong>, con domicilio en
-          <strong> [DOMICILIO]</strong> (en adelante, el “Organizador”). El
+          organizado por <strong>AGENCIA VS SPA</strong>, RUT
+          <strong>77.043.073-9</strong>, con domicilio en
+          <strong>Diagonal Oriente 1850, Providencia</strong> (en adelante, el "Organizador"). El
           Organizador actúa como <strong>responsable del tratamiento</strong> de
           los datos personales recolectados en el Concurso, conforme a la Ley
           N° 19.628 modificada por la Ley N° 21.719 sobre Protección de Datos
