@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdmin } from "@/lib/supabase";
 import { isValidRut } from "@/lib/rut";
 import { rateLimit } from "@/lib/rate-limit";
+import { enviarCorreoInscripcion } from "@/lib/email";
 
 const DOC_TYPES = ["RUT", "DNI_EXTRANJERO", "PASAPORTE"];
 
@@ -64,6 +65,14 @@ export async function POST(req: Request) {
       { error: "No pudimos registrar tu inscripción." },
       { status: 500 }
     );
+  }
+
+  // Correo de confirmación. Un fallo de email no debe invalidar la inscripción,
+  // que ya quedó guardada: lo registramos pero respondemos ok igual.
+  try {
+    await enviarCorreoInscripcion(email, nombre);
+  } catch (e) {
+    console.error("Error al enviar correo de inscripción:", e);
   }
 
   return NextResponse.json({ ok: true });

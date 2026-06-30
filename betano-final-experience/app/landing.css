@@ -1,9 +1,8 @@
 /* ── Base ─────────────────────────────────────────── */
 .landing {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: url('/FONDO.png') center center / cover no-repeat var(--ash);
@@ -23,7 +22,7 @@
   justify-content: flex-end;
 }
 
-/* ── Hero layout ─────────────────────────────────── */
+/* ── Hero layout (dos columnas) ──────────────────── */
 .hero-wrap {
   position: relative;
   z-index: 4;
@@ -32,31 +31,50 @@
   max-width: var(--maxw);
   width: 100%;
   margin: 0 auto;
-  padding: 0 clamp(2rem, 5vw, 5rem) 0.5rem;
+  padding: 2.5rem clamp(1.5rem, 5vw, 5rem) 2rem;
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
 }
 
-/* ── Hero copy (izquierda) ───────────────────────── */
+/* Overlay gradiente: oscurece el lado derecho para legibilidad sobre el estadio */
+.hero-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(4, 2, 1, 0.15) 48%,
+    rgba(4, 2, 1, 0.35) 62%,
+    rgba(4, 2, 1, 0.55) 78%,
+    rgba(4, 2, 1, 0.65) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Izquierda: gráfico de marca ─────────────────── */
 .hero-copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-/* ── Hero form (derecha) ─────────────────────────── */
-.hero-form {
+/* ── Derecha: descripción + CTA ──────────────────── */
+.hero-side {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-right: clamp(0rem, 2vw, 1.5rem);
-  position: relative;
-  z-index: 3;
+  align-items: flex-start;
+  gap: 1.1rem;
+  max-width: 540px;
+  width: 100%;
+  animation: enter-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
 }
 
 /* ── Experience image ────────────────────────────── */
@@ -66,6 +84,290 @@
   height: auto;
   animation: enter-fade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards;
 }
+
+/* ═══════════════════════════════════════════════════
+   BLOQUE 1 — Título con barra decorativa
+   ═══════════════════════════════════════════════════ */
+.hero-title-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.hero-accent-bar {
+  flex-shrink: 0;
+  width: 5px;
+  height: 3.2rem;
+  margin-top: 0.35rem;
+  border-radius: 3px;
+  background: linear-gradient(
+    180deg,
+    var(--ember) 0%,
+    rgba(255, 140, 40, 0.7) 50%,
+    var(--ember) 100%
+  );
+  box-shadow: 0 0 12px rgba(255, 77, 0, 0.45);
+}
+
+.hero-desc-title {
+  font-family: 'MDNichrome Dark', 'MDNichrome', serif;
+  font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+  font-weight: normal;
+  color: #FFFFFF;
+  line-height: 1.12;
+  letter-spacing: 0.02em;
+  text-align: left;
+  text-wrap: balance;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.8),
+    0 1px 3px rgba(0, 0, 0, 0.6);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   BLOQUE 2 — Badges informativos (Fecha / Lugar)
+   ═══════════════════════════════════════════════════ */
+.hero-info-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  width: 100%;
+}
+
+.hero-info-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 1 1 220px;
+  min-width: 200px;
+  background: rgba(12, 5, 2, 0.85);
+  border: 1px solid rgba(255, 77, 0, 0.28);
+  border-left: 3px solid var(--ember);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.hero-info-badge:hover {
+  border-color: rgba(255, 77, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 77, 0, 0.15);
+}
+
+.hero-badge-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  color: var(--ember);
+  opacity: 0.9;
+}
+
+.hero-badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.hero-badge-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ember);
+  line-height: 1;
+}
+
+.hero-badge-value {
+  font-size: clamp(0.78rem, 0.9vw, 0.88rem);
+  font-weight: 600;
+  color: #FAF7F2;
+  line-height: 1.35;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════
+   BLOQUE 3 — Descripción del evento
+   ═══════════════════════════════════════════════════ */
+.hero-body-block {
+  width: 100%;
+  background: rgba(12, 5, 2, 0.78);
+  border: 1px solid rgba(255, 77, 0, 0.16);
+  border-left: 3px solid rgba(255, 77, 0, 0.5);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-body-block::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(
+    circle at 100% 0%,
+    rgba(255, 77, 0, 0.06) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.hero-body-title {
+  font-family: 'MDNichrome', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 0.5rem 0;
+}
+
+.hero-desc-body {
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem);
+  color: #F0EAE2;
+  line-height: 1.7;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   BLOQUE 4 — Pasos para participar
+   ═══════════════════════════════════════════════════ */
+.hero-steps-block {
+  width: 100%;
+  background: rgba(12, 5, 2, 0.78);
+  border: 1px solid rgba(255, 77, 0, 0.16);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.hero-steps-title {
+  font-family: 'MDNichrome', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.15rem;
+}
+
+.hero-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.hero-step-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ember) 0%, var(--ember-deep) 100%);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(255, 77, 0, 0.3);
+  line-height: 1;
+}
+
+.hero-step-text {
+  font-size: clamp(0.8rem, 0.92vw, 0.9rem);
+  color: #D5C8BB;
+  line-height: 1.5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  padding-top: 0.15rem;
+}
+
+/* ── CTA principal (abre el modal) ───────────────── */
+.hero-cta {
+  margin-top: 0.3rem;
+  width: 100%;
+  background: var(--ember);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  padding: 1.15rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255, 77, 0, 0.35);
+  transition: background 0.18s ease, transform 0.08s ease, box-shadow 0.18s ease;
+  animation: cta-pulse 2.6s ease-in-out 1.2s infinite;
+}
+.hero-cta:hover {
+  background: var(--ember-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 38px rgba(255, 77, 0, 0.5);
+}
+.hero-cta:active { transform: translateY(0); }
+
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(255, 77, 0, 0.35); }
+  50%      { box-shadow: 0 10px 30px rgba(255, 77, 0, 0.55), 0 0 0 4px rgba(255, 77, 0, 0.12); }
+}
+
+/* ── Modal de inscripción ────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(4, 2, 1, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1rem, 5vh, 4rem) 1rem;
+  overflow-y: auto;
+  animation: enter-fade 0.25s ease both;
+}
+
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin: auto;
+  animation: modal-pop 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 77, 0, 0.3);
+  background: var(--char);
+  color: var(--bone);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  transition: background 0.16s ease, color 0.16s ease, transform 0.08s ease;
+}
+.modal-close:hover { background: var(--ember); color: #fff; transform: rotate(90deg); }
 
 /* ── Hero brand (combo logo) ─────────────────────── */
 .hero-brand {
@@ -121,7 +423,6 @@
 }
 
 .hero-brand { animation: enter-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.18s backwards; }
-.form-card  { animation: enter-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.42s backwards; }
 
 /* ── Form card ───────────────────────────────────── */
 .form-card {
@@ -153,7 +454,7 @@
 
 .form-title-dim {
   display: block;
-  font-size: clamp(0.65rem, 0.9vw, 0.78rem);
+  font-size: clamp(0.78rem, 1.05vw, 0.95rem);
   color: var(--bone-dim);
   font-weight: 500;
   font-style: normal;
@@ -222,61 +523,68 @@
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
-  .hero-wrap       { grid-template-columns: 1.7fr 1fr; }
   .hero-experience { max-width: 340px; }
 }
 
 @media (max-width: 900px) {
-  .landing {
-    height: auto;
-    min-height: 100dvh;
-    overflow: visible;
-    background: var(--ash);
-  }
-
   .hero-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-    min-height: unset;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2.5rem 1.5rem;
   }
 
-  .hero-copy {
-    flex: none;
-    min-height: 44dvh;
-    display: flex;
-    flex-direction: column;
-    background: url('/FONDO.png') center 35% / cover no-repeat;
-    padding: 2.5rem 1.5rem 2rem;
+  /* En móvil, oscurecer más el fondo completo para legibilidad */
+  .hero-wrap::after {
+    background: linear-gradient(
+      180deg,
+      rgba(4, 2, 1, 0.1) 0%,
+      rgba(4, 2, 1, 0.35) 40%,
+      rgba(4, 2, 1, 0.5) 70%,
+      rgba(4, 2, 1, 0.6) 100%
+    );
+  }
+
+  .hero-experience { max-width: 260px; }
+
+  .hero-brand img { max-width: 240px !important; }
+
+  .hero-side {
+    max-width: 100%;
     align-items: center;
-    justify-content: center;
     text-align: center;
-    position: relative;
-    z-index: 2;
-    gap: 1rem;
-    margin: 0 1rem;
   }
 
-  .hero-experience { max-width: 220px; }
+  .hero-title-block { justify-content: center; }
+  .hero-accent-bar { display: none; }
+  .hero-desc-title { text-align: center; }
 
-  .hero-brand img { max-width: 180px !important; }
-
-  .hero-form {
-    flex: 1;
-    padding: 0.75rem 1rem 2.5rem;
-    background: var(--ash);
-    position: relative;
-    z-index: 2;
+  .hero-info-badges {
+    flex-direction: column;
+    align-items: flex-start;
   }
+  .hero-info-badge {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hero-body-block {
+    text-align: center;
+  }
+
+  .hero-steps-block {
+    text-align: center;
+  }
+
+  .hero-steps-title { text-align: center; }
+  .hero-step { justify-content: flex-start; }
 
   .form-card {
     padding: 1.5rem;
   }
 
   .form-title-main { font-size: 1.6rem; }
-  .form-title-dim  { font-size: 0.72rem; }
+  .form-title-dim  { font-size: 0.85rem; }
 
   .landing-foot {
     padding: 0.75rem 1.5rem;
@@ -294,7 +602,15 @@
   .top-bar          { padding: 0.75rem 1rem; }
   .doc-row          { grid-template-columns: 1fr; }
   .form-card        { padding: 1.25rem 1.25rem; }
-  .hero-experience  { max-width: 190px; }
+  .hero-experience  { max-width: 200px; }
+  .hero-cta         { width: 100%; padding: 1rem; }
+
+  .hero-info-badge     { padding: 0.7rem 0.9rem; }
+  .hero-body-block     { padding: 1rem 1.1rem; }
+  .hero-steps-block    { padding: 1rem 1.1rem; }
+  .hero-accent-bar     { display: none; }
+
+  .modal-close { top: 6px; right: 6px; }
 
   .landing-foot {
     padding: 0.6rem 1.25rem;
@@ -309,5 +625,9 @@
   .combo-logo,
   .hero-experience,
   .hero-brand,
+  .hero-side,
+  .hero-cta,
+  .modal-overlay,
+  .modal-panel,
   .form-card { animation: none; }
 }

@@ -6,6 +6,30 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'MDNichrome';
+  src: url('/MDNichrome-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MDNichrome Dark';
+  src: url('/MDNichrome-Dark.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Haffer';
+  src: url('/Haffer-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Paleta derivada del mockup Final Experience */
   --ember:      #FF4D00;  /* naranja Betano, CTA y acentos */
@@ -26,7 +50,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--ash);
   color: var(--bone);
-  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  font-family: 'Haffer', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

@@ -11,60 +11,63 @@ export default function BasesLegales() {
 
       <h1 className="legal-title">
         Bases Legales y Política de Tratamiento de Datos<br />
-        <span>Concurso “Final Experience Betano”</span>
+        <span>Concurso "Final Experience Betano"</span>
       </h1>
 
-      <p className="legal-note">
-        Documento borrador. Antes de su publicación debe ser revisado y validado
-        por un abogado. Los campos entre corchetes <code>[ ]</code> deben
-        completarse con los datos oficiales del organizador.
-      </p>
-
       <section>
-        <h2>1. Organizador y responsable</h2>
+        <h2>1. Responsable del tratamiento de los datos</h2>
         <p>
-          El concurso “Final Experience Betano” (en adelante, el “Concurso”) es
-          organizado por <strong>AGENCIA VS SPA</strong>, RUT
-          <strong>77.043.073-9</strong>, con domicilio en 
-          <strong>Diagonal Oriente 1850, Providencia</strong> (en adelante, el "Organizador"). El
-          Organizador actúa como <strong>responsable del tratamiento</strong> de
-          los datos personales recolectados en el Concurso, conforme a la Ley
-          N° 19.628 modificada por la Ley N° 21.719 sobre Protección de Datos
-          Personales.
+          Para el concurso "Final Experience Betano" (en adelante, el "Concurso")
+          el responsable del tratamiento de los datos personales, conforme a la
+          Ley N° 19.628 modificada por la Ley N° 21.719 sobre Protección de Datos
+          Personales, es <strong>AGENCIA VS SPA</strong>, RUT{" "}
+          <strong>77.043.073-9</strong>, con domicilio en{" "}
+          <strong>Diagonal Oriente 1850, Providencia</strong> (en adelante, el
+          "Organizador").
         </p>
         <p>
           El desarrollo y operación técnica de la plataforma de inscripción está
-          a cargo de <strong>[NOMBRE DEL ENCARGADO / DESARROLLADOR]</strong>,
-          quien actúa como <strong>encargado del tratamiento</strong> por cuenta
-          del Organizador, sujeto a un acuerdo de tratamiento de datos.
+          a cargo de{" "}
+          <strong>Antonio Capra Barbera, RUT 18.467.272-3</strong>, quien actúa
+          como <strong>encargado del tratamiento</strong> por cuenta del
+          Organizador, sujeto a un acuerdo de tratamiento de datos.
         </p>
       </section>
 
       <section>
         <h2>2. Vigencia y participación</h2>
         <p>
-          El período de inscripción se extiende desde
-          <strong> [FECHA INICIO]</strong> hasta el
-          <strong> [FECHA CIERRE]</strong>. El evento de la final se realizará el
-          <strong> 19 de julio de 2026</strong>.
+          El período de inscripción se extiende desde el{" "}
+          <strong>04 de julio de 2026</strong> hasta el{" "}
+          <strong>15 de julio de 2026</strong>. El evento de la final se
+          realizará el <strong>19 de julio de 2026</strong>, desde las{" "}
+          <strong>12:00 hasta las 19:00 hrs</strong>.
         </p>
         <p>
-          Pueden participar personas naturales <strong>mayores de 18 años</strong>,
-          residentes en Chile, que completen el formulario de inscripción con
-          datos veraces y acepten estas bases. Quedan excluidos trabajadores del
-          Organizador y sus empresas relacionadas, así como del encargado.
+          Pueden participar personas naturales{" "}
+          <strong>mayores de 18 años</strong>, residentes en Chile, que completen
+          el formulario de inscripción con datos veraces y acepten estas bases.
+          Quedan excluidos trabajadores del Organizador y sus empresas
+          relacionadas, así como del encargado del tratamiento.
         </p>
         <p>
           Cada persona puede inscribirse una sola vez. Inscripciones duplicadas o
           con datos falsos serán descartadas.
+        </p>
+        <p>
+          Los ganadores podrán invitar a <strong>2 personas adicionales</strong>{" "}
+          para asistir al evento junto a ellos. Dichos invitados deberán ser
+          mayores de 18 años y residentes en Chile. Los datos de los invitados
+          no se solicitan durante el período de inscripción, sino una vez
+          confirmado el premio, conforme al procedimiento descrito en el punto 4.
         </p>
       </section>
 
       <section>
         <h2>3. Mecánica del sorteo y premios</h2>
         <p>
-          Finalizado el período de inscripción, el Organizador realizará un
-          <strong> sorteo aleatorio y auditable</strong> entre todos los
+          Finalizado el período de inscripción, el Organizador realizará un{" "}
+          <strong>sorteo aleatorio y auditable</strong> entre todos los
           participantes válidos. El sorteo utiliza un algoritmo de barajado con
           una <strong>semilla registrada</strong>, lo que permite reproducir y
           verificar el resultado.
@@ -77,8 +80,15 @@ export default function BasesLegales() {
           premios.
         </p>
         <p>
-          Premio: <strong>[DESCRIPCIÓN DEL PREMIO]</strong>. El premio es personal
-          e intransferible y no es canjeable por dinero.
+          <strong>Premio:</strong> 10 cupos disponibles, cada uno consistente en
+          una invitación a "Final Experience" para ver la Gran Final del Mundial
+          2026, válida para el ganador y 2 invitados adicionales. El premio es
+          personal e intransferible, no es canjeable por dinero ni por otro
+          premio, y no puede fraccionarse ni transferirse parcialmente. Si el
+          ganador no entrega los datos de sus 2 invitados dentro del plazo
+          establecido en el punto 4, podrá asistir igualmente con el cupo
+          correspondiente a su persona, sin derecho a reclamo posterior por los
+          cupos de acompañantes no utilizados.
         </p>
       </section>
 
@@ -86,36 +96,52 @@ export default function BasesLegales() {
         <h2>4. Notificación a ganadores</h2>
         <p>
           Los ganadores serán contactados al correo electrónico registrado en su
-          inscripción. Tendrán un plazo de <strong>[N] días corridos</strong>
-          desde el envío del correo para confirmar la aceptación del premio.
-          Transcurrido ese plazo sin respuesta, se entenderá que renuncian y el
-          premio pasará al siguiente suplente.
+          inscripción. Tendrán un plazo de <strong>2 días corridos</strong> desde
+          el envío del correo para confirmar la aceptación del premio y, de ser
+          el caso, entregar los datos de sus 2 invitados (nombre completo y
+          correo electrónico). Transcurrido ese plazo sin respuesta, se
+          entenderá que el ganador renuncia y el premio pasará al siguiente
+          suplente.
         </p>
       </section>
 
       <section>
         <h2>5. Tratamiento de datos personales</h2>
         <p>
-          Al inscribirse, el participante otorga su <strong>consentimiento libre,
-          específico, informado e inequívoco</strong> para que el Organizador
-          trate los siguientes datos: nombre, correo electrónico, teléfono, tipo
-          y número de documento de identidad y, opcionalmente, el motivo que
-          escriba.
+          Al inscribirse, el participante otorga su{" "}
+          <strong>
+            consentimiento libre, específico, informado e inequívoco
+          </strong>{" "}
+          para que el Organizador trate los siguientes datos: nombre, correo
+          electrónico, teléfono, tipo y número de documento de identidad y,
+          opcionalmente, el motivo que escriba.
+        </p>
+        <p>
+          En caso de resultar ganador, el participante declara contar con el
+          consentimiento de las 2 personas que invite para entregar sus datos
+          (nombre y correo electrónico) al Organizador, y se compromete a
+          informarles sobre el contenido de estas bases y el tratamiento que se
+          dará a su información.
         </p>
         <p>
           <strong>Finalidad única:</strong> estos datos se utilizarán
           exclusivamente para administrar el Concurso —validar la inscripción,
-          ejecutar el sorteo y contactar a los ganadores—.
-          <strong> No se usarán para marketing, publicidad, perfilamiento ni
-          ningún fin distinto</strong>, ni se cederán a terceros ajenos a la
-          operación del Concurso.
+          ejecutar el sorteo, contactar a los ganadores y gestionar el ingreso de
+          sus invitados al evento—.{" "}
+          <strong>
+            No se usarán para marketing, publicidad, perfilamiento ni ningún fin
+            distinto
+          </strong>
+          , ni se cederán a terceros ajenos a la operación del Concurso.
         </p>
         <p>
           <strong>Plazo de conservación:</strong> los datos se conservarán
-          únicamente durante el Concurso y serán
-          <strong> eliminados tras la realización del evento del 19 de julio de
-          2026</strong>, una vez entregados los premios y cerrado el proceso,
-          salvo obligación legal que exija conservarlos por más tiempo.
+          únicamente durante el Concurso y serán{" "}
+          <strong>
+            eliminados tras la realización del evento del 19 de julio de 2026
+          </strong>
+          , una vez entregados los premios y cerrado el proceso, salvo obligación
+          legal que exija conservarlos por más tiempo.
         </p>
         <p>
           <strong>Seguridad:</strong> los datos se almacenan en infraestructura
@@ -125,24 +151,7 @@ export default function BasesLegales() {
       </section>
 
       <section>
-        <h2>6. Derechos del titular (ARCO+)</h2>
-        <p>
-          El participante puede ejercer en cualquier momento sus derechos de
-          <strong> acceso, rectificación, cancelación (supresión), oposición,
-          portabilidad y bloqueo</strong> de sus datos, así como retirar su
-          consentimiento sin que ello afecte la licitud del tratamiento previo.
-        </p>
-        <p>
-          Para ejercer estos derechos, escribir a
-          <strong> [CORREO DE CONTACTO / DPO]</strong>. Las solicitudes se
-          responderán dentro de un plazo máximo de <strong>30 días corridos</strong>.
-          El retiro del consentimiento durante el Concurso implica la
-          imposibilidad de continuar participando.
-        </p>
-      </section>
-
-      <section>
-        <h2>7. Aceptación y modificaciones</h2>
+        <h2>6. Aceptación y modificaciones</h2>
         <p>
           La participación implica la aceptación íntegra de estas bases. El
           Organizador podrá modificarlas por causa justificada, informando a
@@ -152,8 +161,8 @@ export default function BasesLegales() {
       </section>
 
       <p className="legal-foot">
-        Última actualización: [FECHA]. Documento referencial preparado conforme a
-        la Ley N° 21.719. No constituye asesoría legal.
+        Última actualización: 04 de julio de 2026. Documento referencial
+        preparado conforme a la Ley N° 21.719. No constituye asesoría legal.
       </p>
     </main>
   );

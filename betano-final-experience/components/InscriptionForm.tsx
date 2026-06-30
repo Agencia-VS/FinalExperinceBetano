@@ -111,7 +111,7 @@ export default function InscriptionForm() {
           style={{ marginTop: "1.5rem" }}
           onClick={() => setStatus("idle")}
         >
-          Inscribir a otra persona
+          Volver al home
         </button>
       </div>
     );
@@ -122,7 +122,7 @@ export default function InscriptionForm() {
       <h2 className="form-title">
         <span className="form-title-main">Inscríbete</span>
         <span className="form-title-dim">
-          Y participa junto a tus amigos en la{" "}
+          Y participa junto a 2 amigos en la{" "}
           <span className="form-title-em">Final Experience Betano.</span>
         </span>
       </h2>
@@ -193,7 +193,7 @@ export default function InscriptionForm() {
 
         <div>
           <label className="field-label" htmlFor="motivo">
-            Cuéntanos por qué deberías vivir esta experiencia
+            En pocas palabras, ¿por qué quieres vivir la Final Experience?
           </label>
           <textarea
             id="motivo" className="field-textarea" rows={3} value={form.motivo}
