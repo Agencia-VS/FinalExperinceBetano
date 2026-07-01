@@ -187,6 +187,18 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+.hero-badge-link {
+  text-decoration: none;
+  color: inherit;
+}
+.hero-badge-link:hover {
+  border-color: rgba(255, 77, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 77, 0, 0.15);
+}
+.hero-badge-link:hover .hero-badge-value {
+  color: var(--ember);
+}
+
 /* ═══════════════════════════════════════════════════
    BLOQUE 3 — Descripción del evento
    ═══════════════════════════════════════════════════ */

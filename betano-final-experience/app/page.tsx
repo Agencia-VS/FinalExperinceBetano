@@ -55,7 +55,12 @@ export default function Home() {
                 <span className="hero-badge-value">19 julio 2026 · Desde las 12:00 hrs</span>
               </div>
             </div>
-            <div className="hero-info-badge">
+            <a
+              className="hero-info-badge hero-badge-link"
+              href="https://www.google.com/maps/place/Metropolitan+Santiago/@-33.3842451,-70.5912201,17.74z/data=!4m10!1m2!2m1!1sexplanada+metropolidan+vitacura!3m6!1s0x9662c9e4a4e59209:0xce1c8be4e1f853da!8m2!3d-33.3832912!4d-70.588124!15sCh9leHBsYW5hZGEgbWV0cm9wb2xpdGFuIHZpdGFjdXJhWiEiH2V4cGxhbmFkYSBtZXRyb3BvbGl0YW4gdml0YWN1cmGSARFjb252ZW50aW9uX2NlbnRlcpoBRENpOURRVWxSUVVOdlpFTm9kSGxqUmpsdlQydzVWRTFWVGtwa01scFpUbXRXTWs1WVpEVmtNMXBSVGxkU2EwMVlZeEFC4AEA-gEECAAQLA!16s%2Fg%2F12175sr_?entry=ttu&g_ep=EgoyMDI2MDYyOC4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <svg className="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                 <circle cx="12" cy="10" r="3"/>
@@ -64,7 +69,7 @@ export default function Home() {
                 <span className="hero-badge-label">Lugar</span>
                 <span className="hero-badge-value">Explanada Metropolitan, Vitacura</span>
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Bloque 3: Descripción del evento */}
