@@ -49,7 +49,7 @@ export default function EnrollModal() {
             >
               ×
             </button>
-            <InscriptionForm />
+            <InscriptionForm onClose={() => setOpen(false)} />
           </div>
         </div>
       )}

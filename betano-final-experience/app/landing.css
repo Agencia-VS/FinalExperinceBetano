@@ -167,6 +167,7 @@
   flex-direction: column;
   gap: 0.15rem;
   min-width: 0;
+  text-align: left;
 }
 
 .hero-badge-label {

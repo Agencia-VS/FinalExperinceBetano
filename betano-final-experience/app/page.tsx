@@ -69,10 +69,11 @@ export default function Home() {
 
           {/* Bloque 3: Descripción del evento */}
           <div className="hero-body-block">
-            <p className="hero-body-title">Final Experience</p>
+            <p className="hero-body-title">Final Experience Betano</p>
             <p className="hero-desc-body">
-              La gran final en pantalla XL dentro de un domo inmersivo.
-              Música, concursos, comida y la mejor energía. ¡No te quedes fuera!
+              Únete a una experiencia inmersiva en un domo gigante, pantalla XL
+              y sonido envolvente para ver la Gran Final. Concursos, música en
+              vivo y food trucks, todo en un mismo lugar.
             </p>
           </div>
 
@@ -100,11 +101,11 @@ export default function Home() {
       <footer className="landing-foot">
         <div className="footer-logo">
           <Image
-            src="/isoBetano.png"
+            src="/isoBetanoblanco.png"
             alt="Betano"
-            width={40}
-            height={40}
-            style={{ width: "40px", height: "auto" }}
+            width={50}
+            height={50}
+            style={{ width: "50px", height: "auto" }}
           />
         </div>
         <span>Concurso válido en Chile. Mayores de 18 años.</span>

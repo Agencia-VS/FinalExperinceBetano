@@ -26,6 +26,12 @@ function firstName(nombre: string) {
   return nombre.trim().split(/\s+/)[0] || nombre.trim();
 }
 
+/* ── Imágenes del evento (Cloudinary) ──────────────────── */
+const IMG = {
+  headerLogo: "https://res.cloudinary.com/ddwytwhln/image/upload/v1782917838/EXPERIENCE_hsefee.png",
+  cobranding: "https://res.cloudinary.com/ddwytwhln/image/upload/v1782562282/COOBRANDING_ugyzea.png",
+};
+
 /* ── Paleta (alineada con la landing) ─────────────────── */
 const C = {
   ash: "#0B0705",
@@ -39,64 +45,76 @@ const C = {
 
 /**
  * Envoltura común: cuerpo oscuro, tarjeta centrada, header con acento ember
- * y franja de evento. `accent` es la línea superior corta (kicker).
+ * y franja de evento. Usa clases + `!important` para que los clientes de
+ * correo que soportan <style> (Gmail app, Apple Mail, Outlook mobile) reduzcan
+ * paddings y tamaños de fuente en pantallas angostas.
  */
-function shell(opts: {
-  preheader: string;
-  kicker: string;
-  title: string;
-  body: string;
-}) {
+function shell(opts: { preheader: string; kicker: string; body: string }) {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
+  <style>
+    @media only screen and (max-width: 480px) {
+      .fe-wrap   { padding: 20px 8px !important; }
+      .fe-body   { padding: 22px 20px !important; }
+      .fe-strip  { padding: 14px 20px !important; }
+      .fe-foot   { padding: 14px 20px 20px !important; }
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background:${C.ash};">
   <span style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden">${opts.preheader}</span>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.ash};padding:32px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.ash};">
     <tr>
-      <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:${C.char};border:1px solid ${C.smoke};border-radius:16px;overflow:hidden;">
-          <!-- Header -->
+      <td class="fe-wrap" align="center" style="padding:32px 16px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:${C.char};border:1px solid ${C.smoke};border-radius:14px;overflow:hidden;">
+          <!-- Header logo -->
           <tr>
-            <td style="background:linear-gradient(135deg,${C.emberDeep},${C.ember});padding:28px 32px;">
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#fff;opacity:0.85;font-weight:700;">${opts.kicker}</div>
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.1;font-style:italic;font-weight:800;text-transform:uppercase;color:#fff;margin-top:6px;">Final Experience</div>
+            <td style="padding:0;line-height:0;">
+              <img
+                src="${IMG.headerLogo}"
+                alt="Final Experience"
+                width="320"
+                style="display:block;width:100%;max-width:320px;height:auto;border:0;margin:0 auto;"
+              />
             </td>
           </tr>
           <!-- Body -->
           <tr>
-            <td style="padding:32px;font-family:Arial,Helvetica,sans-serif;color:${C.bone};">
+            <td class="fe-body" style="padding:26px 28px;font-family:Arial,Helvetica,sans-serif;color:${C.bone};">
               ${opts.body}
             </td>
           </tr>
           <!-- Event strip -->
           <tr>
-            <td style="padding:0 32px 8px 32px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${C.smoke};">
+            <td class="fe-strip" style="padding:16px 28px;border-top:1px solid ${C.smoke};font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:${C.boneDim};">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding-top:18px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.7;color:${C.boneDim};">
-                    <span style="color:${C.ember};font-weight:700;">📅 19 de julio de 2026</span> · 12:00 hrs<br />
-                    <span style="color:${C.ember};font-weight:700;">📍 Explanada Metropolitan</span>, Vitacura, Santiago
-                  </td>
+                  <td style="padding:0 0 6px;"><strong style="color:${C.ember};">Fecha</strong> 19 jul 2026 · 12:00 hrs</td>
+                </tr>
+                <tr>
+                  <td style="padding:0;"><strong style="color:${C.ember};">Lugar</strong> Explanada Metropolitan, Vitacura</td>
                 </tr>
               </table>
             </td>
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding:20px 32px 28px 32px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:${C.boneDim};border-top:1px solid ${C.smoke};">
-              Este correo se envía únicamente con fines del concurso Final Experience Betano.
-              Tus datos serán eliminados tras la finalización del evento conforme a las
-              <a href="#" style="color:${C.boneDim};text-decoration:underline;">bases legales</a>.
-              Concurso válido en Chile. Mayores de 18 años.
+            <td class="fe-foot" style="padding:14px 28px 20px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:${C.boneDim};border-top:1px solid ${C.smoke};text-align:center;">
+              <img
+                src="${IMG.cobranding}"
+                alt="Betano — Promotor Oficial de la Copa Mundial de la FIFA 2026™"
+                width="200"
+                style="display:block;width:100%;max-width:200px;height:auto;margin:0 auto 12px;border:0;"
+              />
+              Concurso Final Experience Betano · Chile, mayores de 18 años.
+              <a href="https://finalexperience.cl/bases-legales" style="color:${C.ember};text-decoration:none;display:inline-block;padding:4px 2px;">Bases legales</a>.
             </td>
           </tr>
         </table>
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#5c5048;margin-top:16px;">Betano · Promotor Oficial de la Copa Mundial de la FIFA 2026™</div>
       </td>
     </tr>
   </table>
@@ -110,28 +128,14 @@ export function inscripcionHtml(nombre: string) {
   return shell({
     preheader: "Tu inscripción fue exitosa. ¡Mucha suerte en el sorteo!",
     kicker: "Inscripción confirmada",
-    title: "Inscripción confirmada",
     body: `
-      <p style="font-size:18px;line-height:1.5;margin:0 0 16px;color:${C.bone};">Hola <strong>${name}</strong>,</p>
-      <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:${C.bone};">
-        Tu inscripción al concurso <strong style="color:${C.ember};">Final Experience Betano</strong> fue
-        <strong>exitosa</strong> ✅. Ya estás participando por vivir la Gran Final del Mundial 2026
-        como nunca antes: domo inmersivo, pantalla XL, sonido envolvente, música en vivo y mucho más.
+      <p style="font-size:16px;line-height:1.6;margin:0 0 14px;color:${C.bone};">Hola <strong>${name}</strong>,</p>
+      <p style="font-size:15px;line-height:1.6;margin:0 0 14px;color:${C.bone};">
+        Tu inscripción a <strong style="color:${C.ember};">Final Experience Betano</strong> fue exitosa.
+        Ya participas por vivir la Gran Final del Mundial 2026 en un domo inmersivo, junto a 2 amigos.
       </p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
-        <tr>
-          <td style="background:rgba(255,77,0,0.10);border:1px solid rgba(255,77,0,0.30);border-radius:10px;padding:14px 18px;font-size:15px;line-height:1.55;color:${C.bone};">
-            🎟️ <strong>10 cupos disponibles.</strong> Cada ganador asiste junto a <strong>2 amigos</strong>.
-          </td>
-        </tr>
-      </table>
-      <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:${C.bone};">
-        Nos comunicaremos contigo <strong>por este mismo correo</strong> en caso de que resultes uno de
-        los ganadores del sorteo. Te recomendamos revisar tu bandeja de entrada (y la de spam) durante
-        los próximos días.
-      </p>
-      <p style="font-size:17px;line-height:1.5;margin:8px 0 0;color:${C.ember};font-weight:700;font-style:italic;">
-        ¡Mucha suerte! 🍀
+      <p style="font-size:15px;line-height:1.6;margin:0;color:${C.bone};">
+        Si resultas ganador te avisaremos por este mismo correo. ¡Mucha suerte!
       </p>`,
   });
 }
@@ -142,18 +146,14 @@ export function ganadorHtml(nombre: string) {
   return shell({
     preheader: "¡Ganaste! Vivirás la final del Mundial 2026 con Final Experience Betano.",
     kicker: "¡Resultaste ganador!",
-    title: "¡Ganaste!",
     body: `
-      <p style="font-size:18px;line-height:1.5;margin:0 0 16px;color:${C.bone};">Hola <strong>${name}</strong>,</p>
-      <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:${C.bone};">
-        Tenemos excelentes noticias: resultaste <strong style="color:${C.ember};">ganador</strong> del
-        concurso Final Experience Betano. Vivirás la final del Mundial 2026 como nunca antes,
-        junto a <strong>2 invitados</strong>.
+      <p style="font-size:16px;line-height:1.6;margin:0 0 14px;color:${C.bone};">Hola <strong>${name}</strong>,</p>
+      <p style="font-size:15px;line-height:1.6;margin:0 0 14px;color:${C.bone};">
+        Resultaste <strong style="color:${C.ember};">ganador</strong> de Final Experience Betano.
+        Vivirás la final del Mundial 2026 junto a 2 invitados.
       </p>
-      <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:${C.bone};">
-        Nuestro equipo se pondrá en contacto contigo por este mismo correo con los pasos para coordinar
-        la entrega de tu premio y los datos de tus acompañantes. <strong>Tienes 2 días corridos</strong>
-        para confirmar. ¡Mantente atento!
+      <p style="font-size:15px;line-height:1.6;margin:0;color:${C.bone};">
+        Te contactaremos por este correo con los siguientes pasos. Tienes <strong>2 días</strong> para confirmar.
       </p>`,
   });
 }
@@ -164,7 +164,7 @@ export async function enviarCorreoInscripcion(to: string, nombre: string) {
   return client().emails.send({
     from: from(),
     to,
-    subject: "✅ Tu inscripción a Final Experience Betano fue exitosa",
+    subject: "Tu inscripción a Final Experience Betano fue exitosa",
     html: inscripcionHtml(nombre),
   });
 }
@@ -173,7 +173,7 @@ export async function enviarCorreoGanador(to: string, nombre: string) {
   return client().emails.send({
     from: from(),
     to,
-    subject: "🏆 ¡Ganaste la Final Experience Betano!",
+    subject: "¡Ganaste la Final Experience Betano!",
     html: ganadorHtml(nombre),
   });
 }

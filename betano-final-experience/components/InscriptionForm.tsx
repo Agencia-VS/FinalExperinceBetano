@@ -33,7 +33,7 @@ const EMPTY: FormState = {
   aceptaBases: false,
 };
 
-export default function InscriptionForm() {
+export default function InscriptionForm({ onClose }: { onClose?: () => void }) {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
@@ -109,7 +109,7 @@ export default function InscriptionForm() {
           type="button"
           className="btn-ember"
           style={{ marginTop: "1.5rem" }}
-          onClick={() => setStatus("idle")}
+          onClick={() => onClose?.()}
         >
           Volver al home
         </button>
