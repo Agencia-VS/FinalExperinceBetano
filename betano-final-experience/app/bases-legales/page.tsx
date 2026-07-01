@@ -162,7 +162,7 @@ export default function BasesLegales() {
 
       <p className="legal-foot">
         Última actualización: 04 de julio de 2026. Documento referencial
-        preparado conforme a la Ley N° 21.719. No constituye asesoría legal.
+        preparado conforme a la Ley N° 21.719.
       </p>
     </main>
   );
