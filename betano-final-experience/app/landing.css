@@ -38,7 +38,8 @@
   align-items: center;
 }
 
-/* Overlay gradiente: oscurece el lado derecho para legibilidad sobre el estadio */
+/* Overlay gradiente: oscurece el lado derecho — deshabilitado */
+/*
 .hero-wrap::after {
   content: '';
   position: absolute;
@@ -55,6 +56,7 @@
   pointer-events: none;
   border-radius: inherit;
 }
+*/
 
 /* ── Izquierda: gráfico de marca ─────────────────── */
 .hero-copy {
@@ -119,9 +121,6 @@
   letter-spacing: 0.02em;
   text-align: left;
   text-wrap: balance;
-  text-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.8),
-    0 1px 3px rgba(0, 0, 0, 0.6);
   margin: 0;
 }
 
@@ -171,6 +170,7 @@
 }
 
 .hero-badge-label {
+  font-family: 'MDNichrome', serif;
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -181,8 +181,8 @@
 
 .hero-badge-value {
   font-size: clamp(0.78rem, 0.9vw, 0.88rem);
-  font-weight: 600;
-  color: #FAF7F2;
+  font-weight: 300;
+  color: #F0EAE2;
   line-height: 1.35;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
@@ -192,29 +192,17 @@
    ═══════════════════════════════════════════════════ */
 .hero-body-block {
   width: 100%;
-  background: rgba(12, 5, 2, 0.78);
-  border: 1px solid rgba(255, 77, 0, 0.16);
-  border-left: 3px solid rgba(255, 77, 0, 0.5);
+  background: rgba(12, 5, 2, 0.85);
+  border: 1px solid rgba(255, 77, 0, 0.28);
+  border-left: 3px solid var(--ember);
   border-radius: 10px;
   padding: 1.2rem 1.5rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
-.hero-body-block::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(
-    circle at 100% 0%,
-    rgba(255, 77, 0, 0.06) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
+.hero-body-block:hover {
+  border-color: rgba(255, 77, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 77, 0, 0.15);
 }
 
 .hero-body-title {
@@ -239,14 +227,20 @@
    ═══════════════════════════════════════════════════ */
 .hero-steps-block {
   width: 100%;
-  background: rgba(12, 5, 2, 0.78);
-  border: 1px solid rgba(255, 77, 0, 0.16);
+  background: rgba(12, 5, 2, 0.85);
+  border: 1px solid rgba(255, 77, 0, 0.28);
+  border-left: 3px solid var(--ember);
   border-radius: 10px;
   padding: 1.2rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.hero-steps-block:hover {
+  border-color: rgba(255, 77, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 77, 0, 0.15);
 }
 
 .hero-steps-title {
@@ -282,11 +276,30 @@
 
 .hero-step-text {
   font-size: clamp(0.8rem, 0.92vw, 0.9rem);
-  color: #D5C8BB;
+  color: #F0EAE2;
   line-height: 1.5;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   padding-top: 0.15rem;
   text-align: left;
+}
+
+.hero-step-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: transparent;
+  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+}
+.hero-step-link:hover,
+.hero-step-link:focus-visible {
+  color: var(--ember);
+  text-decoration-color: var(--ember);
+  outline: none;
 }
 
 /* ── CTA principal (abre el modal) ───────────────── */
@@ -296,7 +309,7 @@
   background: var(--ember);
   color: #fff;
   border: none;
-  font-family: inherit;
+  font-family: 'MDNichrome', serif;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;

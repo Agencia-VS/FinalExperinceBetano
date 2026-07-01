@@ -197,7 +197,7 @@ export default function InscriptionForm({ onClose }: { onClose?: () => void }) {
           </label>
           <textarea
             id="motivo" className="field-textarea" rows={3} value={form.motivo}
-            placeholder="Tu respuesta (opcional)"
+            placeholder="(Máx. 150 caracteres)"
             onChange={(e) => update("motivo", e.target.value)}
           />
         </div>

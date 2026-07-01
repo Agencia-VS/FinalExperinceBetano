@@ -131,8 +131,9 @@ export function inscripcionHtml(nombre: string) {
     body: `
       <p style="font-size:16px;line-height:1.6;margin:0 0 14px;color:${C.bone};">Hola <strong>${name}</strong>,</p>
       <p style="font-size:15px;line-height:1.6;margin:0 0 14px;color:${C.bone};">
-        Tu inscripción a <strong style="color:${C.ember};">Final Experience Betano</strong> fue exitosa.
-        Ya participas por vivir la Gran Final del Mundial 2026 en un domo inmersivo, junto a 2 amigos.
+        ¡Tu inscripción fue exitosa! Ya estás participando en
+        <strong style="color:${C.ember};">Final Experience Betano</strong>
+        donde podrás vivir la Gran Final del Mundial 2026 junto a 2 amigos.
       </p>
       <p style="font-size:15px;line-height:1.6;margin:0;color:${C.bone};">
         Si resultas ganador te avisaremos por este mismo correo. ¡Mucha suerte!

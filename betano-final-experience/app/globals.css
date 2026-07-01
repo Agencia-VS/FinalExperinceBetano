@@ -128,6 +128,7 @@ a { color: inherit; }
   background: var(--ember);
   color: #fff;
   border: none;
+  font-family: 'MDNichrome', serif;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;

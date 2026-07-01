@@ -1,5 +1,5 @@
 import Image from "next/image";
-import EnrollModal from "@/components/EnrollModal";
+import HeroStepsClient from "@/components/HeroStepsClient";
 import "./landing.css";
 
 export default function Home() {
@@ -37,7 +37,7 @@ export default function Home() {
           {/* Bloque 1: Título con barra decorativa */}
           <div className="hero-title-block">
             <h2 className="hero-desc-title">
-              Vive la final de la Copa del Mundo como nunca antes.
+              VIVE LA FINAL DE LA COPA DEL MUNDO COMO NUNCA ANTES.
             </h2>
           </div>
 
@@ -52,7 +52,7 @@ export default function Home() {
               </svg>
               <div className="hero-badge-text">
                 <span className="hero-badge-label">Fecha</span>
-                <span className="hero-badge-value">19 julio 2026 · 12:00 hrs</span>
+                <span className="hero-badge-value">19 julio 2026 · Desde las 12:00 hrs</span>
               </div>
             </div>
             <div className="hero-info-badge">
@@ -77,24 +77,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Bloque 4: Pasos para participar */}
-          <div className="hero-steps-block">
-            <p className="hero-steps-title">¿Cómo participar?</p>
-            <div className="hero-step">
-              <span className="hero-step-num">1</span>
-              <span className="hero-step-text">Inscríbete entre el 4 y el 15 de julio</span>
-            </div>
-            <div className="hero-step">
-              <span className="hero-step-num">2</span>
-              <span className="hero-step-text">Cuéntanos por qué quieres vivir esta experiencia</span>
-            </div>
-            <div className="hero-step">
-              <span className="hero-step-num">3</span>
-              <span className="hero-step-text">Entra al sorteo para asistir junto a 2 amigos</span>
-            </div>
-          </div>
-
-          <EnrollModal />
+          <HeroStepsClient />
         </section>
       </div>
 
