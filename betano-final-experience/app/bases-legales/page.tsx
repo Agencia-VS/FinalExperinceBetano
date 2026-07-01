@@ -17,7 +17,7 @@ export default function BasesLegales() {
       <section>
         <h2>1. Responsable del tratamiento de los datos</h2>
         <p>
-          Para el concurso "Final Experience Betano" (en adelante, el "Concurso")
+          Para el concurso "Final Experience Betano" (en adelante, el "Concurso"),
           el responsable del tratamiento de los datos personales, conforme a la
           Ley N° 19.628 modificada por la Ley N° 21.719 sobre Protección de Datos
           Personales, es <strong>AGENCIA VS SPA</strong>, RUT{" "}
@@ -41,7 +41,7 @@ export default function BasesLegales() {
           <strong>04 de julio de 2026</strong> hasta el{" "}
           <strong>15 de julio de 2026</strong>. El evento de la final se
           realizará el <strong>19 de julio de 2026</strong>, desde las{" "}
-          <strong>12:00 hasta las 19:00 hrs</strong>.
+          <strong>12:00 hasta las 19:00 horas</strong>.
         </p>
         <p>
           Pueden participar personas naturales{" "}
@@ -60,6 +60,18 @@ export default function BasesLegales() {
           mayores de 18 años y residentes en Chile. Los datos de los invitados
           no se solicitan durante el período de inscripción, sino una vez
           confirmado el premio, conforme al procedimiento descrito en el punto 4.
+        </p>
+        <p>
+          La residencia en Chile no se limita a la Región Metropolitana. Podrán
+          participar personas residentes en cualquier región del país. Sin
+          perjuicio de lo anterior, el premio consiste exclusivamente en la
+          entrada al evento y los cupos para sus invitados. Los costos de
+          traslado, alojamiento, alimentación y cualquier otro gasto derivado
+          del desplazamiento desde el lugar de residencia del ganador hacia el
+          recinto del evento en Santiago serán de cargo exclusivo del ganador y
+          sus acompañantes. El Organizador no asumirá responsabilidad ni
+          obligación alguna por dichos gastos, cualquiera sea la distancia o
+          región de origen del participante premiado.
         </p>
       </section>
 
@@ -157,6 +169,22 @@ export default function BasesLegales() {
           Organizador podrá modificarlas por causa justificada, informando a
           través de los mismos canales del Concurso. Cualquier controversia se
           regirá por la legislación chilena.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Restricción de edad — Evento exclusivo para mayores de 18 años</h2>
+        <p>
+          El evento "Final Experience" es una actividad exclusiva para personas
+          mayores de 18 años. Queda estrictamente prohibido el ingreso de
+          menores de edad, sin excepción, ya sea en calidad de ganador,
+          acompañante o invitado. El Organizador se reserva el derecho de exigir
+          la presentación de documento de identidad vigente en el acceso al
+          recinto, para verificar el cumplimiento de este requisito. El
+          incumplimiento de esta condición facultará al Organizador para denegar
+          el ingreso al evento sin derecho a compensación, reembolso ni reclamo
+          de ningún tipo. Esta restricción aplica tanto al ganador del concurso
+          como a los 2 invitados que este designe.
         </p>
       </section>
 
