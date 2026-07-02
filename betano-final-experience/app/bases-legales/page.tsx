@@ -41,7 +41,7 @@ export default function BasesLegales() {
           <strong>04 de julio de 2026</strong> hasta el{" "}
           <strong>15 de julio de 2026</strong>. El evento de la final se
           realizará el <strong>19 de julio de 2026</strong>, desde las{" "}
-          <strong>12:00 hasta las 19:00 horas</strong>.
+          <strong>13:00 hasta las 19:00 horas</strong>.
         </p>
         <p>
           Pueden participar personas naturales{" "}

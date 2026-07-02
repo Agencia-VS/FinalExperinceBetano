@@ -52,7 +52,7 @@ export default function Home() {
               </svg>
               <div className="hero-badge-text">
                 <span className="hero-badge-label">Fecha</span>
-                <span className="hero-badge-value">19 julio 2026 · Desde las 12:00 hrs</span>
+                <span className="hero-badge-value">19 julio 2026 · Desde las 13:00 hrs</span>
               </div>
             </div>
             <a
