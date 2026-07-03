@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import MarketCard from "./MarketCard";
 import CountdownTimer from "./CountdownTimer";
+import { createBrowser } from "@/lib/supabase-browser";
 
 export type MarketOption = { id: string; etiqueta: string; puntos: number };
 export type Market = {
@@ -68,12 +69,26 @@ export default function PronosticosFlow({
     }
   }, [router]);
 
-  // ¿Pronósticos cerrados?
+  // ¿Pronósticos cerrados? Carga inicial + suscripción Realtime para detectar
+  // el cierre en vivo sin que el usuario tenga que recargar la página.
   useEffect(() => {
     fetch("/api/juego/leaderboard")
       .then((r) => r.json())
-      .then((d) => setLocked(!!d.predictionsLocked))
+      .then((d) => { if (d.predictionsLocked) setLocked(true); })
       .catch(() => {});
+
+    const supabase = createBrowser();
+    const ch = supabase
+      .channel("match_state_lock")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "juego_match_state" },
+        (payload: { new: { predictions_locked?: boolean } }) => {
+          if (payload.new?.predictions_locked) setLocked(true);
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
   }, []);
 
   const save = useCallback(async (pid: string, optionId: string, marketId: string) => {

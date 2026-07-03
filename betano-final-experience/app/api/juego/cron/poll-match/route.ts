@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 
   const { data: st } = await admin
     .from("juego_match_state")
-    .select("match_status, kickoff_at")
+    .select("match_status, kickoff_at, predictions_locked")
     .eq("id", 1)
     .maybeSingle();
   if (st?.match_status === "finished") {
@@ -52,6 +52,8 @@ export async function GET(req: Request) {
   const started = Date.now();
   let iterations = 0;
   let lastStatus = st?.match_status ?? "scheduled";
+  // Track locally so we only write `predictions_locked = true` once per run.
+  let alreadyLocked = st?.predictions_locked ?? false;
 
   while (Date.now() - started < MAX_RUN_MS) {
     iterations++;
@@ -63,12 +65,20 @@ export async function GET(req: Request) {
       const { home_team, away_team, kickoff_at, ...snapshotRow } = snap;
       await admin.from("juego_match_snapshots").insert(snapshotRow);
 
-      const justStarted = prevStatus === "scheduled" && snap.match_status !== "scheduled";
+      // Lock whenever the match is live/in-progress and the flag is still false.
+      // This covers both the normal scheduled→live transition AND the re-entry
+      // case where a previous run set match_status but failed to set the lock.
+      const shouldLock =
+        !alreadyLocked &&
+        snap.match_status !== "scheduled" &&
+        snap.match_status !== "finished";
+      if (shouldLock) alreadyLocked = true;
+
       await admin
         .from("juego_match_state")
         .update({
           match_status: snap.match_status,
-          predictions_locked: justStarted ? true : undefined,
+          predictions_locked: shouldLock ? true : undefined,
           home_team,
           away_team,
           kickoff_at: kickoff_at ?? undefined,
