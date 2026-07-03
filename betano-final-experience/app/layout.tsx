@@ -1,28 +1,41 @@
-import type { Metadata } from "next";
-import { Oswald, Inter } from "next/font/google";
-import { preload } from "react-dom";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 
-// Display: Oswald condensado evoca el lettering deportivo del mockup.
-const display = Oswald({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-display",
+/**
+ * Fuentes de marca Betano (locales, servidas desde /public):
+ *  — MDNichrome (Regular + Dark) → var(--font-mdn): titulares y botones.
+ *    Usar font-weight 800 para el corte Dark (MDNichrome-Dark.woff2).
+ *  — Haffer → var(--font-haffer): cuerpo y UI (formularios, listas, ranking).
+ * Los tokens semánticos (--font-display / --font-body) y las utilidades de
+ * Tailwind (font-title / font-sans) se mapean sobre estas variables en globals.css.
+ */
+const mdNichrome = localFont({
+  src: [
+    { path: "../public/MDNichrome-Regular.woff", weight: "400", style: "normal" },
+    { path: "../public/MDNichrome-Dark.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-mdn",
+  display: "swap",
 });
 
-// Body: Inter, neutra y legible para formularios y legales.
-const body = Inter({
-  subsets: ["latin"],
-  variable: "--font-body",
+const haffer = localFont({
+  src: "../public/Haffer-Regular.ttf",
+  variable: "--font-haffer",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Final Experience Betano | Inscríbete",
+  title: "Final Experience Betano",
   description:
-    "Inscríbete y participa por vivir la final del Mundial 2026 junto a tus amigos. Concurso Final Experience Betano.",
-  icons: {
-    icon: "/isoBetano.png",
-  },
+    "Final Experience Betano — vive la final del Mundial 2026 junto a Betano.",
+  icons: { icon: "/isoBetano.png" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B0705",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -30,10 +43,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  preload("/FONDO.png", { as: "image", fetchPriority: "high" });
-  preload("/EXPERIENCE%20TEXTO.png", { as: "image", fetchPriority: "high" });
   return (
-    <html lang="es" className={`${display.variable} ${body.variable}`}>
+    <html lang="es" className={`${mdNichrome.variable} ${haffer.variable}`}>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

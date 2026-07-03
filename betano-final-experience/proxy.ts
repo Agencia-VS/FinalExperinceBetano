@@ -26,7 +26,9 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isAdmin = path.startsWith("/admin");
+  // Protege el admin del concurso (/admin/*) y el del juego (/juego/admin/*),
+  // ambos con los mismos usuarios de Supabase Auth y el mismo login.
+  const isAdmin = path.startsWith("/admin") || path.startsWith("/juego/admin");
   const isLogin = path === "/admin/login";
 
   if (isAdmin && !isLogin && !user) {
@@ -40,5 +42,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/juego/admin/:path*"],
 };
