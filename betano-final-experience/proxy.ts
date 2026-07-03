@@ -32,10 +32,13 @@ export async function proxy(request: NextRequest) {
   const isLogin = path === "/admin/login";
 
   if (isAdmin && !isLogin && !user) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("next", path);
+    return NextResponse.redirect(loginUrl);
   }
   if (isLogin && user) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+    const next = request.nextUrl.searchParams.get("next") ?? "/admin";
+    return NextResponse.redirect(new URL(next, request.url));
   }
 
   return response;

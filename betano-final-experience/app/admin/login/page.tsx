@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowser } from "@/lib/supabase-browser";
 import Image from "next/image";
 import "../admin.css";
 
 export default function AdminLogin() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -24,7 +25,8 @@ export default function AdminLogin() {
       setError("Credenciales inválidas. Revisa tu correo y contraseña.");
       return;
     }
-    router.push("/admin");
+    const next = searchParams.get("next") ?? "/admin";
+    router.push(next);
     router.refresh();
   }
 
