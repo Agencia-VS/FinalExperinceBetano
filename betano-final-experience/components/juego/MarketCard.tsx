@@ -9,6 +9,13 @@ const RESOLVE_CHIP: Record<string, string> = {
   fulltime: "Final",
 };
 
+// Ventana de tiempo que cuenta la estadística (claridad 90' vs 120').
+const TIEMPO_CHIP: Record<string, string> = {
+  "90": "90 min",
+  "120": "Incluye alargue",
+  ht: "1er tiempo",
+};
+
 export default function MarketCard({
   index,
   market,
@@ -62,6 +69,11 @@ export default function MarketCard({
             <span className="rounded-md bg-smoke/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bone-dim">
               {RESOLVE_CHIP[market.resolves_at] ?? market.resolves_at}
             </span>
+            {market.tiempo && TIEMPO_CHIP[market.tiempo] && TIEMPO_CHIP[market.tiempo] !== RESOLVE_CHIP[market.resolves_at] && (
+              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ember/90">
+                {TIEMPO_CHIP[market.tiempo]}
+              </span>
+            )}
           </div>
           <h3 className="mt-0.5 font-title text-[1.05rem] font-bold uppercase leading-tight tracking-tight text-bone">
             {market.titulo}
@@ -77,6 +89,8 @@ export default function MarketCard({
       <div className={`mt-3.5 grid ${cols} gap-2`}>
         {market.options.map((o) => {
           const active = selected === o.id;
+          // "Otro resultado" (catch-all del resultado exacto) ocupa toda la fila.
+          const fullRow = o.valor === "otro";
           return (
             <motion.button
               key={o.id}
@@ -85,6 +99,8 @@ export default function MarketCard({
               onClick={() => onSelect(o.id)}
               whileTap={{ scale: 0.96 }}
               className={`relative flex min-h-14 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl border px-2 py-2.5 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45 ${
+                fullRow ? "col-span-full" : ""
+              } ${
                 active
                   ? "border-transparent bg-gradient-to-b from-[#FF5A0F] to-[#E23F00] text-white shadow-[0_6px_20px_-6px_rgba(255,77,0,0.55)]"
                   : "border-smoke bg-ash/45 text-bone hover:border-ember/50 active:border-ember"
@@ -248,6 +264,21 @@ function MarketIcon({ id }: { id: string }) {
         <svg {...common}>
           <circle cx="12" cy="13" r="8" />
           <path d="M12 9.5V13l2.5 1.8M10 2.5h4" strokeLinecap="round" />
+        </svg>
+      );
+    case "metodo_victoria": // silbato
+      return (
+        <svg {...common}>
+          <circle cx="9.5" cy="14.5" r="5" />
+          <path d="M13.5 11.5 21 8.5v4.2l-6 2.3" strokeLinejoin="round" />
+          <circle cx="9.5" cy="14.5" r="0.8" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "habra_penales": // arco + pelota en el punto penal
+      return (
+        <svg {...common}>
+          <path d="M3.5 19V6h17v13" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="12" cy="16.5" r="2.4" />
         </svg>
       );
   }

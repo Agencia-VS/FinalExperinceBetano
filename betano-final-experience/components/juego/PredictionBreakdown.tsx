@@ -138,13 +138,21 @@ export default function PredictionBreakdown({
 
 /** Tarjeta individual de un mercado en el breakdown. */
 function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) {
-  const { marketId, titulo, resolvesAt, pickLabel, puntos, resolved, statActual, umbral, direccion } = item;
+  const { titulo, resolvesAt, tiempo, pickLabel, puntos, resolved, statActual, umbral, direccion } = item;
 
   const CHIP: Record<string, string> = {
     live: "En vivo",
     halftime: "1er tiempo",
     fulltime: "Final",
   };
+
+  // Tag de la ventana que cuenta: el usuario entiende la regla sin adivinar.
+  const TIEMPO_CHIP: Record<string, string> = {
+    "90": "90 min",
+    "120": "Incluye alargue",
+    ht: "1er tiempo",
+  };
+  const tiempoLabel = tiempo ? TIEMPO_CHIP[tiempo] : null;
 
   // Barra de progreso solo para O/U
   const hasProgress = statActual != null && umbral != null && direccion != null;
@@ -174,6 +182,11 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
             <span className="rounded-md bg-smoke/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-bone-dim">
               {CHIP[resolvesAt] ?? resolvesAt}
             </span>
+            {tiempoLabel && tiempoLabel !== CHIP[resolvesAt] && (
+              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ember/90">
+                {tiempoLabel}
+              </span>
+            )}
             {resolved ? (
               <span className="rounded-md bg-[#3ddc84]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#3ddc84]">
                 ✅ Acertado

@@ -20,6 +20,8 @@ export type BreakdownItem = {
   marketId: string;
   titulo: string;
   resolvesAt: string;
+  /** Ventana que cuenta: '90' | '120' | 'ht' | null (no aplica). */
+  tiempo: string | null;
   pickLabel: string | null;
   puntos: number;
   resolved: boolean;
@@ -71,7 +73,7 @@ export async function GET(req: Request) {
   // 4. Catálogo de mercados (para título, resolves_at y orden).
   const { data: markets } = await admin
     .from("juego_markets")
-    .select("id, titulo, resolves_at, orden")
+    .select("id, titulo, resolves_at, tiempo, orden")
     .eq("activo", true)
     .order("orden");
 
@@ -103,6 +105,9 @@ export async function GET(req: Request) {
       if (m.id === "habra_roja" && opt.valor === "no") {
         resolved = false; // "No" solo se confirma al final
       }
+      if (m.id === "habra_penales" && opt.valor === "no") {
+        resolved = false; // "No" solo se confirma al final
+      }
       if (m.id === "primer_gol" && !snap?.first_scorer_side) {
         resolved = false; // aún no hubo gol
       }
@@ -126,6 +131,7 @@ export async function GET(req: Request) {
       marketId: m.id,
       titulo: m.titulo,
       resolvesAt: m.resolves_at,
+      tiempo: m.tiempo ?? null,
       pickLabel: opt?.etiqueta ?? null,
       puntos: opt?.puntos ?? 0,
       resolved,
