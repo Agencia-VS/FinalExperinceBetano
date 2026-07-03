@@ -82,7 +82,7 @@ type ApiStatBlock = {
   statistics?: { type?: string; value?: number | string | null }[];
 };
 type ApiFixture = {
-  fixture?: { id?: number; status?: { short?: string; elapsed?: number | null } };
+  fixture?: { id?: number; date?: string; status?: { short?: string; elapsed?: number | null } };
   teams?: { home?: ApiTeam; away?: ApiTeam };
   goals?: { home?: number | null; away?: number | null };
   score?: {
