@@ -8,12 +8,20 @@ import MarketCard from "./MarketCard";
 import CountdownTimer from "./CountdownTimer";
 import { createBrowser } from "@/lib/supabase-browser";
 
-export type MarketOption = { id: string; etiqueta: string; puntos: number };
+export type MarketOption = {
+  id: string;
+  etiqueta: string;
+  puntos: number;
+  /** 'otro' (resultado exacto) ocupa todas las columnas de la grilla. */
+  valor: string | null;
+};
 export type Market = {
   id: string;
   titulo: string;
   descripcion: string | null;
   resolves_at: string;
+  /** Ventana que cuenta: '90' | '120' | 'ht' | null (no aplica). */
+  tiempo: string | null;
   options: MarketOption[];
 };
 export type SaveStatus = "idle" | "saving" | "saved" | "error";

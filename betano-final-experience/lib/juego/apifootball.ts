@@ -60,6 +60,7 @@ export type MatchSnapshotInsert = {
   first_scorer_side: Side | null;
   winner_side: Side | "draw" | null;
   went_to_extra_time: boolean;
+  went_to_penalties: boolean;
   /** Nombres de los equipos (para match_state, no van al snapshot). */
   home_team: string | null;
   away_team: string | null;
@@ -222,6 +223,11 @@ export function mapFixtureToSnapshot(fx: ApiFixture): MatchSnapshotInsert {
     penHome != null ||
     ["ET", "BT", "P", "AET", "PEN"].includes(short ?? "");
 
+  // Penales: hay tanda apenas el status entra en 'P' (en vivo) o si la API
+  // ya reporta el marcador de la tanda.
+  const wentToPenalties =
+    penHome != null || penAway != null || ["P", "PEN"].includes(short ?? "");
+
   // Córners: sólo en statistics. Tarjetas: el mayor entre statistics y el conteo
   // por eventos (los eventos son más "en vivo"; las stats a veces tardan).
   const corners = sumStat(fx.statistics, STAT_CORNERS);
@@ -253,6 +259,7 @@ export function mapFixtureToSnapshot(fx: ApiFixture): MatchSnapshotInsert {
     first_scorer_side: firstScorer,
     winner_side: winner,
     went_to_extra_time: wentToExtra,
+    went_to_penalties: wentToPenalties,
     home_team: fx.teams?.home?.name ?? null,
     away_team: fx.teams?.away?.name ?? null,
     kickoff_at: fx.fixture?.date ?? null,

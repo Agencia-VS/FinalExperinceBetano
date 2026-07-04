@@ -30,12 +30,12 @@ export default async function PronosticosPage() {
   const [{ data: markets }, { data: options }, { data: state }] = await Promise.all([
     admin
       .from("juego_markets")
-      .select("id, titulo, descripcion, resolves_at, orden")
+      .select("id, titulo, descripcion, resolves_at, tiempo, orden")
       .eq("activo", true)
       .order("orden"),
     admin
       .from("juego_market_options")
-      .select("id, market_id, etiqueta, puntos, orden")
+      .select("id, market_id, etiqueta, valor, puntos, orden")
       .order("orden"),
     admin
       .from("juego_match_state")
@@ -72,9 +72,10 @@ export default async function PronosticosPage() {
     titulo: m.titulo,
     descripcion: m.descripcion,
     resolves_at: m.resolves_at,
+    tiempo: m.tiempo ?? null,
     options: (options ?? [])
       .filter((o) => o.market_id === m.id)
-      .map((o) => ({ id: o.id, etiqueta: o.etiqueta, puntos: o.puntos })),
+      .map((o) => ({ id: o.id, etiqueta: o.etiqueta, puntos: o.puntos, valor: o.valor ?? null })),
   }));
 
   return <PronosticosFlow markets={grouped} homeTeam={homeTeam} awayTeam={awayTeam} kickoffAt={kickoffAt} />;

@@ -301,7 +301,7 @@
 .rank-table td {
   text-align: left;
   padding: 0.7rem 0.85rem;
-  border-bottom: 1px solid rgba(42, 27, 18, 0.6);
+  border-bottom: 1px solid var(--smoke);
   white-space: nowrap;
   color: var(--bone);
 }

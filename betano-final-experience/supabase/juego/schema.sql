@@ -44,6 +44,10 @@ create table if not exists public.juego_markets (
   descripcion  text,
   resolves_at  text not null default 'fulltime'
                  check (resolves_at in ('live','halftime','fulltime')),
+  -- Ventana de tiempo que cuenta la estadística (chip en la UI):
+  --   '90' = solo 90' reglamentarios · '120' = incluye alargue · 'ht' = 1er tiempo
+  --   null = no aplica (mercados de desenlace: va_alargue, metodo_victoria, ...)
+  tiempo       text check (tiempo in ('90','120','ht')),
   orden        int  not null default 0,
   activo       boolean not null default true,
   created_at   timestamptz not null default now()
@@ -133,6 +137,7 @@ create table if not exists public.juego_match_snapshots (
   first_scorer_side   text check (first_scorer_side in ('home','away')),
   winner_side         text check (winner_side in ('home','away','draw')),  -- incluye penales
   went_to_extra_time  boolean not null default false,
+  went_to_penalties   boolean not null default false,
   raw                 jsonb,                      -- payload API-Football (debug/replay)
   fetched_at          timestamptz not null default now()
 );
@@ -278,7 +283,15 @@ begin
           l.winner_side is not null and mo.valor = l.winner_side
         when 'resultado_exacto' then
           l.reg_home_score is not null
-          and mo.valor = (l.reg_home_score::text || '-' || l.reg_away_score::text)
+          and case
+            -- "Otro resultado": acierta si el marcador al 90' no coincide con
+            -- NINGÚN otro marcador ofrecido en el catálogo del mercado.
+            when mo.valor = 'otro' then not exists (
+              select 1 from public.juego_market_options x
+              where x.market_id = 'resultado_exacto' and x.valor <> 'otro'
+                and x.valor = (l.reg_home_score::text || '-' || l.reg_away_score::text))
+            else mo.valor = (l.reg_home_score::text || '-' || l.reg_away_score::text)
+          end
         when 'ganador_ht' then
           l.ht_home_score is not null and mo.valor = (case
             when l.ht_home_score > l.ht_away_score then 'home'
@@ -311,8 +324,29 @@ begin
         when 'primer_gol' then
           l.first_scorer_side is not null and mo.valor = l.first_scorer_side
         when 'va_alargue' then
-          l.match_status = 'finished'
-          and mo.valor = (case when l.went_to_extra_time then 'si' else 'no' end)
+          case
+            -- 'sí' acierta EN VIVO apenas arranca el alargue; 'no' recién al final.
+            when mo.valor = 'si' then l.went_to_extra_time
+            when mo.valor = 'no' then l.match_status = 'finished' and not l.went_to_extra_time
+            else false
+          end
+        when 'metodo_victoria' then
+          case
+            -- 'penales' acierta en vivo apenas arranca la tanda;
+            -- '90 min' / 'alargue' solo pueden confirmarse con el partido terminado.
+            when mo.valor = 'pen' then l.went_to_penalties
+            when mo.valor = 'et'  then l.match_status = 'finished'
+                                       and l.went_to_extra_time and not l.went_to_penalties
+            when mo.valor = 'reg' then l.match_status = 'finished'
+                                       and not l.went_to_extra_time
+            else false
+          end
+        when 'habra_penales' then
+          case
+            when mo.valor = 'si' then l.went_to_penalties
+            when mo.valor = 'no' then l.match_status = 'finished' and not l.went_to_penalties
+            else false
+          end
         when 'tiros_arco_ou' then case mo.direccion
             when 'over'  then l.shots_on_goal_total > mo.umbral
             when 'under' then l.match_status = 'finished' and l.shots_on_goal_total < mo.umbral
@@ -429,8 +463,10 @@ exception when duplicate_object then null; end $$;
 -- insert into public.juego_match_snapshots
 --   (source, match_status, home_score, away_score, ht_home_score, ht_away_score,
 --    reg_home_score, reg_away_score, corners_total, yellow_cards_total, red_cards_total,
---    both_teams_scored, first_scorer_side, winner_side, went_to_extra_time)
+--    both_teams_scored, first_scorer_side, winner_side, went_to_extra_time, went_to_penalties)
 -- values
---   ('manual','finished', 2,1, 1,0, 2,1, 7, 4, 1, true, 'home', 'home', false);
+--   -- 4-2 al 90' (marcador fuera del catálogo → gana "Otro resultado"), 8 córners
+--   -- (Más de 7.5 ✓ / Menos de 9.5 ✓ / Más de 9.5 ✗), con alargue y penales.
+--   ('manual','finished', 4,2, 1,0, 4,2, 8, 4, 1, true, 'home', 'home', true, true);
 -- select public.juego_recompute_scores();
 -- select ranking from public.juego_leaderboard_cache where id = 1;
