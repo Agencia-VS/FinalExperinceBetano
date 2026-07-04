@@ -24,6 +24,13 @@ type Snapshot = {
   red_cards_total: number;
 } | null;
 
+type LeaderboardInfo = {
+  cacheRowExists: boolean;
+  rankingCount: number;
+  updatedAt: string | null;
+  scoredPlayers: number;
+};
+
 const STATUS_LABEL: Record<string, string> = {
   scheduled: "Programado",
   live_1h: "1er tiempo",
@@ -39,11 +46,13 @@ export default function JuegoAdminDashboard({
   lastSnapshot,
   totalPlayers,
   fixtureId,
+  leaderboard,
 }: {
   matchState: MatchState;
   lastSnapshot: Snapshot;
   totalPlayers: number;
   fixtureId: string | null;
+  leaderboard: LeaderboardInfo;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -75,6 +84,20 @@ export default function JuegoAdminDashboard({
     }
   }
 
+  async function recalcularRanking() {
+    setBusy(true);
+    setMsg(null);
+    const res = await fetch("/api/juego/admin/resolver", { method: "POST" });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) {
+      setMsg({ text: `Error al recalcular: ${data.error ?? "desconocido"}`, ok: false });
+    } else {
+      setMsg({ text: "Ranking recalculado.", ok: true });
+      router.refresh();
+    }
+  }
+
   async function logout() {
     await createBrowser().auth.signOut();
     router.push("/admin/login");
@@ -96,6 +119,14 @@ export default function JuegoAdminDashboard({
         timeZone: "America/Santiago",
       })
     : "Sin datos aún";
+
+  const leaderboardUpdatedAt = leaderboard.updatedAt
+    ? new Date(leaderboard.updatedAt).toLocaleString("es-CL", {
+        timeStyle: "short",
+        dateStyle: "short",
+        timeZone: "America/Santiago",
+      })
+    : "—";
 
   return (
     <main style={{ fontFamily: "var(--font-haffer, sans-serif)", minHeight: "100dvh", background: "#0B0705", color: "#f0ebe4", padding: "1.5rem" }}>
@@ -154,6 +185,41 @@ export default function JuegoAdminDashboard({
           ) : (
             <p style={{ color: "#888", margin: 0 }}>Sin snapshots todavía.</p>
           )}
+        </section>
+
+        {/* Ranking / leaderboard cache */}
+        <section style={card}>
+          <h2 style={sectionTitle}>Ranking (leaderboard cache)</h2>
+          <dl style={dl}>
+            <Row
+              label="Fila cache"
+              value={
+                leaderboard.cacheRowExists ? (
+                  "Existe"
+                ) : (
+                  <span style={{ color: "#ef4444", fontWeight: 700 }}>⚠ NO EXISTE (id=1 falta)</span>
+                )
+              }
+            />
+            <Row label="Jugadores en ranking" value={String(leaderboard.rankingCount)} />
+            <Row label="Jugadores con puntaje" value={String(leaderboard.scoredPlayers)} />
+            <Row label="Última actualización" value={leaderboardUpdatedAt} />
+          </dl>
+          {!leaderboard.cacheRowExists && (
+            <p style={{ marginTop: "0.5rem", fontSize: 12, color: "#ef4444" }}>
+              La fila id=1 de juego_leaderboard_cache no existe. Si se borró por error, hay que
+              reinsertarla manualmente en Supabase: <code>insert into juego_leaderboard_cache (id) values (1);</code>
+            </p>
+          )}
+          {leaderboard.cacheRowExists && leaderboard.rankingCount === 0 && totalPlayers > 0 && (
+            <p style={{ marginTop: "0.5rem", fontSize: 12, color: "#f59e0b" }}>
+              Hay {totalPlayers} jugador(es) registrado(s) pero el ranking está vacío — probá
+              &quot;Recalcular ranking&quot; abajo y fijate si tira error.
+            </p>
+          )}
+          <button onClick={recalcularRanking} disabled={busy} style={{ ...btnPrimary, marginTop: "1rem" }}>
+            {busy ? "Ejecutando…" : "🔄 Recalcular ranking ahora"}
+          </button>
         </section>
 
         {/* Acciones */}
