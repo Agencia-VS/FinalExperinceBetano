@@ -101,6 +101,8 @@ create table if not exists public.juego_match_state (
   -- Nombres de los equipos (se actualizan automáticamente desde API-Football).
   home_team           text,
   away_team           text,
+  -- ID del fixture en API-Football. Si es null, se usa APIFOOTBALL_FIXTURE_ID del entorno.
+  fixture_id          text,
   -- Guard anti-solapamiento del poller (alternativa a advisory lock).
   polling_owner       uuid,
   lock_expires_at     timestamptz,

@@ -299,3 +299,22 @@ export async function fetchMatchSnapshot(
   }
   return mapFixtureToSnapshot(fx);
 }
+
+/**
+ * Obtiene el fixture ID a usar: primero busca en juego_match_state (DB),
+ * luego cae al environment variable APIFOOTBALL_FIXTURE_ID.
+ *
+ * Esto permite que el admin cambie el partido desde el panel sin tocar Vercel.
+ */
+export async function getFixtureId(admin: ReturnType<typeof import("@/lib/supabase").createAdmin>): Promise<string | null> {
+  // 1) Intentar leer de la DB (configurado desde admin).
+  const { data } = await admin
+    .from("juego_match_state")
+    .select("fixture_id")
+    .eq("id", 1)
+    .maybeSingle();
+  if (data?.fixture_id) return data.fixture_id;
+
+  // 2) Fallback al environment variable.
+  return process.env.APIFOOTBALL_FIXTURE_ID ?? null;
+}

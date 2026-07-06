@@ -1,10 +1,11 @@
 import { createAdmin } from "@/lib/supabase";
+import { getFixtureId } from "@/lib/juego/apifootball";
 import PronosticosFlow, { type Market } from "@/components/juego/PronosticosFlow";
 
 export const dynamic = "force-dynamic";
 
-async function fetchTeamNames(): Promise<{ home: string | null; away: string | null; kickoff: string | null }> {
-  const fixtureId = process.env.APIFOOTBALL_FIXTURE_ID;
+async function fetchTeamNames(admin: ReturnType<typeof createAdmin>): Promise<{ home: string | null; away: string | null; kickoff: string | null }> {
+  const fixtureId = await getFixtureId(admin);
   const apiKey = process.env.API_KEY_FOOTBALL;
   if (!fixtureId || !apiKey) return { home: null, away: null, kickoff: null };
   try {
@@ -51,7 +52,7 @@ export default async function PronosticosPage() {
   // Fallback: si el poller aún no ha poblado los datos, obtenerlos directo
   // de API-Football y guardarlos en match_state para futuras requests.
   if (!homeTeam || !awayTeam || !kickoffAt) {
-    const names = await fetchTeamNames();
+    const names = await fetchTeamNames(admin);
     homeTeam = homeTeam ?? names.home;
     awayTeam = awayTeam ?? names.away;
     kickoffAt = kickoffAt ?? names.kickoff;

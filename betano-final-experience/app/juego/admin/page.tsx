@@ -16,7 +16,7 @@ export default async function JuegoAdminPage() {
   const [stateRes, snapshotRes, playersRes, leaderboardRes, scoresRes] = await Promise.all([
     admin
       .from("juego_match_state")
-      .select("match_status, predictions_locked, kickoff_at, home_team, away_team, polling_owner, lock_expires_at, updated_at")
+      .select("match_status, predictions_locked, kickoff_at, home_team, away_team, polling_owner, lock_expires_at, updated_at, fixture_id")
       .eq("id", 1)
       .maybeSingle(),
     admin
@@ -59,13 +59,13 @@ export default async function JuegoAdminPage() {
       }}
       lastSnapshot={snapshotRes.data ?? null}
       totalPlayers={playersRes.count ?? 0}
-      fixtureId={process.env.APIFOOTBALL_FIXTURE_ID ?? null}
-      leaderboard={{
-        cacheRowExists: leaderboardRes.data != null,
-        rankingCount: rankingArr?.length ?? 0,
-        updatedAt: leaderboardRes.data?.updated_at ?? null,
-        scoredPlayers: scoresRes.count ?? 0,
-      }}
+        fixtureId={st?.fixture_id || process.env.APIFOOTBALL_FIXTURE_ID || null}
+        leaderboard={{
+          cacheRowExists: leaderboardRes.data != null,
+          rankingCount: rankingArr?.length ?? 0,
+          updatedAt: leaderboardRes.data?.updated_at ?? null,
+          scoredPlayers: scoresRes.count ?? 0,
+        }}
     />
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdmin } from "@/lib/supabase";
-import { fetchMatchSnapshot } from "@/lib/juego/apifootball";
+import { fetchMatchSnapshot, getFixtureId } from "@/lib/juego/apifootball";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -17,12 +17,13 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
 
-  const fixtureId = process.env.APIFOOTBALL_FIXTURE_ID;
+  const admin = createAdmin();
+  const fixtureId = await getFixtureId(admin);
   if (!fixtureId) {
-    return NextResponse.json({ error: "Falta APIFOOTBALL_FIXTURE_ID." }, { status: 500 });
+    return NextResponse.json({ error: "Falta fixture ID (ni en DB ni en APIFOOTBALL_FIXTURE_ID)." }, { status: 500 });
   }
 
-  const admin = createAdmin();
+  // admin ya fue creado arriba, no duplicar.
   const ownerId = crypto.randomUUID();
 
   const { data: claimed, error: claimErr } = await admin.rpc("juego_try_claim_poll", {

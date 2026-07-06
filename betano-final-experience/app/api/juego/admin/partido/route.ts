@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServer, createAdmin } from "@/lib/supabase";
-import { fetchMatchSnapshot } from "@/lib/juego/apifootball";
+import { fetchMatchSnapshot, getFixtureId } from "@/lib/juego/apifootball";
 
 async function requireAdmin() {
   const supabase = await createServer();
@@ -23,7 +23,7 @@ export async function GET() {
   const [stateRes, snapshotRes] = await Promise.all([
     admin
       .from("juego_match_state")
-      .select("match_status, predictions_locked, kickoff_at, home_team, away_team, polling_owner, lock_expires_at, updated_at")
+      .select("match_status, predictions_locked, kickoff_at, home_team, away_team, polling_owner, lock_expires_at, updated_at, fixture_id")
       .eq("id", 1)
       .maybeSingle(),
     admin
@@ -48,23 +48,26 @@ export async function GET() {
     away_team: st?.away_team ?? null,
     polling_active: pollingActive,
     last_snapshot: snapshotRes.data ?? null,
-    fixture_id: process.env.APIFOOTBALL_FIXTURE_ID ?? null,
+    fixture_id: st?.fixture_id || process.env.APIFOOTBALL_FIXTURE_ID || null,
   });
 }
 
 /**
- * POST /api/juego/admin/partido  { action: "poll" | "lock" | "unlock" }
+ * POST /api/juego/admin/partido
+ *   { action: "poll" | "lock" | "unlock" | "setFixture" | "reset" }
  *
- * poll   → ejecuta un ciclo de poll manual (sin restricción de kickoff_at),
- *          útil para verificar la integración con API-Football antes del partido.
- * lock   → cierra los pronósticos manualmente.
- * unlock → reabre los pronósticos (sólo antes del partido).
+ * poll       → ejecuta un ciclo de poll manual (sin restricción de kickoff_at),
+ *              útil para verificar la integración con API-Football antes del partido.
+ * lock       → cierra los pronósticos manualmente.
+ * unlock     → reabre los pronósticos (sólo antes del partido).
+ * setFixture → cambia el fixture ID { action: "setFixture", fixtureId: "123456" }
+ * reset      → resetea predicciones, puntajes y snapshots para un nuevo partido.
  */
 export async function POST(req: Request) {
   const user = await requireAdmin();
   if (!user) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
 
-  let body: { action?: string };
+  let body: { action?: string; fixtureId?: string };
   try {
     body = await req.json();
   } catch {
@@ -82,10 +85,48 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, predictions_locked: locked });
   }
 
-  if (body.action === "poll") {
-    const fixtureId = process.env.APIFOOTBALL_FIXTURE_ID;
+  if (body.action === "setFixture") {
+    const fixtureId = body.fixtureId?.trim();
     if (!fixtureId) {
-      return NextResponse.json({ error: "Falta APIFOOTBALL_FIXTURE_ID en el entorno." }, { status: 500 });
+      return NextResponse.json({ error: "Debes proporcionar un fixture ID." }, { status: 400 });
+    }
+    await admin
+      .from("juego_match_state")
+      .update({ fixture_id: fixtureId, updated_at: new Date().toISOString() })
+      .eq("id", 1);
+    return NextResponse.json({ ok: true, fixture_id: fixtureId });
+  }
+
+  if (body.action === "reset") {
+    // Limpia datos del partido anterior para empezar uno nuevo.
+    await Promise.all([
+      admin.from("juego_predictions").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
+      admin.from("juego_player_scores").delete().neq("player_id", "00000000-0000-0000-0000-000000000000"),
+      admin.from("juego_match_snapshots").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
+    ]);
+    // Resetear match_state (menos fixture_id que lo configura setFixture).
+    await admin
+      .from("juego_match_state")
+      .update({
+        match_status: "scheduled",
+        predictions_locked: false,
+        home_team: null,
+        away_team: null,
+        kickoff_at: null,
+        polling_owner: null,
+        lock_expires_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", 1);
+    // Recalcular leaderboard (quedará vacío).
+    await admin.rpc("juego_recompute_scores");
+    return NextResponse.json({ ok: true, reset: true });
+  }
+
+  if (body.action === "poll") {
+    const fixtureId = await getFixtureId(admin);
+    if (!fixtureId) {
+      return NextResponse.json({ error: "No hay fixture ID configurado. Usa setFixture o define APIFOOTBALL_FIXTURE_ID." }, { status: 500 });
     }
 
     let snap;
