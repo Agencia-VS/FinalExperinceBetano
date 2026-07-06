@@ -98,11 +98,14 @@ export async function POST(req: Request) {
   }
 
   if (body.action === "reset") {
-    // Limpia datos del partido anterior para empezar uno nuevo.
+    // Limpia TODO del partido anterior para empezar uno nuevo.
+    // Se borran jugadores porque cada ronda/partido puede tener
+    // participantes distintos (se registran por QR por evento).
     await Promise.all([
       admin.from("juego_predictions").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
       admin.from("juego_player_scores").delete().neq("player_id", "00000000-0000-0000-0000-000000000000"),
       admin.from("juego_match_snapshots").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
+      admin.from("juego_players").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
     ]);
     // Resetear match_state (menos fixture_id que lo configura setFixture).
     await admin

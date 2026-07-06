@@ -84,7 +84,7 @@ export default function JuegoAdminDashboard({
             : action === "setFixture"
             ? `Fixture actualizado a ${data.fixture_id}.`
             : action === "reset"
-            ? "Juego reseteado. Predicciones, puntajes y snapshots eliminados."
+            ? "Juego reseteado. Jugadores, predicciones, puntajes y snapshots eliminados."
             : "OK.",
         ok: true,
       });
@@ -118,7 +118,7 @@ export default function JuegoAdminDashboard({
   }
 
   async function handleReset() {
-    if (!window.confirm("⚠ ¿Resetear todo el juego?\n\nSe eliminarán TODAS las predicciones, puntajes y snapshots.\nEl estado del partido volverá a 'Programado'.\n\nEsta acción NO se puede deshacer.")) return;
+    if (!window.confirm("⚠ ¿Resetear todo el juego?\n\nSe eliminarán TODOS los jugadores, predicciones, puntajes y snapshots.\nEl estado del partido volverá a 'Programado'.\nLos mercados NO se borran.\n\nEsta acción NO se puede deshacer.")) return;
     setBusy(true);
     await postAction("reset");
     setBusy(false);
@@ -300,7 +300,8 @@ export default function JuegoAdminDashboard({
           </button>
           <p style={{ margin: "0.5rem 0 0", fontSize: 11, color: "#555" }}>
             Usa esto cuando cambies a un partido completamente nuevo. Elimina todas las predicciones,
-            puntajes y snapshots del partido anterior. No elimina jugadores ni mercados.
+            puntajes y snapshots del partido anterior. También elimina jugadores (cada ronda
+            puede tener participantes distintos). No elimina mercados.
           </p>
         </section>
 
