@@ -131,7 +131,9 @@ begin
             when 'under' then l.match_status = 'finished' and l.offsides_total < mo.umbral
             else false end
         when 'posesion' then
-          l.possession_home is not null and l.possession_away is not null
+          -- La posesión fluctúa todo el partido: solo es definitiva al final.
+          l.match_status = 'finished'
+          and l.possession_home is not null and l.possession_away is not null
           and mo.valor = (case
             when l.possession_home > l.possession_away then 'home'
             when l.possession_away > l.possession_home then 'away'

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import MarketCard from "./MarketCard";
 import CountdownTimer from "./CountdownTimer";
 import { createBrowser } from "@/lib/supabase-browser";
+import { replaceTeamNames } from "@/lib/juego/teamLabels";
 
 export type MarketOption = {
   id: string;
@@ -49,8 +50,7 @@ export default function PronosticosFlow({
   // los equipos (cuando API-Football ya los haya enviado al poller).
   const displayMarkets = useMemo(() => {
     if (!homeTeam && !awayTeam) return markets;
-    const repl = (s: string) =>
-      s.replace(/\bLocal\b/g, homeTeam ?? "Local").replace(/\bVisita\b/g, awayTeam ?? "Visita");
+    const repl = (s: string) => replaceTeamNames(s, homeTeam, awayTeam);
     return markets.map((m) => ({
       ...m,
       titulo: repl(m.titulo),

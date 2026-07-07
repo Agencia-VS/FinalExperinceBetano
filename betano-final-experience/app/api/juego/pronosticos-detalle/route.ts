@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdmin } from "@/lib/supabase";
+import { replaceTeamNames } from "@/lib/juego/teamLabels";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ export type BreakdownItem = {
   pickLabel: string | null;
   puntos: number;
   resolved: boolean;
+  /** La jugada ya es irreversiblemente errada (marcable ❌ aun en vivo). */
+  lost: boolean;
   matchLive: boolean;
   matchFinished: boolean;
   // Solo para O/U:
@@ -79,6 +82,16 @@ export async function GET(req: Request) {
 
   const marketMap = new Map((markets ?? []).map((m) => [m.id, m]));
 
+  // 5. Nombres reales de los equipos (para reemplazar "Local"/"Visita" en el
+  //    ticket, igual que en el flujo de selección). Viven en juego_match_state,
+  //    no en el snapshot.
+  const { data: matchState } = await admin
+    .from("juego_match_state")
+    .select("home_team, away_team")
+    .maybeSingle();
+  const homeTeam = matchState?.home_team ?? null;
+  const awayTeam = matchState?.away_team ?? null;
+
   // Armar breakdown
   const isFinished = snap?.match_status === "finished";
   const isLive = snap && snap.match_status !== "scheduled" && snap.match_status !== "finished";
@@ -127,14 +140,62 @@ export async function GET(req: Request) {
       }
     }
 
+    // Marcado de "errada" en vivo: espejo del acierto en vivo. Solo cuando el
+    // resultado es IRREVERSIBLE (stat monótono ya superado, flag ya sellado,
+    // resultado al descanso fijo). Nunca para posesión / campeón / resultado
+    // exacto, que pueden cambiar hasta el pitazo final.
+    let lost = false;
+    if (opt && snap && !resolved && (isLive || isFinished)) {
+      const v = opt.valor ?? null;
+      // Under de O/U: el stat solo sube, así que superar el umbral lo sella.
+      if (opt.direccion === "under" && statActual != null && opt.umbral != null) {
+        lost = statActual > opt.umbral;
+      }
+      switch (m.id) {
+        case "primer_gol":
+          lost = !!snap.first_scorer_side && v !== snap.first_scorer_side;
+          break;
+        case "ganador_ht": {
+          if (snap.ht_home_score != null && snap.ht_away_score != null) {
+            const htWinner =
+              snap.ht_home_score > snap.ht_away_score
+                ? "home"
+                : snap.ht_home_score < snap.ht_away_score
+                  ? "away"
+                  : "draw";
+            lost = v !== htWinner;
+          }
+          break;
+        }
+        case "ambas_anotan":
+          if (v === "no") lost = !!snap.both_teams_scored;
+          break;
+        case "habra_roja":
+          if (v === "no") lost = (snap.red_cards_total ?? 0) > 0;
+          break;
+        case "va_alargue":
+          if (v === "no") lost = !!snap.went_to_extra_time;
+          break;
+        case "habra_penales":
+          if (v === "no") lost = !!snap.went_to_penalties;
+          break;
+        case "metodo_victoria":
+          if (v === "reg") lost = !!snap.went_to_extra_time;
+          else if (v === "et") lost = !!snap.went_to_penalties;
+          break;
+        // campeon, resultado_exacto, posesion: no se marcan erradas en vivo.
+      }
+    }
+
     return {
       marketId: m.id,
-      titulo: m.titulo,
+      titulo: replaceTeamNames(m.titulo, homeTeam, awayTeam),
       resolvesAt: m.resolves_at,
       tiempo: m.tiempo ?? null,
-      pickLabel: opt?.etiqueta ?? null,
+      pickLabel: opt?.etiqueta ? replaceTeamNames(opt.etiqueta, homeTeam, awayTeam) : null,
       puntos: opt?.puntos ?? 0,
       resolved,
+      lost,
       matchLive: isLive,
       matchFinished: isFinished,
       statActual,

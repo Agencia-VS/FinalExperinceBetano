@@ -35,6 +35,7 @@ export default function PredictionBreakdown({
 
   const answered = items.filter((i) => i.pickLabel).length;
   const resolved = items.filter((i) => i.resolved).length;
+  const lost = items.filter((i) => i.lost && !i.resolved).length;
 
   return (
     <AnimatePresence>
@@ -78,7 +79,7 @@ export default function PredictionBreakdown({
                   {alias}
                 </h2>
                 <p className="mt-0.5 text-[11px] text-bone-dim">
-                  {answered} jugadas · {resolved} acertadas
+                  {answered} jugadas · {resolved} acertadas{lost > 0 ? ` · ${lost} erradas` : ""}
                 </p>
               </div>
               <button
@@ -139,6 +140,8 @@ export default function PredictionBreakdown({
 /** Tarjeta individual de un mercado en el breakdown. */
 function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) {
   const { titulo, resolvesAt, tiempo, pickLabel, puntos, resolved, statActual, umbral, direccion } = item;
+  // Errada solo si además no está acertada (resolved tiene prioridad).
+  const lost = item.lost && !resolved;
 
   const CHIP: Record<string, string> = {
     live: "En vivo",
@@ -164,7 +167,7 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03, type: "spring", stiffness: 300, damping: 32 }}
-      className={`j-card p-3.5 ${resolved ? "!border-[#3ddc84]/40" : ""}`}
+      className={`j-card p-3.5 ${resolved ? "!border-[#3ddc84]/40" : lost ? "!border-[#ff6b4a]/40" : ""}`}
     >
       {/* Header */}
       <div className="flex items-start gap-3">
@@ -172,7 +175,9 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-[11px] font-bold tabular-nums ${
             resolved
               ? "border-[#3ddc84]/50 bg-[#3ddc84]/12 text-[#3ddc84]"
-              : "border-smoke bg-ash/50 text-bone-dim"
+              : lost
+                ? "border-[#ff6b4a]/50 bg-[#ff6b4a]/12 text-[#ff8a6a]"
+                : "border-smoke bg-ash/50 text-bone-dim"
           }`}
         >
           {String(index + 1).padStart(2, "0")}
@@ -190,6 +195,10 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
             {resolved ? (
               <span className="rounded-md bg-[#3ddc84]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#3ddc84]">
                 ✅ Acertado
+              </span>
+            ) : lost ? (
+              <span className="rounded-md bg-[#ff6b4a]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#ff8a6a]">
+                ❌ No acertado
               </span>
             ) : item.matchLive && item.pickLabel ? (
               <span className="rounded-md bg-ember/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ember">
@@ -211,9 +220,11 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
           className={`flex min-w-0 flex-1 items-center gap-2 rounded-xl border px-3 py-2 ${
             resolved
               ? "border-[#3ddc84]/50 bg-[#3ddc84]/8"
-              : pickLabel
-                ? "border-smoke bg-ash/45"
-                : "border-smoke/50 bg-transparent"
+              : lost
+                ? "border-[#ff6b4a]/50 bg-[#ff6b4a]/8"
+                : pickLabel
+                  ? "border-smoke bg-ash/45"
+                  : "border-smoke/50 bg-transparent"
           }`}
         >
           <span className={`text-sm font-semibold ${pickLabel ? "text-bone" : "italic text-bone-dim/60"}`}>
