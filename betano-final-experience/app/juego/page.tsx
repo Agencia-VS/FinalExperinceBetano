@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import CountdownTimer from "@/components/juego/CountdownTimer";
+import Image from "next/image";
 
 const container: Variants = {
   hidden: {},
@@ -24,7 +25,7 @@ export default function JuegoHome() {
       {/* Top bar: marca + fecha del evento */}
       <motion.header variants={item} className="flex items-center justify-between">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/isoBetanoblanco.png" alt="Betano" className="h-7 w-auto" />
+        <Image src="/isoBetanoblanco.png" alt="Betano" width={0} height={0} sizes="7rem" className="h-7 w-auto" />
         <span className="rounded-full border border-smoke bg-char/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-bone-dim">
           19 · 07 · 2026
         </span>
@@ -44,9 +45,10 @@ export default function JuegoHome() {
           variants={item}
           className="font-title text-[clamp(3.2rem,17vw,5rem)] font-extrabold uppercase leading-[0.88] tracking-tight text-bone"
         >
-          Predice
-          <br />
-          <span className="j-text-fire">la final</span>
+          {/* Móvil */}
+          <Image src="/juego/FINAL BET.png" alt="Final Experience" width={0} height={0} sizes="12rem" className="h-auto w-48 md:hidden" />
+          {/* Desktop */}
+          <Image src="/juego/FINAL BET HORIZONTAL.png" alt="Final Experience" width={0} height={0} sizes="24rem" className="hidden h-auto w-96 md:block" />
         </motion.h1>
 
         <motion.p

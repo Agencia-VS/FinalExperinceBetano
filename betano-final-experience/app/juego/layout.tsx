@@ -11,6 +11,28 @@ export const metadata: Metadata = {
 export default function JuegoLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-dvh overflow-x-hidden">
+      {/* Fondo móvil */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-20 md:hidden"
+        style={{
+          backgroundImage: "url('/juego/FONDOMOVIL.jpg.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      {/* Fondo escritorio */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-20 hidden md:block"
+        style={{
+          backgroundImage: "url('/juego/FONDODESK.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
       {/* Glow superior e inferior */}
       <div
         aria-hidden
