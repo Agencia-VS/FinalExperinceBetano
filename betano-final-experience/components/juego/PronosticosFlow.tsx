@@ -60,6 +60,9 @@ export default function PronosticosFlow({
   }, [markets, homeTeam, awayTeam]);
 
   // Identidad + hidratación de picks locales.
+  // Optimista: renderiza inmediato desde localStorage y valida en segundo
+  // plano contra el servidor. Si el jugador fue borrado (ej. RESET de admin),
+  // limpia localStorage y redirige a registro.
   useEffect(() => {
     try {
       const raw = localStorage.getItem("juego_player");
@@ -68,10 +71,23 @@ export default function PronosticosFlow({
         return;
       }
       const p = JSON.parse(raw);
+      // Optimista: mostrar UI de inmediato con datos cacheados.
       setPlayerId(p.playerId);
       setAliasName(p.alias ?? "");
       const saved = localStorage.getItem(`juego_picks_${p.playerId}`);
       if (saved) setPicks(JSON.parse(saved));
+
+      // Validación server-side en segundo plano.
+      fetch(`/api/juego/pronosticos?playerId=${encodeURIComponent(p.playerId)}`)
+        .then((r) => {
+          if (!r.ok) throw new Error("not-found");
+        })
+        .catch(() => {
+          // Jugador huérfano: limpiar y redirigir.
+          localStorage.removeItem("juego_player");
+          localStorage.removeItem(`juego_picks_${p.playerId}`);
+          router.replace("/juego/registro");
+        });
     } catch {
       router.replace("/juego/registro");
     }

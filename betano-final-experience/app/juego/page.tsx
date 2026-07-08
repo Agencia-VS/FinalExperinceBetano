@@ -23,7 +23,20 @@ export default function JuegoHome() {
     if (raw) {
       try {
         const p = JSON.parse(raw);
-        if (p.playerId) setIsReturningPlayer(true);
+        if (p.playerId) {
+          // Optimista: mostrar botón de inmediato, validar en segundo plano.
+          setIsReturningPlayer(true);
+          fetch(`/api/juego/pronosticos?playerId=${encodeURIComponent(p.playerId)}`)
+            .then((r) => {
+              if (!r.ok) throw new Error("not-found");
+            })
+            .catch(() => {
+              // Jugador borrado del servidor → limpiar caché local.
+              localStorage.removeItem("juego_player");
+              localStorage.removeItem(`juego_picks_${p.playerId}`);
+              setIsReturningPlayer(false);
+            });
+        }
       } catch { /* ignore malformed */ }
     }
   }, []);

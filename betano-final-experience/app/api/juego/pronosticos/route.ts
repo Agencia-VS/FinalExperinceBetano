@@ -95,6 +95,27 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true, guardados: rows.length });
 }
 
+/**
+ * GET /api/juego/pronosticos?playerId=uuid
+ * Validación ligera: confirma que el jugador existe en la DB.
+ * Útil para detectar playerIds huérfanos post-RESET del admin.
+ */
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const playerId = searchParams.get("playerId") ?? "";
+  if (!playerId) return NextResponse.json({ error: "Falta playerId." }, { status: 400 });
+
+  const admin = createAdmin();
+  const { data } = await admin
+    .from("juego_players")
+    .select("id")
+    .eq("id", playerId)
+    .maybeSingle();
+
+  if (!data) return NextResponse.json({ error: "Jugador no encontrado." }, { status: 404 });
+  return NextResponse.json({ valid: true });
+}
+
 function bad(msg: string) {
   return NextResponse.json({ error: msg }, { status: 400 });
 }
