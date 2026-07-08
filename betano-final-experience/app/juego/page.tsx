@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import CountdownTimer from "@/components/juego/CountdownTimer";
@@ -15,6 +16,18 @@ const item: Variants = {
 };
 
 export default function JuegoHome() {
+  const [isReturningPlayer, setIsReturningPlayer] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("juego_player");
+    if (raw) {
+      try {
+        const p = JSON.parse(raw);
+        if (p.playerId) setIsReturningPlayer(true);
+      } catch { /* ignore malformed */ }
+    }
+  }, []);
+
   return (
     <motion.main
       variants={container}
@@ -87,7 +100,7 @@ export default function JuegoHome() {
                 <path d="M12 8.4l3.1 2.25-1.2 3.6h-3.8l-1.2-3.6L12 8.4Z" strokeLinejoin="round" />
               </>
             }
-            label="10 jugadas"
+            label="16 jugadas"
           />
         </motion.ul>
       </div>
@@ -100,6 +113,17 @@ export default function JuegoHome() {
             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
+        {isReturningPlayer && (
+          <Link
+            href="/juego/ranking"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-smoke bg-char/40 py-3.5 text-sm font-semibold text-bone transition-colors hover:bg-char/60 active:bg-char/80"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M3 22h18M8 17V9m4 8V3m4 14v-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Ir al ranking
+          </Link>
+        )}
         <p className="text-center text-xs text-bone-dim">
           Gratis · menos de un minuto · sin descargas
         </p>
