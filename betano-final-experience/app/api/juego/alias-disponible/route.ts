@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // GET /api/juego/alias-disponible?alias=...  (con debounce desde el cliente)
 export async function GET(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(ip, 40)) {
+  if (!rateLimit(ip, 60)) {
     return NextResponse.json({ available: false, reason: "Demasiados intentos." }, { status: 429 });
   }
 
