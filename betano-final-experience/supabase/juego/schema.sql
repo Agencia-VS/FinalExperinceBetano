@@ -23,6 +23,7 @@ create table if not exists public.juego_players (
                   lower(regexp_replace(btrim(alias), '\s+', ' ', 'g'))
                 ) stored,
   device_token  uuid,
+  avatar        text,
   created_at    timestamptz not null default now()
 );
 
@@ -406,10 +407,11 @@ begin
                    'posicion',  posicion,
                    'player_id', player_id,
                    'alias',     alias,
+                   'avatar',    avatar,
                    'puntos',    puntos
                  ) order by posicion, alias)
         from (
-          select ps.player_id, pl.alias, ps.puntos,
+          select ps.player_id, pl.alias, pl.avatar, ps.puntos,
                  rank() over (order by ps.puntos desc) as posicion
           from public.juego_player_scores ps
           join public.juego_players pl on pl.id = ps.player_id

@@ -29,6 +29,7 @@
 @theme inline {
   --color-ember:      var(--ember);
   --color-ember-deep: var(--ember-deep);
+  --color-wither:     var(--ember);
   --color-ash:        var(--ash);
   --color-char:       var(--char);
   --color-smoke:      var(--smoke);

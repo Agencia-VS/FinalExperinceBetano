@@ -55,7 +55,7 @@ export default function MarketCard({
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ${
             answered
-              ? "border-ember/50 bg-ember/15 text-ember"
+              ? "border-ember/50 bg-ember/15 text-wither"
               : "border-smoke bg-ash/50 text-bone-dim"
           }`}
         >
@@ -70,7 +70,7 @@ export default function MarketCard({
               {RESOLVE_CHIP[market.resolves_at] ?? market.resolves_at}
             </span>
             {market.tiempo && TIEMPO_CHIP[market.tiempo] && TIEMPO_CHIP[market.tiempo] !== RESOLVE_CHIP[market.resolves_at] && (
-              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ember/90">
+              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-wither/90">
                 {TIEMPO_CHIP[market.tiempo]}
               </span>
             )}
@@ -110,7 +110,7 @@ export default function MarketCard({
               <span className="text-[13px] font-semibold leading-tight">{o.etiqueta}</span>
               <span
                 className={`text-[11px] font-bold tabular-nums ${
-                  active ? "text-white/85" : "text-ember"
+                  active ? "text-white/85" : "text-wither"
                 }`}
               >
                 +{o.puntos} pts

@@ -81,7 +81,7 @@ export default function CountdownTimer({
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={className}
     >
-      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bone-dim/70">
+      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
         La final comienza en
       </p>
       <div className="flex items-center gap-1.5" aria-label="Cuenta regresiva para el inicio del partido" role="timer">
@@ -91,12 +91,12 @@ export default function CountdownTimer({
               <span className="font-title text-xl font-extrabold tabular-nums leading-none text-bone">
                 {String(seg.value).padStart(2, "0")}
               </span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-ember">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-wither">
                 {seg.label}
               </span>
             </span>
             {i < visible.length - 1 && (
-              <span className="text-sm font-bold text-bone-dim/40" aria-hidden>:</span>
+              <span className="text-sm font-bold text-white/80" aria-hidden>:</span>
             )}
           </span>
         ))}

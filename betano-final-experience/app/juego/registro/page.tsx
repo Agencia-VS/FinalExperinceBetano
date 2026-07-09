@@ -22,7 +22,7 @@ export default function RegistroPage() {
       </header>
 
       <div className="mt-9">
-        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-ember">
+        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-wither">
           Paso 1 · Tu jugador
         </p>
         <h1 className="mt-2 font-title text-[2.15rem] font-extrabold uppercase leading-[0.95] tracking-tight text-bone">

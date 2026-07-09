@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import MarketCard from "./MarketCard";
 import CountdownTimer from "./CountdownTimer";
+import Avatar from "./Avatar";
 import { createBrowser } from "@/lib/supabase-browser";
 import { replaceTeamNames } from "@/lib/juego/teamLabels";
 
@@ -41,6 +42,7 @@ export default function PronosticosFlow({
   const router = useRouter();
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [aliasName, setAliasName] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [picks, setPicks] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Record<string, SaveStatus>>({});
   const [locked, setLocked] = useState(false);
@@ -74,6 +76,7 @@ export default function PronosticosFlow({
       // Optimista: mostrar UI de inmediato con datos cacheados.
       setPlayerId(p.playerId);
       setAliasName(p.alias ?? "");
+      setAvatarUrl(p.avatar ?? null);
       const saved = localStorage.getItem(`juego_picks_${p.playerId}`);
       if (saved) setPicks(JSON.parse(saved));
 
@@ -172,7 +175,7 @@ export default function PronosticosFlow({
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-ember">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-wither">
               Paso 2 · Tus jugadas
             </p>
             <h1 className="mt-1 font-title text-[1.6rem] font-extrabold uppercase leading-none tracking-tight text-bone">
@@ -180,9 +183,12 @@ export default function PronosticosFlow({
             </h1>
           </div>
           {aliasName && (
-            <span className="max-w-[9rem] truncate rounded-full border border-smoke bg-char/70 px-3 py-1.5 text-xs font-semibold text-bone">
-              {aliasName}
-            </span>
+            <div className="flex items-center gap-2">
+              <Avatar alias={aliasName} size={30} avatarUrl={avatarUrl} />
+              <span className="max-w-[8rem] truncate rounded-full border border-smoke bg-char/70 px-3 py-1.5 text-xs font-semibold text-bone">
+                {aliasName}
+              </span>
+            </div>
           )}
         </div>
 
@@ -216,7 +222,7 @@ export default function PronosticosFlow({
 
       {locked && (
         <div className="mt-4 flex items-center gap-3 rounded-2xl border border-ember/40 bg-ember/10 px-4 py-3">
-          <svg className="h-5 w-5 shrink-0 text-ember" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <svg className="h-5 w-5 shrink-0 text-wither" viewBox="0 0 24 24" fill="none" aria-hidden>
             <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="1.8" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" />
           </svg>

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { createBrowser } from "@/lib/supabase-browser";
 import PredictionBreakdown from "./PredictionBreakdown";
+import Avatar from "./Avatar";
 
-export type Row = { posicion: number; player_id: string; alias: string; puntos: number };
+export type Row = { posicion: number; player_id: string; alias: string; avatar?: string | null; puntos: number };
 
 const LIVE_STATES = ["live_1h", "halftime", "live_2h", "extra_time", "penalties"];
 const MEDAL = ["#FFD24A", "#D8D8D8", "#E08A4B"];
@@ -25,6 +26,7 @@ export default function RankingLive({
   const [searchTerm, setSearchTerm] = useState("");
   const [modalPlayerId, setModalPlayerId] = useState<string | null>(null);
   const [modalAlias, setModalAlias] = useState("");
+  const [modalAvatar, setModalAvatar] = useState<string | null>(null);
   const prevPos = useRef<Map<string, number>>(new Map());
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -101,6 +103,7 @@ export default function RankingLive({
   function openModal(r: Row) {
     setModalPlayerId(r.player_id);
     setModalAlias(r.alias);
+    setModalAvatar(r.avatar ?? null);
   }
 
   return (
@@ -124,7 +127,7 @@ export default function RankingLive({
         <span
           className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] ${
             isLive
-              ? "border-ember/50 bg-ember/10 text-ember"
+              ? "border-ember/50 bg-ember/10 text-wither"
               : "border-smoke bg-char/60 text-bone-dim"
           }`}
         >
@@ -209,7 +212,7 @@ export default function RankingLive({
                         <path d="M3 8l4.5 3L12 5l4.5 6L21 8l-1.5 9h-15L3 8Z" />
                       </svg>
                     )}
-                    <Avatar alias={r.alias} rank={rank} size={first ? 52 : 42} />
+                    <Avatar alias={r.alias} rank={rank} size={first ? 52 : 42} avatarUrl={r.avatar} />
                     <p className="mt-2 w-full truncate text-[12px] font-semibold text-bone">
                       {r.alias}
                     </p>
@@ -242,7 +245,7 @@ export default function RankingLive({
                   }`}
                 >
                   <RankBadge pos={r.posicion} />
-                  <Avatar alias={r.alias} rank={r.posicion} size={34} />
+                  <Avatar alias={r.alias} rank={r.posicion} size={34} avatarUrl={r.avatar} />
                   <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-bone">
                     {r.alias}
                     {r.player_id === meId && <MeBadge />}
@@ -279,7 +282,7 @@ export default function RankingLive({
                       }`}
                     >
                       <RankBadge pos={r.posicion} />
-                      <Avatar alias={r.alias} rank={r.posicion} size={34} />
+                      <Avatar alias={r.alias} rank={r.posicion} size={34} avatarUrl={r.avatar} />
                       <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-bone">
                         {r.alias}
                         {mine && <MeBadge />}
@@ -304,10 +307,10 @@ export default function RankingLive({
             onClick={() => openModal(me)}
             className="flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-2xl border border-ember bg-[#2a1206]/95 px-3.5 py-2.5 text-left shadow-[0_8px_30px_-8px_rgba(255,77,0,0.55)] backdrop-blur transition-colors hover:bg-[#2f1408]"
           >
-            <span className="w-7 shrink-0 text-center font-title text-base font-bold tabular-nums text-ember">
+            <span className="w-7 shrink-0 text-center font-title text-base font-bold tabular-nums text-wither">
               {me.posicion}
             </span>
-            <Avatar alias={me.alias} rank={me.posicion} size={34} />
+            <Avatar alias={me.alias} rank={me.posicion} size={34} avatarUrl={me.avatar} />
             <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-bone">
               {me.alias}
               <MeBadge />
@@ -324,6 +327,7 @@ export default function RankingLive({
       <PredictionBreakdown
         playerId={modalPlayerId ?? ""}
         alias={modalAlias}
+        avatarUrl={modalAvatar}
         open={modalPlayerId !== null}
         onClose={() => setModalPlayerId(null)}
       />
@@ -344,27 +348,8 @@ function RankBadge({ pos }: { pos: number }) {
 
 function MeBadge() {
   return (
-    <span className="ml-1.5 rounded-md bg-ember/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ember">
+    <span className="ml-1.5 rounded-md bg-ember/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-wither">
       Tú
-    </span>
-  );
-}
-
-function Avatar({ alias, rank, size }: { alias: string; rank: number; size: number }) {
-  const initials = alias
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  const ring = rank <= 3 ? MEDAL[rank - 1] : "var(--smoke)";
-  return (
-    <span
-      className="flex shrink-0 items-center justify-center rounded-full bg-smoke/80 font-title font-bold uppercase text-bone"
-      style={{ width: size, height: size, fontSize: size * 0.36, boxShadow: `0 0 0 2px ${ring}` }}
-      aria-hidden
-    >
-      {initials}
     </span>
   );
 }

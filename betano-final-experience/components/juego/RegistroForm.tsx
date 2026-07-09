@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import AliasField from "./AliasField";
+import AvatarSelector from "./AvatarSelector";
 
 export const inputCls =
   "w-full rounded-2xl border border-smoke bg-char/80 px-4 py-3.5 text-base text-bone placeholder:text-bone-dim/60 outline-none transition-[border-color,box-shadow] duration-200 focus:border-ember focus:shadow-[0_0_0_3px_rgba(255,77,0,0.15)]";
@@ -25,6 +26,7 @@ export default function RegistroForm() {
   const [apellido, setApellido] = useState("");
   const [alias, setAlias] = useState("");
   const [aliasOk, setAliasOk] = useState(false);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +49,7 @@ export default function RegistroForm() {
           nombre: nombre.trim(),
           apellido: apellido.trim(),
           alias: alias.trim(),
+          avatar: avatar,
         }),
       });
       const data = await res.json();
@@ -57,7 +60,7 @@ export default function RegistroForm() {
       }
       localStorage.setItem(
         "juego_player",
-        JSON.stringify({ playerId: data.playerId, alias: data.alias })
+        JSON.stringify({ playerId: data.playerId, alias: data.alias, avatar: data.avatar })
       );
       router.push("/juego/pronosticos");
     } catch {
@@ -109,6 +112,10 @@ export default function RegistroForm() {
             inputCls={inputCls}
             labelCls={labelCls}
           />
+        </motion.div>
+
+        <motion.div custom={3} variants={fade} initial="hidden" animate="show">
+          <AvatarSelector value={avatar} onChange={setAvatar} />
         </motion.div>
       </div>
 

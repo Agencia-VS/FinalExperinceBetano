@@ -16,7 +16,8 @@ export default function JuegoLayout({ children }: { children: React.ReactNode })
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-20 md:hidden"
         style={{
-          backgroundImage: "url('/juego/FONDOMOVIL.jpg.jpeg')",
+          backgroundImage: "url('/juego/FONDOMOVIL.jpg')",
+          opacity: 0.85,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           backgroundRepeat: "no-repeat",
@@ -27,7 +28,8 @@ export default function JuegoLayout({ children }: { children: React.ReactNode })
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-20 hidden md:block"
         style={{
-          backgroundImage: "url('/juego/FONDODESK.png')",
+          backgroundImage: "url('/juego/FONDODESK.jpg')",
+          opacity: 0.85,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           backgroundRepeat: "no-repeat",

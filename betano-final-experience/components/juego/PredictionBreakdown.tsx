@@ -3,15 +3,18 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { BreakdownItem } from "@/app/api/juego/pronosticos-detalle/route";
+import Avatar from "./Avatar";
 
 export default function PredictionBreakdown({
   playerId,
   alias,
+  avatarUrl,
   open,
   onClose,
 }: {
   playerId: string;
   alias: string;
+  avatarUrl?: string | null;
   open: boolean;
   onClose: () => void;
 }) {
@@ -71,16 +74,19 @@ export default function PredictionBreakdown({
 
             {/* Header */}
             <div className="flex items-start justify-between px-5 pb-3">
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ember">
-                  Detalle de jugadas
-                </p>
-                <h2 className="mt-0.5 truncate font-title text-[1.4rem] font-extrabold uppercase leading-tight text-bone">
-                  {alias}
-                </h2>
-                <p className="mt-0.5 text-[11px] text-bone-dim">
-                  {answered} jugadas · {resolved} acertadas{lost > 0 ? ` · ${lost} erradas` : ""}
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                <Avatar alias={alias} size={40} avatarUrl={avatarUrl} />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-wither">
+                    Detalle de jugadas
+                  </p>
+                  <h2 className="mt-0.5 truncate font-title text-[1.4rem] font-extrabold uppercase leading-tight text-bone">
+                    {alias}
+                  </h2>
+                  <p className="mt-0.5 text-[11px] text-bone-dim">
+                    {answered} jugadas · {resolved} acertadas{lost > 0 ? ` · ${lost} erradas` : ""}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={onClose}
@@ -100,7 +106,7 @@ export default function PredictionBreakdown({
             >
               {loading && (
                 <div className="flex flex-col items-center py-14">
-                  <svg className="h-7 w-7 animate-spin text-ember" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <svg className="h-7 w-7 animate-spin text-wither" viewBox="0 0 24 24" fill="none" aria-hidden>
                     <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
                     <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                   </svg>
@@ -111,7 +117,7 @@ export default function PredictionBreakdown({
               {error && (
                 <div className="rounded-2xl border border-[#ff6b4a]/30 bg-[#ff6b4a]/10 px-4 py-5 text-center">
                   <p className="text-sm text-[#ff8a6a]">{error}</p>
-                  <button onClick={onClose} className="mt-3 text-xs font-semibold text-ember underline">
+                  <button onClick={onClose} className="mt-3 text-xs font-semibold text-wither underline">
                     Cerrar
                   </button>
                 </div>
@@ -188,7 +194,7 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
               {CHIP[resolvesAt] ?? resolvesAt}
             </span>
             {tiempoLabel && tiempoLabel !== CHIP[resolvesAt] && (
-              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ember/90">
+              <span className="rounded-md border border-ember/30 bg-ember/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-wither/90">
                 {tiempoLabel}
               </span>
             )}
@@ -201,7 +207,7 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
                 ❌ No acertado
               </span>
             ) : item.matchLive && item.pickLabel ? (
-              <span className="rounded-md bg-ember/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ember">
+              <span className="rounded-md bg-ember/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-wither">
                 En juego
               </span>
             ) : item.matchFinished && item.pickLabel ? (
@@ -230,7 +236,7 @@ function BreakdownCard({ item, index }: { item: BreakdownItem; index: number }) 
           <span className={`text-sm font-semibold ${pickLabel ? "text-bone" : "italic text-bone-dim/60"}`}>
             {pickLabel ?? "Sin respuesta"}
           </span>
-          <span className="ml-auto shrink-0 text-[11px] font-bold tabular-nums text-ember">
+          <span className="ml-auto shrink-0 text-[11px] font-bold tabular-nums text-wither">
             +{puntos} pts
           </span>
         </div>

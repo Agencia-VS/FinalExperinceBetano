@@ -61,9 +61,9 @@ export default function JuegoHome() {
       <div className="flex flex-1 flex-col justify-center py-12">
         <motion.p
           variants={item}
-          className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.26em] text-ember"
+          className="mb-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.26em] text-white/80"
         >
-          <span className="j-live-dot inline-block h-1.5 w-1.5 rounded-full bg-ember" />
+          <span className="j-live-dot inline-block h-1.5 w-1.5 rounded-full bg-white" />
           Final Experience · Mundial 2026
         </motion.p>
 
@@ -79,7 +79,7 @@ export default function JuegoHome() {
 
         <motion.p
           variants={item}
-          className="mt-5 max-w-[21rem] text-[15px] leading-relaxed text-bone-dim"
+          className="mt-5 max-w-[21rem] text-[15px] leading-relaxed text-white/80"
         >
           Arma tus jugadas antes del pitazo inicial y mira cómo escalas en el
           ranking en vivo, jugada a jugada, con toda la tribuna.
@@ -149,7 +149,7 @@ function Feature({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <li className="j-card flex flex-col items-center gap-2 px-2 py-3.5 text-center">
       <svg
-        className="h-5 w-5 text-ember"
+        className="h-5 w-5 text-wither"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

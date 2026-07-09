@@ -188,7 +188,7 @@ export default function AliasField({
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-ember/40 bg-ember/10 px-3.5 py-2 text-sm font-medium text-bone transition-colors hover:border-ember hover:bg-ember/20"
                 >
-                  <svg className="h-3.5 w-3.5 text-ember" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <svg className="h-3.5 w-3.5 text-wither" viewBox="0 0 24 24" fill="none" aria-hidden>
                     <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
                   </svg>
                   {s}

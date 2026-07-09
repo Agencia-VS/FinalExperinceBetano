@@ -5,7 +5,10 @@ import { normalizeAlias, validateAliasShape, aliasCandidates } from "@/lib/juego
 import { isProfane } from "@/lib/juego/profanity-filter";
 import { ensureDeviceToken } from "@/lib/juego/device-token";
 
-// POST /api/juego/registro  { nombre, apellido, alias }
+// Lista de avatares válidos (nombres de archivo).
+const AVATARES = Array.from({ length: 12 }, (_, i) => `avatar-${i + 1}.png`);
+
+// POST /api/juego/registro  { nombre, apellido, alias, avatar? }
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   if (!rateLimit(ip)) {
@@ -25,6 +28,7 @@ export async function POST(req: Request) {
   const nombre = String(body.nombre ?? "").trim();
   const apellido = String(body.apellido ?? "").trim();
   const alias = String(body.alias ?? "").trim();
+  const avatar = body.avatar != null ? String(body.avatar).trim() : null;
 
   // Re-validación server-side (nunca confiar solo en el cliente).
   if (nombre.length < 2) return bad("Ingresa tu nombre.");
@@ -33,14 +37,16 @@ export async function POST(req: Request) {
   if (shapeErr) return bad(shapeErr);
   const aliasNorm = normalizeAlias(alias);
   if (isProfane(aliasNorm)) return bad("Elige otro alias.");
+  // Validar avatar: debe ser uno de los 12 nombres permitidos o null.
+  if (avatar !== null && !AVATARES.includes(avatar)) return bad("Avatar inválido.");
 
   const admin = createAdmin();
   const deviceToken = await ensureDeviceToken();
 
   const { data, error } = await admin
     .from("juego_players")
-    .insert({ nombre, apellido, alias, device_token: deviceToken })
-    .select("id, alias")
+    .insert({ nombre, apellido, alias, avatar, device_token: deviceToken })
+    .select("id, alias, avatar")
     .single();
 
   if (error) {
@@ -50,7 +56,7 @@ export async function POST(req: Request) {
         // Re-scan / refresco del mismo navegador → devolver su jugador existente.
         const { data: existing } = await admin
           .from("juego_players")
-          .select("id, alias")
+          .select("id, alias, avatar")
           .eq("device_token", deviceToken)
           .maybeSingle();
         if (existing) {
@@ -58,6 +64,7 @@ export async function POST(req: Request) {
             ok: true,
             playerId: existing.id,
             alias: existing.alias,
+            avatar: existing.avatar,
             existing: true,
           });
         }
@@ -84,7 +91,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No pudimos registrarte." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, playerId: data.id, alias: data.alias });
+  return NextResponse.json({ ok: true, playerId: data.id, alias: data.alias, avatar: data.avatar });
 }
 
 function bad(msg: string) {
