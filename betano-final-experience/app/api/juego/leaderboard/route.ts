@@ -11,11 +11,16 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const admin = createAdmin();
 
-  const [cacheRes, stateRes] = await Promise.all([
+  const [cacheRes, stateRes, finalRes] = await Promise.all([
     admin.from("juego_leaderboard_cache").select("ranking, updated_at").eq("id", 1).maybeSingle(),
     admin
       .from("juego_match_state")
       .select("match_status, predictions_locked, kickoff_at, home_team, away_team")
+      .eq("id", 1)
+      .maybeSingle(),
+    admin
+      .from("juego_final_result")
+      .select("status, seed, max_winners, winners, tie_breaker_events, executed_at, revealed_at")
       .eq("id", 1)
       .maybeSingle(),
   ]);
@@ -28,5 +33,6 @@ export async function GET() {
     kickoffAt: stateRes.data?.kickoff_at ?? null,
     homeTeam: stateRes.data?.home_team ?? null,
     awayTeam: stateRes.data?.away_team ?? null,
+    finalResult: finalRes.data ?? null,
   });
 }

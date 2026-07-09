@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createBrowser } from "@/lib/supabase-browser";
 import PredictionBreakdown from "./PredictionBreakdown";
 import Avatar from "./Avatar";
+import FinalReveal from "./FinalReveal";
+import { useFinalReveal, type FinalResultRow } from "./useFinalReveal";
 
 export type Row = { posicion: number; player_id: string; alias: string; avatar?: string | null; puntos: number };
 
@@ -15,11 +17,15 @@ const MEDAL = ["#FFD24A", "#D8D8D8", "#E08A4B"];
 export default function RankingLive({
   initialRanking,
   matchStatus,
+  initialFinalResult = null,
 }: {
   initialRanking: Row[];
   matchStatus: string;
+  initialFinalResult?: FinalResultRow | null;
 }) {
   const [ranking, setRanking] = useState<Row[]>(initialRanking);
+  const { result: finalResult, active: finalActive, skipAnimation } =
+    useFinalReveal(initialFinalResult);
   const [meId, setMeId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [moves, setMoves] = useState<Record<string, number>>({});
@@ -331,6 +337,19 @@ export default function RankingLive({
         open={modalPlayerId !== null}
         onClose={() => setModalPlayerId(null)}
       />
+
+      {/* Final del juego: ruleta de desempate + podio (disparado por Realtime) */}
+      <AnimatePresence>
+        {finalActive && finalResult && (
+          <FinalReveal
+            key={finalResult.seed ?? "final"}
+            result={finalResult}
+            variant="mobile"
+            skipAnimation={skipAnimation}
+            meId={meId}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }

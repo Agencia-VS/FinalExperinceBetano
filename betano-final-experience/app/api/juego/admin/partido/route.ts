@@ -121,6 +121,21 @@ export async function POST(req: Request) {
         updated_at: new Date().toISOString(),
       })
       .eq("id", 1);
+    // Resetear el sorteo final (la auditoría en juego_final_runs se conserva).
+    await admin
+      .from("juego_final_result")
+      .update({
+        status: "idle",
+        seed: null,
+        max_winners: null,
+        winners: [],
+        tie_breaker_events: [],
+        executed_by: null,
+        executed_at: null,
+        revealed_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", 1);
     // Recalcular leaderboard (quedará vacío).
     await admin.rpc("juego_recompute_scores");
     return NextResponse.json({ ok: true, reset: true });

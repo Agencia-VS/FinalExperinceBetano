@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowser } from "@/lib/supabase-browser";
+import type { TieBreakerEvent, Winner } from "@/lib/juego/winners";
+
+type FinalResult = {
+  status: "idle" | "executed" | "revealed";
+  seed: string | null;
+  max_winners: number | null;
+  winners: Winner[];
+  tie_breaker_events: TieBreakerEvent[];
+  executed_at: string | null;
+  revealed_at: string | null;
+} | null;
 
 type MatchState = {
   match_status: string;
@@ -47,18 +58,23 @@ export default function JuegoAdminDashboard({
   totalPlayers,
   fixtureId,
   leaderboard,
+  finalResult,
+  defaultMaxWinners,
 }: {
   matchState: MatchState;
   lastSnapshot: Snapshot;
   totalPlayers: number;
   fixtureId: string | null;
   leaderboard: LeaderboardInfo;
+  finalResult: FinalResult;
+  defaultMaxWinners: number;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [editFixtureId, setEditFixtureId] = useState(fixtureId ?? "");
   const [saving, setSaving] = useState(false);
+  const [maxWinnersInput, setMaxWinnersInput] = useState(String(defaultMaxWinners));
 
   async function postAction(action: string, extra?: Record<string, string>) {
     setBusy(true);
@@ -122,6 +138,78 @@ export default function JuegoAdminDashboard({
     setBusy(true);
     await postAction("reset");
     setBusy(false);
+  }
+
+  async function postFinal(body: Record<string, unknown>) {
+    const res = await fetch("/api/juego/admin/finalizar", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return { res, data: await res.json() };
+  }
+
+  async function ejecutarSorteo() {
+    const n = Number(maxWinnersInput);
+    if (!Number.isInteger(n) || n < 1 || n > 100) {
+      setMsg({ text: "Nº de ganadores debe ser un entero entre 1 y 100.", ok: false });
+      return;
+    }
+    if (
+      !window.confirm(
+        `🎰 ¿Ejecutar el sorteo final con ${n} ganador(es)?\n\nEl resultado se decide en el servidor (semilla auditable) y la ruleta arranca AL INSTANTE en todos los teléfonos y en la TV.`
+      )
+    )
+      return;
+
+    setBusy(true);
+    setMsg(null);
+    let { res, data } = await postFinal({ action: "execute", maxWinners: n });
+    if (res.status === 409 && data.needsForce) {
+      if (window.confirm("⚠ El partido NO está finalizado.\n\n¿Ejecutar el sorteo de todas formas?")) {
+        ({ res, data } = await postFinal({ action: "execute", maxWinners: n, force: true }));
+      } else {
+        setBusy(false);
+        return;
+      }
+    }
+    setBusy(false);
+    if (!res.ok) {
+      setMsg({ text: data.error ?? "Error al ejecutar el sorteo.", ok: false });
+    } else {
+      setMsg({ text: `Sorteo ejecutado: ${data.winners.length} ganador(es). La animación está corriendo en las pantallas.`, ok: true });
+      router.refresh();
+    }
+  }
+
+  async function marcarRevelado() {
+    setBusy(true);
+    setMsg(null);
+    const { res, data } = await postFinal({ action: "reveal" });
+    setBusy(false);
+    if (!res.ok) setMsg({ text: data.error ?? "Error al marcar revelado.", ok: false });
+    else {
+      setMsg({ text: "Marcado como revelado: quien entre ahora ve el podio directo.", ok: true });
+      router.refresh();
+    }
+  }
+
+  async function deshacerSorteo() {
+    if (
+      !window.confirm(
+        "↩ ¿Deshacer el sorteo final?\n\nLos overlays desaparecen de todas las pantallas al instante.\nLa ejecución queda registrada en la auditoría (juego_final_runs).\nDespués puedes volver a ejecutar con una semilla nueva."
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg(null);
+    const { res, data } = await postFinal({ action: "undo" });
+    setBusy(false);
+    if (!res.ok) setMsg({ text: data.error ?? "Error al deshacer.", ok: false });
+    else {
+      setMsg({ text: "Sorteo deshecho. Puedes ejecutar de nuevo.", ok: true });
+      router.refresh();
+    }
   }
 
   async function logout() {
@@ -247,6 +335,120 @@ export default function JuegoAdminDashboard({
           </button>
         </section>
 
+        {/* Final del juego: sorteo de desempate + reveal */}
+        <section style={card}>
+          <h2 style={sectionTitle}>Final del juego</h2>
+
+          {(!finalResult || finalResult.status === "idle") && (
+            <>
+              <p style={{ margin: "0 0 1rem", fontSize: 13, color: "#888" }}>
+                Resuelve los empates con un sorteo en el servidor (semilla auditable) y dispara
+                la ruleta en todos los teléfonos y en <a href="/juego/tv" style={linkStyle}>/juego/tv</a>.
+              </p>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end", marginBottom: "0.75rem" }}>
+                <div style={{ flex: "0 0 130px" }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#888", marginBottom: "0.4rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    Nº de ganadores
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={maxWinnersInput}
+                    onChange={(e) => setMaxWinnersInput(e.target.value)}
+                    style={{
+                      width: "100%",
+                      background: "#0B0705",
+                      border: "1px solid #333",
+                      borderRadius: 8,
+                      padding: "0.65rem 0.75rem",
+                      color: "#f0ebe4",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      outline: "none",
+                    }}
+                  />
+                </div>
+                <button onClick={ejecutarSorteo} disabled={busy} style={{ ...btnPrimary, flex: 1 }}>
+                  {busy ? "Ejecutando…" : "🎰 Ejecutar sorteo final"}
+                </button>
+              </div>
+              {matchState.match_status !== "finished" && (
+                <p style={{ margin: 0, fontSize: 11, color: "#f59e0b" }}>
+                  ⚠ El partido aún no está &quot;Finalizado&quot; — se pedirá confirmación extra.
+                </p>
+              )}
+            </>
+          )}
+
+          {finalResult && finalResult.status !== "idle" && (
+            <>
+              <dl style={dl}>
+                <Row
+                  label="Estado"
+                  value={
+                    <span style={{ color: finalResult.status === "revealed" ? "#22c55e" : "#f59e0b", fontWeight: 700 }}>
+                      {finalResult.status === "revealed" ? "REVELADO" : "EJECUTADO (animación en curso)"}
+                    </span>
+                  }
+                />
+                <Row label="Ganadores" value={String(finalResult.winners.length)} />
+                <Row label="Sorteos" value={finalResult.tie_breaker_events.length === 0 ? "Sin empates" : String(finalResult.tie_breaker_events.length)} />
+                <Row label="Semilla" value={<code style={{ fontSize: 12 }}>{finalResult.seed ?? "—"}</code>} />
+              </dl>
+
+              <div style={{ borderTop: "1px solid #2a2420", margin: "0.75rem 0", paddingTop: "0.75rem" }}>
+                {[...finalResult.winners]
+                  .sort((a, b) => a.finalPosition - b.finalPosition)
+                  .map((w) => (
+                    <div key={w.player_id} style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.3rem 0", fontSize: 14 }}>
+                      <span style={{ width: 28, fontWeight: 800, color: "#FF4D00" }}>{w.finalPosition}º</span>
+                      <span style={{ flex: 1, fontWeight: 600 }}>{w.alias}</span>
+                      <span style={{ color: "#888", fontVariantNumeric: "tabular-nums" }}>{w.puntos} pts</span>
+                      {w.viaTieBreaker && <span title="Definido por ruleta">🎰</span>}
+                    </div>
+                  ))}
+              </div>
+
+              {finalResult.tie_breaker_events.length > 0 && (
+                <p style={{ margin: "0 0 0.75rem", fontSize: 12, color: "#888" }}>
+                  {finalResult.tie_breaker_events
+                    .map((ev) =>
+                      ev.kind === "order"
+                        ? `Empate en ${ev.puntos} pts — orden de ${ev.positions.map((p) => `${p}º`).join("/")}`
+                        : `Empate en ${ev.puntos} pts — ${ev.participants.length} jugadores por ${ev.spots} cupo(s)`
+                    )
+                    .join(" · ")}
+                </p>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                {finalResult.status === "executed" && (
+                  <button onClick={marcarRevelado} disabled={busy} style={btnPrimary}>
+                    📺 Marcar como revelado (los que entren ven el podio directo)
+                  </button>
+                )}
+                <button
+                  onClick={deshacerSorteo}
+                  disabled={busy}
+                  style={{
+                    background: "transparent",
+                    color: "#ef4444",
+                    border: "1px solid #7f1d1d",
+                    borderRadius: 8,
+                    padding: "0.65rem 1rem",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: "pointer",
+                  }}
+                >
+                  ↩ Deshacer sorteo
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+
         {/* Configuración */}
         <section style={card}>
           <h2 style={sectionTitle}>Configuración del partido</h2>
@@ -330,6 +532,7 @@ export default function JuegoAdminDashboard({
         {/* Links */}
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
           <a href="/juego/ranking" style={linkStyle}>Ver ranking →</a>
+          <a href="/juego/tv" style={linkStyle}>Vista TV →</a>
           <a href="/admin" style={linkStyle}>Admin sorteo →</a>
         </div>
       </div>

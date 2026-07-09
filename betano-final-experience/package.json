@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:winners": "npx -y tsx scripts/test-winners.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
