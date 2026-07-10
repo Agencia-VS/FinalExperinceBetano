@@ -5,8 +5,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createBrowser } from "@/lib/supabase-browser";
 import Avatar from "@/components/juego/Avatar";
 import FinalReveal from "@/components/juego/FinalReveal";
+import PrizeReveal from "@/components/juego/PrizeReveal";
 import { useFinalReveal, type FinalResultRow } from "@/components/juego/useFinalReveal";
 import type { Row } from "@/components/juego/RankingLive";
+import { applyFinalOrder } from "@/lib/juego/ranking";
 
 const LIVE_STATES = ["live_1h", "halftime", "live_2h", "extra_time", "penalties"];
 const MEDAL = ["#FFD24A", "#D8D8D8", "#E08A4B"];
@@ -36,8 +38,43 @@ export default function TvBoard({
 }) {
   const [ranking, setRanking] = useState<Row[]>(initialRanking);
   const [status, setStatus] = useState(matchStatus);
-  const { result: finalResult, active: finalActive, skipAnimation } =
-    useFinalReveal(initialFinalResult);
+  const {
+    result: finalResult,
+    active: finalActive,
+    skipAnimation,
+    prizesActive,
+    skipPrizeAnimation,
+  } = useFinalReveal(initialFinalResult);
+  const [isFs, setIsFs] = useState(false);
+  const [idle, setIdle] = useState(false);
+
+  // Pantalla completa (kiosco de proyector): oculta el chrome del navegador.
+  // Los navegadores exigen un gesto del usuario, por eso es un botón manual.
+  const toggleFs = () => {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else document.documentElement.requestFullscreen?.();
+  };
+  useEffect(() => {
+    const onFs = () => setIsFs(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
+
+  // Oculta el cursor tras unos segundos quieto (se ve solo el juego).
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const wake = () => {
+      setIdle(false);
+      clearTimeout(t);
+      t = setTimeout(() => setIdle(true), 4000);
+    };
+    wake();
+    window.addEventListener("mousemove", wake);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("mousemove", wake);
+    };
+  }, []);
 
   // Leaderboard en vivo: Realtime + poll de respaldo (patrón de RankingLive).
   useEffect(() => {
@@ -78,10 +115,12 @@ export default function TvBoard({
   }, []);
 
   const isLive = LIVE_STATES.includes(status);
-  const top = ranking.slice(0, 10);
+  const top = applyFinalOrder(ranking, finalResult?.winners).slice(0, 10);
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col pb-8">
+    <main
+      className={`mx-auto flex w-full max-w-5xl flex-1 flex-col pb-8 ${idle ? "cursor-none" : ""}`}
+    >
       {/* Header proyector */}
       <header className="flex items-center justify-between pb-8 pt-2">
         <h1 className="font-title text-5xl font-extrabold uppercase leading-none tracking-tight text-bone">
@@ -93,18 +132,45 @@ export default function TvBoard({
             "Ranking en vivo"
           )}
         </h1>
-        <span
-          className={`flex items-center gap-3 rounded-full border px-5 py-2.5 text-lg font-bold uppercase tracking-[0.14em] ${
-            isLive ? "border-ember/50 bg-ember/10 text-wither" : "border-smoke bg-char/60 text-bone-dim"
-          }`}
-        >
+        <div className="flex items-center gap-3">
           <span
-            className={`inline-block h-2.5 w-2.5 rounded-full ${
-              isLive ? "j-live-dot bg-ember" : "bg-bone-dim"
+            className={`flex items-center gap-3 rounded-full border px-5 py-2.5 text-lg font-bold uppercase tracking-[0.14em] ${
+              isLive ? "border-ember/50 bg-ember/10 text-wither" : "border-smoke bg-char/60 text-bone-dim"
             }`}
-          />
-          {STATUS_LABEL[status] ?? status}
-        </span>
+          >
+            <span
+              className={`inline-block h-2.5 w-2.5 rounded-full ${
+                isLive ? "j-live-dot bg-ember" : "bg-bone-dim"
+              }`}
+            />
+            {STATUS_LABEL[status] ?? status}
+          </span>
+          <button
+            onClick={toggleFs}
+            aria-label={isFs ? "Salir de pantalla completa" : "Pantalla completa"}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-smoke bg-char/60 text-bone-dim transition-colors hover:border-ember/50 hover:text-bone"
+          >
+            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden>
+              {isFs ? (
+                <path
+                  d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              ) : (
+                <path
+                  d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </header>
 
       {/* Top 10 a escala de proyector */}
@@ -148,16 +214,24 @@ export default function TvBoard({
         </ul>
       )}
 
-      {/* Final del juego: ruleta + podio a pantalla completa */}
+      {/* Final del juego: ruleta + podio a pantalla completa. Una vez sorteados
+          los premios (Fase 2), su overlay reemplaza al del podio. */}
       <AnimatePresence>
-        {finalActive && finalResult && (
+        {prizesActive && finalResult ? (
+          <PrizeReveal
+            key={finalResult.prize_seed ?? "prizes"}
+            result={finalResult}
+            variant="tv"
+            skipAnimation={skipPrizeAnimation}
+          />
+        ) : finalActive && finalResult ? (
           <FinalReveal
             key={finalResult.seed ?? "final"}
             result={finalResult}
             variant="tv"
             skipAnimation={skipAnimation}
           />
-        )}
+        ) : null}
       </AnimatePresence>
     </main>
   );

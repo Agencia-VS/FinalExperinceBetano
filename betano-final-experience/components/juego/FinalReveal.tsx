@@ -3,24 +3,19 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Avatar from "./Avatar";
-import RouletteReel from "./RouletteReel";
+import {
+  MEDAL,
+  T,
+  SZ,
+  type Sizes,
+  phaseAnim,
+  posLabel,
+  positionsLabel,
+  SpinStage,
+  WinnerReveal,
+} from "./revealKit";
 import type { FinalResultRow } from "./useFinalReveal";
 import type { TieBreakerEvent, TieBreakerPlayer } from "@/lib/juego/winners";
-
-const MEDAL = ["#FFD24A", "#D8D8D8", "#E08A4B"];
-
-/** Timings compartidos: teléfonos y TV reproducen la misma partitura, así
- *  todas las pantallas van casi sincronizadas sin coordinación extra. */
-const T = {
-  intro: 2600,
-  eventIntro: 3200,
-  spin: 4200,
-  pickReveal: 2600,
-  // Red de seguridad: si el carrete nunca avisa que aterrizó (pestaña en
-  // segundo plano, celular bloqueado, glitch de animación), esto fuerza el
-  // avance igual para que la pantalla nunca quede pegada girando.
-  spinFallback: 4200 + 750 + 2500,
-} as const;
 
 type Phase =
   | { name: "intro" }
@@ -66,53 +61,6 @@ function nextPhase(phase: Phase, events: TieBreakerEvent[]): Phase {
       return phase;
   }
 }
-
-function posLabel(n: number) {
-  return `${n}º`;
-}
-
-function positionsLabel(positions: number[]) {
-  const labels = positions.map(posLabel);
-  if (labels.length === 1) return labels[0];
-  return `${labels.slice(0, -1).join(", ")} y ${labels[labels.length - 1]}`;
-}
-
-/** Mapa de tamaños por superficie; la lógica y los timings son idénticos. */
-const SZ = {
-  mobile: {
-    wrap: "max-w-md px-6",
-    eyebrow: "text-[11px] tracking-[0.3em]",
-    title: "text-3xl",
-    subtitle: "text-sm",
-    row: 64,
-    winAvatar: 96,
-    winAlias: "text-3xl",
-    posLabel: "text-5xl",
-    podiumAvatar: 56,
-    podiumFirstAvatar: 74,
-    listAvatar: 34,
-  },
-  tv: {
-    wrap: "max-w-4xl px-12",
-    eyebrow: "text-lg tracking-[0.35em]",
-    title: "text-7xl",
-    subtitle: "text-2xl",
-    row: 112,
-    winAvatar: 190,
-    winAlias: "text-7xl",
-    posLabel: "text-8xl",
-    podiumAvatar: 104,
-    podiumFirstAvatar: 140,
-    listAvatar: 52,
-  },
-} as const;
-
-const phaseAnim = {
-  initial: { opacity: 0, y: 18 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -14 },
-  transition: { type: "spring" as const, stiffness: 350, damping: 36 },
-};
 
 /**
  * Overlay del final del juego: pausa el ranking, corre la ruleta por cada
@@ -207,8 +155,12 @@ export default function FinalReveal({
           {phase.name === "spinning" && (
             <SpinStage
               key={`sp-${phase.eventIndex}-${phase.pickIndex}`}
-              ev={events[phase.eventIndex]}
-              pickIndex={phase.pickIndex}
+              eyebrow="La ruleta gira"
+              title={`¿Quién se queda con el ${posLabel(
+                events[phase.eventIndex].positions[phase.pickIndex]
+              )} lugar?`}
+              pool={poolFor(events[phase.eventIndex], phase.pickIndex)}
+              target={events[phase.eventIndex].resolvedOrder[phase.pickIndex]}
               sz={sz}
               onDone={() => setPhase((p) => nextPhase(p, events))}
             />
@@ -231,7 +183,7 @@ export default function FinalReveal({
               seed={result.seed}
               meId={meId}
               sz={sz}
-              onClose={variant === "mobile" ? () => setDismissed(true) : undefined}
+              onClose={() => setDismissed(true)}
             />
           )}
         </AnimatePresence>
@@ -239,8 +191,6 @@ export default function FinalReveal({
     </motion.div>
   );
 }
-
-type Sizes = (typeof SZ)[keyof typeof SZ];
 
 function EventIntro({
   ev,
@@ -300,37 +250,8 @@ function EventIntro({
   );
 }
 
-function SpinStage({
-  ev,
-  pickIndex,
-  sz,
-  onDone,
-}: {
-  ev: TieBreakerEvent;
-  pickIndex: number;
-  sz: Sizes;
-  onDone: () => void;
-}) {
-  const position = ev.positions[pickIndex];
-  return (
-    <motion.div {...phaseAnim} className="text-center">
-      <p className={`font-bold uppercase text-wither ${sz.eyebrow}`}>La ruleta gira</p>
-      <h2 className={`mt-3 font-title font-extrabold uppercase leading-none text-bone ${sz.title}`}>
-        ¿Quién se queda con el {posLabel(position)} lugar?
-      </h2>
-      <div className="mt-7">
-        <RouletteReel
-          pool={poolFor(ev, pickIndex)}
-          target={ev.resolvedOrder[pickIndex]}
-          rowHeight={sz.row}
-          durationMs={T.spin}
-          onDone={onDone}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
+/** Envoltorio de desempate sobre WinnerReveal: calcula puesto, medalla y la
+ *  lista de eliminados (sólo en un cutoff) y delega el render al kit. */
 function PickReveal({
   ev,
   pickIndex,
@@ -345,62 +266,45 @@ function PickReveal({
   const winner = ev.resolvedOrder[pickIndex];
   const position = ev.positions[pickIndex];
   const medal = position <= 3 ? MEDAL[position - 1] : "var(--bone)";
-  const isMe = winner.player_id === meId;
   const showEliminated = pickIndex === 0 && ev.kind === "cutoff" && ev.eliminated.length > 0;
 
   return (
-    <motion.div {...phaseAnim} className="text-center">
-      <p className={`font-title font-extrabold uppercase leading-none ${sz.posLabel}`} style={{ color: medal }}>
-        {posLabel(position)}
-      </p>
-      <motion.div
-        className="mt-5 flex justify-center"
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-      >
-        <Avatar alias={winner.alias} rank={position} size={sz.winAvatar} avatarUrl={winner.avatar} />
-      </motion.div>
-      <h2 className={`mt-4 font-title font-extrabold uppercase leading-none text-bone ${sz.winAlias}`}>
-        {winner.alias}
-      </h2>
-      <p className={`mt-2 font-bold tabular-nums text-bone-dim ${sz.subtitle}`}>{winner.puntos} pts</p>
-      {isMe && (
-        <motion.p
-          className="j-text-fire mt-3 font-title text-xl font-extrabold uppercase"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 320, damping: 18, delay: 0.35 }}
-        >
-          ¡Eres tú!
-        </motion.p>
-      )}
-      {showEliminated && (
-        <motion.div
-          className="mt-7"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <p className={`font-bold uppercase text-bone-dim ${sz.eyebrow}`}>Quedan fuera</p>
-          <div className="mt-2.5 flex flex-wrap justify-center gap-2">
-            {ev.eliminated.slice(0, 12).map((p) => (
-              <span
-                key={p.player_id}
-                className="rounded-full border border-smoke bg-char/60 px-3 py-1 text-xs font-semibold text-bone-dim/70"
-              >
-                {p.alias}
-              </span>
-            ))}
-            {ev.eliminated.length > 12 && (
-              <span className="rounded-full border border-smoke bg-char/60 px-3 py-1 text-xs font-semibold text-bone-dim/70">
-                +{ev.eliminated.length - 12} más
-              </span>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+    <WinnerReveal
+      heading={posLabel(position)}
+      headingColor={medal}
+      player={winner}
+      subLabel={`${winner.puntos} pts`}
+      isMe={winner.player_id === meId}
+      rank={position}
+      sz={sz}
+      footer={
+        showEliminated ? (
+          <motion.div
+            className="mt-7"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <p className={`font-bold uppercase text-bone-dim ${sz.eyebrow}`}>Quedan fuera</p>
+            <div className="mt-2.5 flex flex-wrap justify-center gap-2">
+              {ev.eliminated.slice(0, 12).map((p) => (
+                <span
+                  key={p.player_id}
+                  className="rounded-full border border-smoke bg-char/60 px-3 py-1 text-xs font-semibold text-bone-dim/70"
+                >
+                  {p.alias}
+                </span>
+              ))}
+              {ev.eliminated.length > 12 && (
+                <span className="rounded-full border border-smoke bg-char/60 px-3 py-1 text-xs font-semibold text-bone-dim/70">
+                  +{ev.eliminated.length - 12} más
+                </span>
+              )}
+            </div>
+          </motion.div>
+        ) : undefined
+      }
+    />
   );
 }
 

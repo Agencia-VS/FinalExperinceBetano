@@ -78,7 +78,7 @@ export function createSeededRng(seed: string): Rng {
 }
 
 /** Fisher–Yates sobre una copia. */
-function shuffle<T>(arr: readonly T[], rng: Rng): T[] {
+export function shuffle<T>(arr: readonly T[], rng: Rng): T[] {
   const out = [...arr];
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));

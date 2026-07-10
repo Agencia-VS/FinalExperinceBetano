@@ -20,7 +20,9 @@ export default async function TvPage() {
       .maybeSingle(),
     admin
       .from("juego_final_result")
-      .select("status, seed, max_winners, winners, tie_breaker_events, executed_at, revealed_at")
+      .select(
+        "status, seed, max_winners, winners, tie_breaker_events, executed_at, revealed_at, prizes, prize_assignments, prize_seed, raffled_at"
+      )
       .eq("id", 1)
       .maybeSingle(),
   ]);

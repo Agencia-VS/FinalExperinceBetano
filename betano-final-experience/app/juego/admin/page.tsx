@@ -13,7 +13,7 @@ export default async function JuegoAdminPage() {
 
   const admin = createAdmin();
 
-  const [stateRes, snapshotRes, playersRes, leaderboardRes, scoresRes, finalRes] = await Promise.all([
+  const [stateRes, snapshotRes, playersRes, leaderboardRes, scoresRes, finalRes, catalogRes] = await Promise.all([
     admin
       .from("juego_match_state")
       .select("match_status, predictions_locked, kickoff_at, home_team, away_team, polling_owner, lock_expires_at, updated_at, fixture_id")
@@ -38,9 +38,12 @@ export default async function JuegoAdminPage() {
       .select("player_id", { count: "exact", head: true }),
     admin
       .from("juego_final_result")
-      .select("status, seed, max_winners, winners, tie_breaker_events, executed_at, revealed_at")
+      .select(
+        "status, seed, max_winners, winners, tie_breaker_events, executed_at, revealed_at, prizes, prize_assignments, prize_seed, raffled_at"
+      )
       .eq("id", 1)
       .maybeSingle(),
+    admin.from("juego_prize_catalog").select("prizes").eq("id", 1).maybeSingle(),
   ]);
 
   const st = stateRes.data;
@@ -72,6 +75,7 @@ export default async function JuegoAdminPage() {
           scoredPlayers: scoresRes.count ?? 0,
         }}
       finalResult={finalRes.data ?? null}
+      prizeCatalog={(catalogRes.data?.prizes as string[] | null) ?? []}
       defaultMaxWinners={Number(process.env.JUEGO_MAX_WINNERS) || 3}
     />
   );

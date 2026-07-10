@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowser } from "@/lib/supabase-browser";
 import type { TieBreakerEvent, Winner } from "@/lib/juego/winners";
+import type { PrizeAssignment } from "@/lib/juego/prizes";
 
 type FinalResult = {
   status: "idle" | "executed" | "revealed";
@@ -13,6 +14,8 @@ type FinalResult = {
   tie_breaker_events: TieBreakerEvent[];
   executed_at: string | null;
   revealed_at: string | null;
+  prize_assignments?: PrizeAssignment[];
+  raffled_at?: string | null;
 } | null;
 
 type MatchState = {
@@ -59,6 +62,7 @@ export default function JuegoAdminDashboard({
   fixtureId,
   leaderboard,
   finalResult,
+  prizeCatalog,
   defaultMaxWinners,
 }: {
   matchState: MatchState;
@@ -67,6 +71,7 @@ export default function JuegoAdminDashboard({
   fixtureId: string | null;
   leaderboard: LeaderboardInfo;
   finalResult: FinalResult;
+  prizeCatalog: string[];
   defaultMaxWinners: number;
 }) {
   const router = useRouter();
@@ -75,6 +80,8 @@ export default function JuegoAdminDashboard({
   const [editFixtureId, setEditFixtureId] = useState(fixtureId ?? "");
   const [saving, setSaving] = useState(false);
   const [maxWinnersInput, setMaxWinnersInput] = useState(String(defaultMaxWinners));
+  // Catálogo de premios preconfigurado (uno por línea, más valioso primero).
+  const [catalogInput, setCatalogInput] = useState(prizeCatalog.join("\n"));
 
   async function postAction(action: string, extra?: Record<string, string>) {
     setBusy(true);
@@ -190,6 +197,77 @@ export default function JuegoAdminDashboard({
     if (!res.ok) setMsg({ text: data.error ?? "Error al marcar revelado.", ok: false });
     else {
       setMsg({ text: "Marcado como revelado: quien entre ahora ve el podio directo.", ok: true });
+      router.refresh();
+    }
+  }
+
+  function catalogPrizes() {
+    return catalogInput
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  async function guardarCatalogo() {
+    setBusy(true);
+    setMsg(null);
+    const { res, data } = await postFinal({ action: "saveCatalog", prizes: catalogPrizes() });
+    setBusy(false);
+    if (!res.ok) setMsg({ text: data.error ?? "Error al guardar el catálogo.", ok: false });
+    else {
+      setMsg({ text: `Catálogo guardado (${data.prizes.length} premios).`, ok: true });
+      router.refresh();
+    }
+  }
+
+  async function sortearPremios() {
+    const prizes = catalogPrizes();
+    const nGanadores = finalResult?.winners.length ?? 0;
+    if (prizes.length < nGanadores) {
+      setMsg({
+        text: `Hacen falta al menos ${nGanadores} premios en el catálogo (hay ${prizes.length}).`,
+        ok: false,
+      });
+      return;
+    }
+    const disputados = prizes.slice(0, nGanadores);
+    if (
+      !window.confirm(
+        `🎁 ¿Sortear estos ${nGanadores} premios entre los ${nGanadores} ganadores?\n\n${disputados
+          .map((p, i) => `${i + 1}. ${p}`)
+          .join(
+            "\n"
+          )}\n\nEl resultado se decide en el servidor (semilla auditable) y la ruleta arranca AL INSTANTE en todas las pantallas.`
+      )
+    )
+      return;
+
+    setBusy(true);
+    setMsg(null);
+    // Envía el catálogo actual como premios; el servidor toma los N más valiosos.
+    const { res, data } = await postFinal({ action: "rafflePrizes", prizes });
+    setBusy(false);
+    if (!res.ok) setMsg({ text: data.error ?? "Error al sortear premios.", ok: false });
+    else {
+      setMsg({ text: "Premios sorteados. La animación está corriendo en las pantallas.", ok: true });
+      router.refresh();
+    }
+  }
+
+  async function deshacerPremios() {
+    if (
+      !window.confirm(
+        "↩ ¿Deshacer el sorteo de premios?\n\nLos overlays de premios desaparecen de las pantallas. Podrás volver a sortear con una semilla nueva."
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg(null);
+    const { res, data } = await postFinal({ action: "undoPrizes" });
+    setBusy(false);
+    if (!res.ok) setMsg({ text: data.error ?? "Error al deshacer los premios.", ok: false });
+    else {
+      setMsg({ text: "Premios deshechos. Puedes volver a sortear.", ok: true });
       router.refresh();
     }
   }
@@ -335,6 +413,41 @@ export default function JuegoAdminDashboard({
           </button>
         </section>
 
+        {/* Catálogo de premios: se preconfigura de antemano; el sorteo usa los
+            N más valiosos según cuántos ganadores haya. */}
+        <section style={card}>
+          <h2 style={sectionTitle}>Catálogo de premios</h2>
+          <p style={{ margin: "0 0 0.75rem", fontSize: 13, color: "#888" }}>
+            Un premio por línea, el primero es el más valioso. Déjalo cargado antes del
+            evento: si hay más premios que ganadores, se disputan sólo los más valiosos.
+          </p>
+          <textarea
+            value={catalogInput}
+            onChange={(e) => setCatalogInput(e.target.value)}
+            rows={Math.max(3, catalogPrizes().length + 1)}
+            placeholder={"PlayStation 5\nSilla Gamer\nGiftcard\nCamiseta\nTaza"}
+            style={{
+              width: "100%",
+              background: "#0B0705",
+              border: "1px solid #333",
+              borderRadius: 8,
+              padding: "0.65rem 0.75rem",
+              color: "#f0ebe4",
+              fontSize: 14,
+              fontWeight: 500,
+              outline: "none",
+              resize: "vertical",
+              fontFamily: "inherit",
+            }}
+          />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.6rem" }}>
+            <button onClick={guardarCatalogo} disabled={busy} style={btnPrimary}>
+              {busy ? "Guardando…" : "💾 Guardar catálogo"}
+            </button>
+            <span style={{ fontSize: 12, color: "#888" }}>{catalogPrizes().length} premio(s)</span>
+          </div>
+        </section>
+
         {/* Final del juego: sorteo de desempate + reveal */}
         <section style={card}>
           <h2 style={sectionTitle}>Final del juego</h2>
@@ -445,6 +558,64 @@ export default function JuegoAdminDashboard({
                   ↩ Deshacer sorteo
                 </button>
               </div>
+
+              {/* Fase 2: sorteo de premios entre los ganadores (usa el catálogo) */}
+              {finalResult.status === "revealed" && !finalResult.raffled_at && (
+                <div style={{ borderTop: "1px solid #2a2420", margin: "1rem 0 0", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  {catalogPrizes().length < finalResult.winners.length ? (
+                    <p style={{ margin: 0, fontSize: 12, color: "#f59e0b" }}>
+                      ⚠ El catálogo tiene {catalogPrizes().length} premio(s) y hay {finalResult.winners.length} ganadores.
+                      Carga al menos {finalResult.winners.length} en el catálogo (abajo) y guarda.
+                    </p>
+                  ) : (
+                    <>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                        🎁 Se disputarán estos {finalResult.winners.length} premios
+                      </label>
+                      <ol style={{ margin: 0, paddingLeft: "1.2rem", fontSize: 14, color: "#f0ebe4" }}>
+                        {catalogPrizes().slice(0, finalResult.winners.length).map((p, i) => (
+                          <li key={i} style={{ padding: "0.15rem 0" }}>{p}</li>
+                        ))}
+                      </ol>
+                      <button onClick={sortearPremios} disabled={busy} style={btnPrimary}>
+                        {busy ? "Sorteando…" : "🎁 Sortear premios"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {finalResult.raffled_at && finalResult.prize_assignments && (
+                <div style={{ borderTop: "1px solid #2a2420", margin: "1rem 0 0", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    🎁 Premios sorteados
+                  </label>
+                  <div>
+                    {finalResult.prize_assignments.map((a) => (
+                      <div key={a.player_id} style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.3rem 0", fontSize: 14 }}>
+                        <span style={{ flex: 1, fontWeight: 600 }}>{a.alias}</span>
+                        <span style={{ color: "#FF4D00", fontWeight: 700 }}>{a.prize.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={deshacerPremios}
+                    disabled={busy}
+                    style={{
+                      background: "transparent",
+                      color: "#ef4444",
+                      border: "1px solid #7f1d1d",
+                      borderRadius: 8,
+                      padding: "0.65rem 1rem",
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: "pointer",
+                    }}
+                  >
+                    ↩ Deshacer premios
+                  </button>
+                </div>
+              )}
             </>
           )}
         </section>

@@ -7,7 +7,9 @@ import { createBrowser } from "@/lib/supabase-browser";
 import PredictionBreakdown from "./PredictionBreakdown";
 import Avatar from "./Avatar";
 import FinalReveal from "./FinalReveal";
+import PrizeReveal from "./PrizeReveal";
 import { useFinalReveal, type FinalResultRow } from "./useFinalReveal";
+import { applyFinalOrder } from "@/lib/juego/ranking";
 
 export type Row = { posicion: number; player_id: string; alias: string; avatar?: string | null; puntos: number };
 
@@ -24,8 +26,13 @@ export default function RankingLive({
   initialFinalResult?: FinalResultRow | null;
 }) {
   const [ranking, setRanking] = useState<Row[]>(initialRanking);
-  const { result: finalResult, active: finalActive, skipAnimation } =
-    useFinalReveal(initialFinalResult);
+  const {
+    result: finalResult,
+    active: finalActive,
+    skipAnimation,
+    prizesActive,
+    skipPrizeAnimation,
+  } = useFinalReveal(initialFinalResult);
   const [meId, setMeId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [moves, setMoves] = useState<Record<string, number>>({});
@@ -93,15 +100,22 @@ export default function RankingLive({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Una vez ejecutado el sorteo, reordena para reflejar el desempate
+  // (ganadores con su puesto definitivo 1..N; el resto por puntos).
+  const displayRanking = useMemo(
+    () => applyFinalOrder(ranking, finalResult?.winners),
+    [ranking, finalResult]
+  );
+
   const filtered = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
-    if (!q) return ranking;
-    return ranking.filter((r) => r.alias.toLowerCase().includes(q));
-  }, [ranking, searchTerm]);
+    if (!q) return displayRanking;
+    return displayRanking.filter((r) => r.alias.toLowerCase().includes(q));
+  }, [displayRanking, searchTerm]);
 
   const podium = filtered.slice(0, 3);
   const rest = filtered.slice(3, 30);
-  const me = meId ? ranking.find((r) => r.player_id === meId) : undefined;
+  const me = meId ? displayRanking.find((r) => r.player_id === meId) : undefined;
   const meInFiltered = me && filtered.find((r) => r.player_id === meId) != null;
   const meVisible = meInFiltered && me.posicion <= 30;
   const isLive = LIVE_STATES.includes(matchStatus);
@@ -338,9 +352,18 @@ export default function RankingLive({
         onClose={() => setModalPlayerId(null)}
       />
 
-      {/* Final del juego: ruleta de desempate + podio (disparado por Realtime) */}
+      {/* Final del juego: ruleta de desempate + podio (disparado por Realtime).
+          Tras sortear premios (Fase 2), su overlay reemplaza al del podio. */}
       <AnimatePresence>
-        {finalActive && finalResult && (
+        {prizesActive && finalResult ? (
+          <PrizeReveal
+            key={finalResult.prize_seed ?? "prizes"}
+            result={finalResult}
+            variant="mobile"
+            skipAnimation={skipPrizeAnimation}
+            meId={meId}
+          />
+        ) : finalActive && finalResult ? (
           <FinalReveal
             key={finalResult.seed ?? "final"}
             result={finalResult}
@@ -348,7 +371,7 @@ export default function RankingLive({
             skipAnimation={skipAnimation}
             meId={meId}
           />
-        )}
+        ) : null}
       </AnimatePresence>
     </main>
   );
