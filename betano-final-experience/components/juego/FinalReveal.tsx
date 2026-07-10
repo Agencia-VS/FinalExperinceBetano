@@ -11,7 +11,16 @@ const MEDAL = ["#FFD24A", "#D8D8D8", "#E08A4B"];
 
 /** Timings compartidos: teléfonos y TV reproducen la misma partitura, así
  *  todas las pantallas van casi sincronizadas sin coordinación extra. */
-const T = { intro: 2600, eventIntro: 3200, spin: 4200, pickReveal: 2600 } as const;
+const T = {
+  intro: 2600,
+  eventIntro: 3200,
+  spin: 4200,
+  pickReveal: 2600,
+  // Red de seguridad: si el carrete nunca avisa que aterrizó (pestaña en
+  // segundo plano, celular bloqueado, glitch de animación), esto fuerza el
+  // avance igual para que la pantalla nunca quede pegada girando.
+  spinFallback: 4200 + 750 + 2500,
+} as const;
 
 type Phase =
   | { name: "intro" }
@@ -121,7 +130,11 @@ export default function FinalReveal({
   skipAnimation?: boolean;
   meId?: string | null;
 }) {
-  const events = Array.isArray(result.tie_breaker_events) ? result.tie_breaker_events : [];
+  // Se dramatiza siempre de menor a mayor premio: el sorteo que resuelve los
+  // puestos de menor valor va primero, y el que incluye el 1º queda al final.
+  const events = (Array.isArray(result.tie_breaker_events) ? result.tie_breaker_events : [])
+    .slice()
+    .sort((a, b) => Math.max(...b.positions) - Math.max(...a.positions));
   const [phase, setPhase] = useState<Phase>(() =>
     skipAnimation ? { name: "podium" } : { name: "intro" }
   );
@@ -130,9 +143,15 @@ export default function FinalReveal({
 
   // Fases con avance automático; "spinning" avanza cuando el carrete aterriza.
   useEffect(() => {
-    if (phase.name === "spinning" || phase.name === "podium") return;
+    if (phase.name === "podium") return;
     const ms =
-      phase.name === "intro" ? T.intro : phase.name === "event_intro" ? T.eventIntro : T.pickReveal;
+      phase.name === "intro"
+        ? T.intro
+        : phase.name === "event_intro"
+        ? T.eventIntro
+        : phase.name === "spinning"
+        ? T.spinFallback
+        : T.pickReveal;
     const t = setTimeout(() => setPhase((p) => nextPhase(p, events)), ms);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -217,16 +236,6 @@ export default function FinalReveal({
           )}
         </AnimatePresence>
       </div>
-
-      {/* Saltar (sólo móvil, antes del podio) */}
-      {variant === "mobile" && phase.name !== "podium" && (
-        <button
-          onClick={() => setPhase({ name: "podium" })}
-          className="absolute bottom-5 right-5 rounded-full border border-smoke bg-char/80 px-4 py-2 text-xs font-bold uppercase tracking-wider text-bone-dim backdrop-blur transition-colors hover:border-ember/50 hover:text-bone"
-        >
-          Saltar ▸
-        </button>
-      )}
     </motion.div>
   );
 }
