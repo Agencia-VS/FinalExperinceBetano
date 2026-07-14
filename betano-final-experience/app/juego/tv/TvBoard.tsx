@@ -76,6 +76,22 @@ export default function TvBoard({
     };
   }, []);
 
+  // Modo TV/kiosco: un solo contexto de scroll sin barra visible.
+  // Bloquea el scroll del body para evitar el doble scroll (body + main interno),
+  // alineado con §5 de ui-ux-pro-max: "Avoid nested scroll regions".
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, []);
+
   // Leaderboard en vivo: Realtime + poll de respaldo (patrón de RankingLive).
   useEffect(() => {
     const supabase = createBrowser();
