@@ -119,7 +119,7 @@ export default function TvBoard({
 
   return (
     <main
-      className={`mx-auto flex w-full max-w-5xl flex-1 flex-col pb-8 ${idle ? "cursor-none" : ""}`}
+      className={`no-scrollbar mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto pb-8 ${idle ? "cursor-none" : ""}`}
     >
       {/* Header proyector */}
       <header className="flex items-center justify-between pb-8 pt-2">

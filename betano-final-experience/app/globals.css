@@ -218,3 +218,14 @@ a { color: inherit; }
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
 }
+
+/* ============================================================
+   Utilidad: ocultar scrollbar (modo TV / kiosco)
+   ============================================================ */
+.no-scrollbar {
+  -ms-overflow-style: none;       /* IE/Edge */
+  scrollbar-width: none;          /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Opera */
+}
