@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdmin } from "@/lib/supabase";
 import { isValidRut } from "@/lib/rut";
 import { rateLimit } from "@/lib/rate-limit";
+import { inscripcionesCerradas } from "@/lib/concurso";
 import { enviarCorreoInscripcion } from "@/lib/email";
 
 const DOC_TYPES = ["RUT", "DNI_EXTRANJERO", "PASAPORTE"];
@@ -13,6 +14,14 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: "Demasiados intentos. Espera un momento e intenta de nuevo." },
       { status: 429 }
+    );
+  }
+
+  // Cierre de inscripciones (autoritativo en servidor; el cliente es evadible).
+  if (inscripcionesCerradas()) {
+    return NextResponse.json(
+      { error: "Las inscripciones están cerradas." },
+      { status: 403 }
     );
   }
 

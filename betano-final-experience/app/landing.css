@@ -340,6 +340,18 @@
 }
 .hero-cta:active { transform: translateY(0); }
 
+/* Estado cerrado: inscripciones finalizadas */
+.hero-cta-closed,
+.hero-cta-closed:hover {
+  background: var(--char);
+  color: var(--bone-dim);
+  border: 1px solid var(--smoke);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  animation: none;
+}
+
 @keyframes cta-pulse {
   0%, 100% { box-shadow: 0 10px 30px rgba(255, 77, 0, 0.35); }
   50%      { box-shadow: 0 10px 30px rgba(255, 77, 0, 0.55), 0 0 0 4px rgba(255, 77, 0, 0.12); }

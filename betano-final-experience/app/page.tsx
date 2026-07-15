@@ -1,8 +1,14 @@
 import Image from "next/image";
 import HeroStepsClient from "@/components/HeroStepsClient";
+import { inscripcionesCerradas } from "@/lib/concurso";
 import "./landing.css";
 
+// El cierre depende de la hora actual, así que la página se renderiza por
+// petición (si no, el estado quedaría congelado en el momento del build).
+export const dynamic = "force-dynamic";
+
 export default function Home() {
+  const cerrado = inscripcionesCerradas();
   return (
     <main className="landing">
       <header className="top-bar">
@@ -82,7 +88,7 @@ export default function Home() {
             </p>
           </div>
 
-          <HeroStepsClient />
+          <HeroStepsClient closed={cerrado} />
         </section>
       </div>
 

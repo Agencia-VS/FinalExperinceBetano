@@ -277,6 +277,25 @@
 
 .seed-row .field-input { flex: 1; min-width: 220px; }
 
+/* ── Configuración de correo ── */
+.email-config {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.email-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.email-config-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.email-config-row .field-input { flex: 1; min-width: 220px; }
+.email-config-row .ghost-btn { white-space: nowrap; }
+
 /* ── Table ── */
 .table-scroll { overflow-x: auto; margin-top: 0.25rem; }
 

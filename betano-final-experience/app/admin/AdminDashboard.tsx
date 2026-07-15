@@ -44,6 +44,9 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
   const [seed, setSeed] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [replyTo, setReplyTo] = useState("");
+  const [testEmail, setTestEmail] = useState("");
+  const [emailMsg, setEmailMsg] = useState("");
 
   const aceptadosORevocados = resultados.filter((r) => r.premio_tomado === false).length;
   const ganadoresEfectivos = resultados
@@ -95,12 +98,40 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
     const res = await fetch("/api/admin/notificar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ resultadoIds: [...ganadoresIds] }),
+      body: JSON.stringify({
+        resultadoIds: [...ganadoresIds],
+        replyTo: replyTo.trim() || undefined,
+      }),
     });
     const d = await res.json();
     setBusy(false);
     setMsg(res.ok ? `Correos enviados: ${d.enviados}.` : d.error ?? "Error al notificar.");
     router.refresh();
+  }
+
+  async function enviarPrueba() {
+    setEmailMsg("");
+    const dest = testEmail.trim();
+    if (!dest) {
+      setEmailMsg("Ingresa un email de prueba.");
+      return;
+    }
+    setBusy(true);
+    const res = await fetch("/api/admin/notificar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        testEmail: dest,
+        replyTo: replyTo.trim() || undefined,
+      }),
+    });
+    const d = await res.json();
+    setBusy(false);
+    setEmailMsg(
+      res.ok
+        ? `Correo de prueba enviado a ${dest}.`
+        : d.error ?? "Error al enviar la prueba."
+    );
   }
 
   return (
@@ -165,6 +196,58 @@ export default function AdminDashboard({ totalParticipantes, sorteo, resultados 
               <span className="stat-label">Notificados</span>
             </div>
           </div>
+
+          {/* ── Configuración de correo ── */}
+          <section className="panel">
+            <div className="panel-head-row">
+              <div>
+                <h2 className="panel-h">Configuración de correo</h2>
+                <p className="muted">
+                  Reply-to para las respuestas de los ganadores y prueba del correo
+                  antes de notificar.
+                </p>
+              </div>
+            </div>
+            <div className="email-config">
+              <div className="email-config-field">
+                <label className="field-label" htmlFor="replyTo">
+                  Reply-to (opcional)
+                </label>
+                <input
+                  id="replyTo"
+                  className="field-input"
+                  type="email"
+                  placeholder="Vacío = valor por defecto del organizador"
+                  value={replyTo}
+                  onChange={(e) => setReplyTo(e.target.value)}
+                />
+              </div>
+              <div className="email-config-field">
+                <label className="field-label" htmlFor="testEmail">
+                  Enviar correo de prueba
+                </label>
+                <div className="email-config-row">
+                  <input
+                    id="testEmail"
+                    className="field-input"
+                    type="email"
+                    placeholder="tucorreo@ejemplo.cl"
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="ghost-btn"
+                    onClick={enviarPrueba}
+                    disabled={busy}
+                  >
+                    Enviar prueba
+                  </button>
+                </div>
+              </div>
+            </div>
+            {emailMsg && <p className="panel-msg" role="status">{emailMsg}</p>}
+          </section>
 
           {/* ── Sorteo panel ── */}
           <section className="panel">

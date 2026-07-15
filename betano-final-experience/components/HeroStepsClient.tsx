@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import InscriptionForm from "@/components/InscriptionForm";
 
-export default function HeroStepsClient() {
+export default function HeroStepsClient({ closed = false }: { closed?: boolean }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -27,14 +27,20 @@ export default function HeroStepsClient() {
         <div className="hero-step">
           <span className="hero-step-num">1</span>
           <span className="hero-step-text">
-            <button
-              type="button"
-              className="hero-step-link"
-              onClick={() => setOpen(true)}
-            >
-              Inscríbete
-            </button>
-            {" "}entre el 4 y el 15 de julio
+            {closed ? (
+              <>Las inscripciones estuvieron abiertas entre el 4 y el 15 de julio</>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="hero-step-link"
+                  onClick={() => setOpen(true)}
+                >
+                  Inscríbete
+                </button>
+                {" "}entre el 4 y el 15 de julio
+              </>
+            )}
           </span>
         </div>
         <div className="hero-step">
@@ -48,16 +54,22 @@ export default function HeroStepsClient() {
       </div>
 
       {/* CTA: Participa */}
-      <button
-        type="button"
-        className="hero-cta"
-        onClick={() => setOpen(true)}
-      >
-        Participa
-      </button>
+      {closed ? (
+        <button type="button" className="hero-cta hero-cta-closed" disabled>
+          Inscripciones cerradas
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="hero-cta"
+          onClick={() => setOpen(true)}
+        >
+          Participa
+        </button>
+      )}
 
       {/* Modal */}
-      {open && (
+      {open && !closed && (
         <div
           className="modal-overlay"
           role="dialog"
