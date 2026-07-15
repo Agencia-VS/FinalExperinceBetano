@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBrowser } from "@/lib/supabase-browser";
 import type { TieBreakerEvent, Winner } from "@/lib/juego/winners";
 import type { PrizeAssignment } from "@/lib/juego/prizes";
+import TriviaAdminPanel from "./TriviaAdminPanel";
 
 type FinalResult = {
   status: "idle" | "executed" | "revealed";
@@ -75,6 +76,9 @@ export default function JuegoAdminDashboard({
   defaultMaxWinners: number;
 }) {
   const router = useRouter();
+  // Trivia (evento 2026) por defecto; el panel del juego de pronósticos queda
+  // intacto en su pestaña para una futura activación.
+  const [tab, setTab] = useState<"trivia" | "pronosticos">("trivia");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [editFixtureId, setEditFixtureId] = useState(fixtureId ?? "");
@@ -330,11 +334,33 @@ export default function JuegoAdminDashboard({
             <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "#FF4D00", margin: 0 }}>
               Admin · Juego
             </p>
-            <h1 style={{ fontSize: 22, fontWeight: 800, margin: "4px 0 0" }}>Panel del partido</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 800, margin: "4px 0 0" }}>
+              {tab === "trivia" ? "Trivia en vivo" : "Panel del partido"}
+            </h1>
           </div>
           <button onClick={logout} style={btnGhost}>Cerrar sesión</button>
         </div>
 
+        {/* Pestañas: Trivia (evento) / Pronósticos (juego anterior, intacto) */}
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem" }}>
+          <button
+            onClick={() => setTab("trivia")}
+            style={tab === "trivia" ? tabActive : tabIdle}
+          >
+            🎯 Trivia
+          </button>
+          <button
+            onClick={() => setTab("pronosticos")}
+            style={tab === "pronosticos" ? tabActive : tabIdle}
+          >
+            ⚽ Pronósticos (anterior)
+          </button>
+        </div>
+
+        {tab === "trivia" && <TriviaAdminPanel />}
+
+        {tab === "pronosticos" && (
+          <>
         {msg && (
           <div style={{ ...msgBox, borderColor: msg.ok ? "#22c55e" : "#ef4444", color: msg.ok ? "#22c55e" : "#ef4444" }}>
             {msg.text}
@@ -699,6 +725,8 @@ export default function JuegoAdminDashboard({
             El cron automático corre cada 5 min en Vercel dentro de la ventana del partido (30 min antes del kickoff). El poll manual no tiene esa restricción — úsalo para verificar la integración.
           </p>
         </section>
+          </>
+        )}
 
         {/* Links */}
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
@@ -769,6 +797,22 @@ const msgBox: React.CSSProperties = {
   marginBottom: "1rem",
   fontSize: 13,
   fontWeight: 600,
+};
+const tabIdle: React.CSSProperties = {
+  background: "transparent",
+  color: "#888",
+  border: "1px solid #333",
+  borderRadius: 8,
+  padding: "0.55rem 1rem",
+  fontWeight: 700,
+  fontSize: 13,
+  cursor: "pointer",
+};
+const tabActive: React.CSSProperties = {
+  ...tabIdle,
+  background: "#FF4D00",
+  color: "#fff",
+  border: "1px solid #FF4D00",
 };
 const linkStyle: React.CSSProperties = {
   color: "#FF4D00",
