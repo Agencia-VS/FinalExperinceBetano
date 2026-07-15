@@ -159,7 +159,7 @@ export function ganadorHtml(nombre: string) {
   </style>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;">
-  <span style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden">¡Estás en la Final Experience Betano! Vivirás la gran final del Mundial 2026.</span>
+  <span style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden">¡Felicidades! Ganaste el concurso Final Experience Betano. Confirma tu asistencia.</span>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;">
     <tr>
       <td class="fe-wrap" align="center" style="padding:20px 12px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -174,47 +174,20 @@ export function ganadorHtml(nombre: string) {
           <tr>
             <td class="fe-orange" style="background:#FF5A00;padding:25px;color:#ffffff;">
               <div style="text-align:center;">
-                <span style="display:inline-block;background:#000000;color:#ffffff;border:1px solid #333333;padding:5px 14px;border-radius:15px;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.04em;">Invitación Oficial</span>
+                <span style="display:inline-block;background:#000000;color:#ffffff;border:1px solid #333333;padding:5px 14px;border-radius:15px;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.04em;">¡Ganaste!</span>
               </div>
-              <h1 style="font-size:22px;line-height:1.2;color:#ffffff;margin:16px 0 12px;text-align:center;letter-spacing:-0.5px;">¡Estás en la Final Experience!</h1>
-              <p style="font-size:15px;line-height:1.5;margin:0 0 16px;text-align:center;color:#ffffff;">
-                Hola <strong>${name}</strong>, es un placer invitarte a vivir la pasión de la gran final del Mundial 2026 junto a nosotros.
+              <h1 style="font-size:24px;line-height:1.2;color:#ffffff;margin:16px 0 12px;text-align:center;letter-spacing:-0.5px;">¡Felicidades!</h1>
+              <p style="font-size:15px;line-height:1.55;margin:0 0 16px;text-align:center;color:#ffffff;">
+                Hola <strong>${name}</strong>, ganaste el concurso para vivir la <strong>Final Experience Betano</strong> y disfrutar la gran final del Mundial 2026 junto a <strong>2 acompañantes</strong>.
               </p>
               <div style="text-align:center;margin:0 0 20px;">
                 <img src="${IMG.headerLogo}" alt="Final Experience" width="280" style="display:block;width:85%;max-width:280px;height:auto;margin:0 auto;border:0;border-radius:8px;" />
               </div>
-              <!-- Invitación: acompañantes -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;margin:0 0 16px;">
+              <!-- Confirmación (responder → reply-to) -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;margin:0;">
                 <tr>
-                  <td style="padding:16px;text-align:center;font-size:14px;line-height:1.5;color:#333333;">
-                    Vivirás la gran final del Mundial 2026 junto a <strong>2 acompañantes</strong>.
-                  </td>
-                </tr>
-              </table>
-              <!-- Detalles del evento (etiqueta arriba, valor abajo a ancho completo) -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                <tr>
-                  <td style="padding:6px 22px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="padding:15px 0;border-bottom:1px solid #eef0f2;">
-                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Evento</span>
-                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">Betano Final Experience</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:15px 0;border-bottom:1px solid #eef0f2;">
-                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Fecha</span>
-                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">19 jul 2026 · 13:00 hrs</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:15px 0;">
-                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Lugar</span>
-                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">Explanada Metropolitan, Vitacura</span>
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding:18px;text-align:center;font-size:14px;line-height:1.55;color:#333333;">
+                    <strong style="color:#111827;">Confirma tu asistencia respondiendo a este correo</strong> y te haremos llegar toda la información del evento.
                   </td>
                 </tr>
               </table>
@@ -224,7 +197,7 @@ export function ganadorHtml(nombre: string) {
           <tr>
             <td class="fe-foot" style="padding:20px 22px;background:#fafafa;border-top:1px solid #eef0f2;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
               <p style="margin:0 0 12px;font-size:13px;line-height:1.55;color:#4b5563;text-align:center;">
-                <strong style="color:#111827;">Chilevisión</strong> se contactará contigo para coordinar los detalles de tu participación. Responde a este correo y tu mensaje será redirigido al equipo organizador.
+                <strong style="color:#111827;">Chilevisión</strong> se contactará contigo una vez que confirmes tu participación. Si no la confirmas, tu cupo pasará a otro participante.
               </p>
               <p style="margin:0;font-size:11px;line-height:1.6;color:#9ca3af;text-align:center;">
                 Betano Final Experience · Chile, mayores de 18 años. <a href="https://finalexperience.cl/bases-legales" style="color:#FF5A00;text-decoration:none;">Bases legales</a>.
