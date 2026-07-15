@@ -183,30 +183,36 @@ export function ganadorHtml(nombre: string) {
               <div style="text-align:center;margin:0 0 20px;">
                 <img src="${IMG.headerLogo}" alt="Final Experience" width="280" style="display:block;width:85%;max-width:280px;height:auto;margin:0 auto;border:0;border-radius:8px;" />
               </div>
-              <!-- Coordinación (invita a responder → reply-to) -->
+              <!-- Invitación: acompañantes -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;margin:0 0 16px;">
                 <tr>
                   <td style="padding:16px;text-align:center;font-size:14px;line-height:1.5;color:#333333;">
-                    Vivirás la final junto a <strong>2 acompañantes</strong>. <strong>Responde a este correo</strong> y te contactaremos con los siguientes pasos para coordinar tu llegada.
+                    Vivirás la gran final del Mundial 2026 junto a <strong>2 acompañantes</strong>.
                   </td>
                 </tr>
               </table>
-              <!-- Detalles del evento -->
+              <!-- Detalles del evento (etiqueta arriba, valor abajo a ancho completo) -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.05);">
                 <tr>
-                  <td style="padding:4px 20px;">
+                  <td style="padding:6px 22px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;">Evento</td>
-                        <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:14px;font-weight:700;text-align:right;color:#111827;">Betano Final Experience</td>
+                        <td style="padding:15px 0;border-bottom:1px solid #eef0f2;">
+                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Evento</span>
+                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">Betano Final Experience</span>
+                        </td>
                       </tr>
                       <tr>
-                        <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;">Fecha</td>
-                        <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:14px;font-weight:700;text-align:right;color:#111827;">19 jul 2026 · 12:00 hrs</td>
+                        <td style="padding:15px 0;border-bottom:1px solid #eef0f2;">
+                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Fecha</span>
+                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">19 jul 2026 · 12:00 hrs</span>
+                        </td>
                       </tr>
                       <tr>
-                        <td style="padding:12px 0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280;">Lugar</td>
-                        <td style="padding:12px 0;font-size:14px;font-weight:700;text-align:right;color:#111827;">Explanada Metropolitan, Vitacura</td>
+                        <td style="padding:15px 0;">
+                          <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Lugar</span>
+                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">Explanada Metropolitan, Vitacura</span>
+                        </td>
                       </tr>
                     </table>
                   </td>
@@ -216,9 +222,13 @@ export function ganadorHtml(nombre: string) {
           </tr>
           <!-- Footer -->
           <tr>
-            <td class="fe-foot" align="center" style="padding:20px 15px;background:#fafafa;border-top:1px solid #f3f4f6;font-size:12px;line-height:1.6;color:#9ca3af;text-align:center;">
-              Betano Final Experience · Chile, mayores de 18 años.<br />
-              <a href="https://finalexperience.cl/bases-legales" style="color:#FF5A00;text-decoration:none;">Bases legales</a>.
+            <td class="fe-foot" style="padding:20px 22px;background:#fafafa;border-top:1px solid #eef0f2;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.55;color:#4b5563;text-align:center;">
+                <strong style="color:#111827;">Chilevisión</strong> se contactará contigo para coordinar los detalles de tu participación. Responde a este correo y tu mensaje será redirigido al equipo organizador.
+              </p>
+              <p style="margin:0;font-size:11px;line-height:1.6;color:#9ca3af;text-align:center;">
+                Betano Final Experience · Chile, mayores de 18 años. <a href="https://finalexperience.cl/bases-legales" style="color:#FF5A00;text-decoration:none;">Bases legales</a>.
+              </p>
             </td>
           </tr>
         </table>
