@@ -130,6 +130,10 @@ export async function POST(req: Request) {
         max_winners: null,
         winners: [],
         tie_breaker_events: [],
+        prizes: [],
+        prize_assignments: [],
+        prize_seed: null,
+        raffled_at: null,
         executed_by: null,
         executed_at: null,
         revealed_at: null,
@@ -138,6 +142,51 @@ export async function POST(req: Request) {
       .eq("id", 1);
     // Recalcular leaderboard (quedará vacío).
     await admin.rpc("juego_recompute_scores");
+
+    // ── Resetear trivia: preguntas, respuestas, sorteos y config ──
+    // Respuestas de los jugadores (se borran todas).
+    await admin.from("juego_trivia_answers").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    // Preguntas: volver a su estado inicial.
+    // Q1–Q9 → borrador, Q10 → abierta (cierra con kickoff).
+    await admin
+      .from("juego_trivia_questions")
+      .update({
+        status: "borrador",
+        opened_at: null,
+        closes_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .neq("orden", 10);
+    await admin
+      .from("juego_trivia_questions")
+      .update({
+        status: "abierta",
+        opened_at: null,
+        closes_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("orden", 10);
+    // Sorteos: volver a idle (sin seed, sin ganador).
+    await admin
+      .from("juego_trivia_draws")
+      .update({
+        status: "idle",
+        seed: null,
+        pool_snapshot: [],
+        winner: null,
+        es_consuelo: false,
+        executed_by: null,
+        executed_at: null,
+        revealed_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .neq("question_id", "00000000-0000-0000-0000-000000000000");
+    // Config: limpiar kickoff.
+    await admin
+      .from("juego_trivia_config")
+      .update({ kickoff_at: null, updated_at: new Date().toISOString() })
+      .eq("id", 1);
+
     return NextResponse.json({ ok: true, reset: true });
   }
 
