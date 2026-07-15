@@ -62,7 +62,9 @@ export default function RegistroForm() {
         "juego_player",
         JSON.stringify({ playerId: data.playerId, alias: data.alias, avatar: data.avatar })
       );
-      router.push("/juego/pronosticos");
+      // Trivia del evento 2026. (Antes: "/juego/pronosticos" — restaurar si
+      // se reactiva el juego de predicciones.)
+      router.push("/juego/trivia");
     } catch {
       setError("Sin conexión. Revisa tu internet e intenta de nuevo.");
       setSubmitting(false);
