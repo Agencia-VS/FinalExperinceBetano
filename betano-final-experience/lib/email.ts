@@ -205,7 +205,7 @@ export function ganadorHtml(nombre: string) {
                       <tr>
                         <td style="padding:15px 0;border-bottom:1px solid #eef0f2;">
                           <span style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:#9ca3af;margin:0 0 5px;">Fecha</span>
-                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">19 jul 2026 · 12:00 hrs</span>
+                          <span style="display:block;font-size:15px;font-weight:700;line-height:1.4;color:#111827;">19 jul 2026 · 13:00 hrs</span>
                         </td>
                       </tr>
                       <tr>
