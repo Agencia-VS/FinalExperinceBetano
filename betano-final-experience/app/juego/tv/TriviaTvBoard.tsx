@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import TriviaRouletteReveal from "@/components/juego/TriviaRouletteReveal";
 import { useTriviaState, type TriviaSnapshot } from "@/components/juego/useTriviaState";
 import { isQuestionOpen, pickFeaturedQuestion, type TriviaQuestion } from "@/lib/juego/trivia";
@@ -318,6 +319,13 @@ function WaitingScreen({ kickoffAt, now }: { kickoffAt: string | null; now: numb
           </span>
         </p>
       )}
+      <Image
+        src="/BTH.svg"
+        alt="Betano — Promotor Oficial de la Copa Mundial de la FIFA 2026™"
+        width={1440}
+        height={810}
+        className="mt-[clamp(1.25rem,3.5dvh,2.5rem)] h-auto w-full max-w-[clamp(140px,22dvh,220px)] opacity-90"
+      />
     </div>
   );
 }
