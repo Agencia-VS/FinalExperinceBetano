@@ -97,7 +97,7 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
           <span
             className={`flex items-center gap-3 rounded-full border px-5 py-2.5 text-lg font-bold uppercase tracking-[0.14em] ${
               featuredOpen
-                ? "border-ember/50 bg-ember/10 text-wither"
+                ? "border-ember/50 bg-ember/10 text-bone"
                 : timeUp
                   ? "border-[#FFD24A]/40 bg-[#FFD24A]/10 text-[#FFD24A]"
                   : "border-smoke bg-char/60 text-bone-dim"

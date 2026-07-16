@@ -17,7 +17,7 @@ export default function JuegoLayout({ children }: { children: React.ReactNode })
         className="pointer-events-none fixed inset-0 -z-20 md:hidden"
         style={{
           backgroundImage: "url('/juego/FONDOMOVIL.jpg')",
-          opacity: 0.85,
+          opacity: 0.75,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           backgroundRepeat: "no-repeat",
