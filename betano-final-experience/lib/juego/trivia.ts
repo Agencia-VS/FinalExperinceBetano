@@ -61,9 +61,10 @@ export function isQuestionOpen(
 }
 
 /**
- * Qué pregunta destaca el proyector: la abierta; si no hay, la última con
- * actividad (cerrada/sorteada), con la correcta pintada para que el host la
- * comente.
+ * Qué pregunta destaca el proyector: la 'abierta' (tenga o no tiempo
+ * restante — el cierre es una acción manual del admin, no algo que dispare
+ * el reloj); si no hay, la última con actividad (cerrada/sorteada), con la
+ * correcta pintada para que el host la comente.
  *
  * Cuando el host revela el sorteo de esa última, el bloque terminó y el
  * tablero cae a la pantalla de espera. Sólo se mira la ÚLTIMA: buscar hacia
@@ -72,13 +73,16 @@ export function isQuestionOpen(
  */
 export function pickFeaturedQuestion(
   questions: TriviaQuestion[],
-  draws: Map<string, Pick<TriviaDraw, "status">>,
-  now: number = Date.now()
+  draws: Map<string, Pick<TriviaDraw, "status">>
 ): TriviaQuestion | undefined {
   const rest = questions.filter((q) => !q.cierra_con_kickoff);
 
-  const open = rest.find((q) => isQuestionOpen(q, now));
-  if (open) return open;
+  // Cualquier 'abierta' manda, tenga o no tiempo restante: hasta que el host
+  // la cierre sigue siendo el tema del show — el tiempo agotado solo cambia
+  // el sub-estado visual (cronómetro → "esperando respuestas"), no destaca
+  // otra pregunta.
+  const current = rest.find((q) => q.status === "abierta");
+  if (current) return current;
 
   const last = [...rest]
     .filter((q) => q.status === "cerrada" || q.status === "sorteada")

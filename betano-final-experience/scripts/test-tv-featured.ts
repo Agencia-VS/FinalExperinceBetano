@@ -54,26 +54,26 @@ console.log("pickFeaturedQuestion");
 test("la pregunta abierta manda sobre cualquier cerrada", () => {
   const q1 = mk("q1", "sorteada", { openedMin: -10, closesMin: -8 });
   const q2 = mk("q2", "abierta", { openedMin: -1, closesMin: +1 });
-  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "revealed"]), NOW);
+  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "revealed"]));
   assert.equal(f?.id, "q2");
 });
 
 test("sin abierta, se destaca la última cerrada (el host comenta la correcta)", () => {
   const q1 = mk("q1", "cerrada", { openedMin: -10, closesMin: -8 });
   const q2 = mk("q2", "cerrada", { openedMin: -3, closesMin: -1 });
-  const f = pickFeaturedQuestion([q1, q2], draws(), NOW);
+  const f = pickFeaturedQuestion([q1, q2], draws());
   assert.equal(f?.id, "q2");
 });
 
 test("sorteo ejecutado pero sin revelar: la pregunta sigue en pantalla", () => {
   const q1 = mk("q1", "sorteada", { openedMin: -3, closesMin: -1 });
-  const f = pickFeaturedQuestion([q1], draws(["q1", "executed"]), NOW);
+  const f = pickFeaturedQuestion([q1], draws(["q1", "executed"]));
   assert.equal(f?.id, "q1");
 });
 
 test("al revelar el sorteo de la última, el tablero queda en espera", () => {
   const q1 = mk("q1", "sorteada", { openedMin: -3, closesMin: -1 });
-  const f = pickFeaturedQuestion([q1], draws(["q1", "revealed"]), NOW);
+  const f = pickFeaturedQuestion([q1], draws(["q1", "revealed"]));
   assert.equal(f, undefined);
 });
 
@@ -81,33 +81,40 @@ test("revelar NO resucita una pregunta vieja que se cerró sin sortear", () => {
   // El host saltó el sorteo de q1 (queda 'idle') y siguió con q2.
   const q1 = mk("q1", "cerrada", { openedMin: -10, closesMin: -8 });
   const q2 = mk("q2", "sorteada", { openedMin: -3, closesMin: -1 });
-  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "idle"], ["q2", "revealed"]), NOW);
+  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "idle"], ["q2", "revealed"]));
   assert.equal(f, undefined, "debe caer a la pantalla de espera, no volver a q1");
 });
 
 test("abrir la siguiente saca al tablero de la espera", () => {
   const q1 = mk("q1", "sorteada", { openedMin: -3, closesMin: -1 });
   const q2 = mk("q2", "abierta", { openedMin: 0, closesMin: +1.5 });
-  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "revealed"]), NOW);
+  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "revealed"]));
   assert.equal(f?.id, "q2");
 });
 
 test("la anclada al kickoff (Q10) nunca se destaca", () => {
   const q10 = mk("q10", "abierta", { openedMin: -5, closesMin: +60, anclada: true });
-  assert.equal(pickFeaturedQuestion([q10], draws(), NOW), undefined);
+  assert.equal(pickFeaturedQuestion([q10], draws()), undefined);
 
   const q1 = mk("q1", "cerrada", { openedMin: -3, closesMin: -1 });
-  assert.equal(pickFeaturedQuestion([q10, q1], draws(), NOW)?.id, "q1");
+  assert.equal(pickFeaturedQuestion([q10, q1], draws())?.id, "q1");
 });
 
-test("una pregunta 'abierta' cuyo reloj ya venció no cuenta como abierta", () => {
+test("una pregunta 'abierta' con el reloj vencido sigue destacada (esperando que el admin cierre)", () => {
   const q1 = mk("q1", "abierta", { openedMin: -5, closesMin: -1 });
-  // Ni abierta ni cerrada/sorteada ⇒ nada que destacar.
-  assert.equal(pickFeaturedQuestion([q1], draws(), NOW), undefined);
+  const f = pickFeaturedQuestion([q1], draws());
+  assert.equal(f?.id, "q1", "el cierre es manual del admin, no del reloj");
+});
+
+test("una 'abierta' vencida gana a una cerrada/sorteada más vieja (no cae a la de antes)", () => {
+  const q1 = mk("q1", "sorteada", { openedMin: -10, closesMin: -8 });
+  const q2 = mk("q2", "abierta", { openedMin: -3, closesMin: -1 });
+  const f = pickFeaturedQuestion([q1, q2], draws(["q1", "revealed"]));
+  assert.equal(f?.id, "q2");
 });
 
 test("sin preguntas, no hay destacada", () => {
-  assert.equal(pickFeaturedQuestion([], draws(), NOW), undefined);
+  assert.equal(pickFeaturedQuestion([], draws()), undefined);
 });
 
 console.log(`\n${n} tests OK`);

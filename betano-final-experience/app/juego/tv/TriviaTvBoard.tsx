@@ -57,11 +57,14 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
   }, []);
 
   const featured: TriviaQuestion | undefined = useMemo(
-    () => pickFeaturedQuestion(questions, draws, now),
-    [questions, draws, now]
+    () => pickFeaturedQuestion(questions, draws),
+    [questions, draws]
   );
 
   const featuredOpen = featured != null && isQuestionOpen(featured, now);
+  // Venció el cronómetro pero el admin todavía no cerró la pregunta: sigue
+  // siendo la destacada (pickFeaturedQuestion), solo cambia el sub-estado.
+  const timeUp = featured != null && featured.status === "abierta" && !featuredOpen;
   const secondsLeft =
     featuredOpen && featured.closes_at != null
       ? Math.max(0, Math.ceil((new Date(featured.closes_at).getTime() - now) / 1000))
@@ -85,15 +88,21 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
             className={`flex items-center gap-3 rounded-full border px-5 py-2.5 text-lg font-bold uppercase tracking-[0.14em] ${
               featuredOpen
                 ? "border-ember/50 bg-ember/10 text-wither"
-                : "border-smoke bg-char/60 text-bone-dim"
+                : timeUp
+                  ? "border-[#FFD24A]/40 bg-[#FFD24A]/10 text-[#FFD24A]"
+                  : "border-smoke bg-char/60 text-bone-dim"
             }`}
           >
             <span
               className={`inline-block h-2.5 w-2.5 rounded-full ${
-                featuredOpen ? "j-live-dot bg-ember" : "bg-bone-dim"
+                featuredOpen
+                  ? "j-live-dot bg-ember"
+                  : timeUp
+                    ? "j-live-dot bg-[#FFD24A]"
+                    : "bg-bone-dim"
               }`}
             />
-            {featuredOpen ? "Pregunta abierta" : "En espera"}
+            {featuredOpen ? "Pregunta abierta" : timeUp ? "Esperando respuestas" : "En espera"}
           </span>
           <button
             onClick={toggleFs}
@@ -213,6 +222,14 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
                         boxShadow: "0 0 18px rgba(255,77,0,0.5)",
                       }}
                     />
+                  </div>
+                )}
+                {timeUp && (
+                  <div className="flex items-center gap-4">
+                    <span className="j-live-dot inline-block h-3.5 w-3.5 rounded-full bg-[#FFD24A]" />
+                    <span className="font-title text-3xl font-extrabold uppercase tracking-wide text-[#FFD24A]">
+                      Esperando respuestas…
+                    </span>
                   </div>
                 )}
                 {typeof total === "number" && (
