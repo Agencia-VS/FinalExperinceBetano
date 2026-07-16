@@ -1,7 +1,7 @@
 -- ============================================================
 -- Migración v8: Trivia con 10 sorteos en vivo (evento 19/07/2026)
 -- Ejecutar en el SQL Editor del proyecto Supabase.
---
+
 -- Reemplaza la dinámica de pronósticos por una trivia guiada por el
 -- host, SIN tocar ninguna tabla existente del juego de pronósticos
 -- (que queda intacto para una futura activación).

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:winners": "npx -y tsx scripts/test-winners.ts"
+    "test:winners": "npx -y tsx scripts/test-winners.ts",
+    "test:tv": "npx -y tsx scripts/test-tv-featured.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

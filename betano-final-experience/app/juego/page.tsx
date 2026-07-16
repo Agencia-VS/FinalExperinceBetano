@@ -81,8 +81,8 @@ export default function JuegoHome() {
           variants={item}
           className="mt-5 max-w-[21rem] text-[15px] leading-relaxed text-white/80"
         >
-          Arma tus jugadas antes del pitazo inicial y mira cómo escalas en el
-          ranking en vivo, jugada a jugada, con toda la tribuna.
+          ¡Participa y gana premios fantásticos! En cada respuesta tendrás la
+          oportunidad de ganar.
         </motion.p>
 
         {/* Countdown al kickoff */}
@@ -92,49 +92,51 @@ export default function JuegoHome() {
         <motion.ul variants={item} className="mt-9 grid grid-cols-3 gap-2.5">
           <Feature
             icon={
-              <path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H13L13 2Z" strokeLinejoin="round" />
+              <>
+                <path d="M4 8h16a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4V9a1 1 0 0 1 1-1Z" strokeLinejoin="round" />
+                <path d="M13 8v10" strokeLinecap="round" strokeDasharray="2 2.5" />
+              </>
             }
-            label="Ranking en vivo"
+            label="Sorteo en vivo"
           />
           <Feature
             icon={
               <>
-                <path d="M8 21h8M12 17v4" strokeLinecap="round" />
-                <path d="M6 3h12v5a6 6 0 0 1-12 0V3Z" strokeLinejoin="round" />
-                <path d="M18 5h2.5a0.5 0.5 0 0 1 .5.5C21 8 19.5 9.5 18 9.7M6 5H3.5a0.5 0.5 0 0 0-.5.5C3 8 4.5 9.5 6 9.7" strokeLinecap="round" />
+                <path d="M3 11h18v3H3zM4.5 14h15v7h-15z" strokeLinejoin="round" />
+                <path d="M12 11v10" strokeLinecap="round" />
+                <path d="M12 11S10.5 7.5 8.5 7.5a2 2 0 1 0 0 3.5M12 11s1.5-3.5 3.5-3.5a2 2 0 1 1 0 3.5" strokeLinejoin="round" />
               </>
             }
-            label="Premios top 3"
+            label="10 premios"
           />
           <Feature
             icon={
               <>
                 <circle cx="12" cy="12" r="9" />
-                <path d="M12 8.4l3.1 2.25-1.2 3.6h-3.8l-1.2-3.6L12 8.4Z" strokeLinejoin="round" />
+                <path d="M9.4 9.3a2.7 2.7 0 1 1 3.2 3.5v1.4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12.5 17.2h.01" strokeLinecap="round" strokeWidth="2.4" />
               </>
             }
-            label="16 jugadas"
+            label="10 preguntas flash"
           />
         </motion.ul>
       </div>
 
       {/* CTA */}
       <motion.div variants={item} className="flex flex-col gap-3">
-        <Link href="/juego/registro" className="btn-ember j-cta w-full py-4 text-base">
-          Comenzar a jugar
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
-        {isReturningPlayer && (
-          <Link
-            href="/juego/ranking"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-smoke bg-char/40 py-3.5 text-sm font-semibold text-bone transition-colors hover:bg-char/60 active:bg-char/80"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M3 22h18M8 17V9m4 8V3m4 14v-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        {isReturningPlayer ? (
+          <Link href="/juego/trivia" className="btn-ember j-cta w-full py-4 text-base">
+            Ir a mis respuestas
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Ir al ranking
+          </Link>
+        ) : (
+          <Link href="/juego/registro" className="btn-ember j-cta w-full py-4 text-base">
+            Comenzar a jugar
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Link>
         )}
         <p className="text-center text-xs text-bone-dim">

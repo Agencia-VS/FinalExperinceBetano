@@ -59,3 +59,33 @@ export function isQuestionOpen(
   if (q.closes_at == null) return true; // sin límite (Q10 antes de configurar kickoff)
   return now < new Date(q.closes_at).getTime();
 }
+
+/**
+ * Qué pregunta destaca el proyector: la abierta; si no hay, la última con
+ * actividad (cerrada/sorteada), con la correcta pintada para que el host la
+ * comente.
+ *
+ * Cuando el host revela el sorteo de esa última, el bloque terminó y el
+ * tablero cae a la pantalla de espera. Sólo se mira la ÚLTIMA: buscar hacia
+ * atrás una sin revelar resucitaría en pantalla alguna que se cerró sin
+ * sortear.
+ */
+export function pickFeaturedQuestion(
+  questions: TriviaQuestion[],
+  draws: Map<string, Pick<TriviaDraw, "status">>,
+  now: number = Date.now()
+): TriviaQuestion | undefined {
+  const rest = questions.filter((q) => !q.cierra_con_kickoff);
+
+  const open = rest.find((q) => isQuestionOpen(q, now));
+  if (open) return open;
+
+  const last = [...rest]
+    .filter((q) => q.status === "cerrada" || q.status === "sorteada")
+    .sort(
+      (a, b) => new Date(b.opened_at ?? 0).getTime() - new Date(a.opened_at ?? 0).getTime()
+    )[0];
+
+  if (last && draws.get(last.id)?.status === "revealed") return undefined;
+  return last;
+}

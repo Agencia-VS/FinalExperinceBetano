@@ -730,7 +730,6 @@ export default function JuegoAdminDashboard({
 
         {/* Links */}
         <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-          <a href="/juego/ranking" style={linkStyle}>Ver ranking →</a>
           <a href="/juego/tv" style={linkStyle}>Vista TV →</a>
           <a href="/admin" style={linkStyle}>Admin sorteo →</a>
         </div>

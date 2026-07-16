@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import TriviaRouletteReveal from "@/components/juego/TriviaRouletteReveal";
 import { useTriviaState, type TriviaSnapshot } from "@/components/juego/useTriviaState";
-import { isQuestionOpen, type TriviaQuestion } from "@/lib/juego/trivia";
+import { isQuestionOpen, pickFeaturedQuestion, type TriviaQuestion } from "@/lib/juego/trivia";
 
 /**
  * Tablero de trivia para el proyector: la pregunta activa en gigante con
@@ -56,20 +56,10 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
     };
   }, []);
 
-  // Qué mostrar: la pregunta abierta; si no hay, la última con actividad
-  // (cerrada/sorteada, la correcta pintada para que el host la comente).
-  const featured: TriviaQuestion | undefined = useMemo(() => {
-    const rest = questions.filter((q) => !q.cierra_con_kickoff);
-    return (
-      rest.find((q) => isQuestionOpen(q, now)) ??
-      [...rest]
-        .filter((q) => q.status === "cerrada" || q.status === "sorteada")
-        .sort(
-          (a, b) =>
-            new Date(b.opened_at ?? 0).getTime() - new Date(a.opened_at ?? 0).getTime()
-        )[0]
-    );
-  }, [questions, now]);
+  const featured: TriviaQuestion | undefined = useMemo(
+    () => pickFeaturedQuestion(questions, draws, now),
+    [questions, draws, now]
+  );
 
   const featuredOpen = featured != null && isQuestionOpen(featured, now);
   const secondsLeft =
@@ -254,9 +244,11 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
       )}
 
       {/* Ruleta del sorteo a pantalla completa (disparada por Realtime).
-          Se auto-descarta cuando el host abre la siguiente pregunta. */}
+          Nadie toca el proyector: el overlay se levanta cuando el host marca
+          el sorteo como 'revealed' desde el panel, o cuando abre la siguiente
+          pregunta. En el móvil, en cambio, lo cierra el propio jugador. */}
       <AnimatePresence>
-        {activeReveal && (
+        {activeReveal && activeReveal.draw.status !== "revealed" && (
           <TriviaRouletteReveal
             key={activeReveal.draw.seed ?? activeReveal.question.id}
             question={activeReveal.question}
@@ -289,7 +281,7 @@ function WaitingScreen({ kickoffAt, now }: { kickoffAt: string | null; now: numb
         La trivia continúa en un momento
       </p>
       <p className="mt-3 max-w-xl text-xl text-bone-dim">
-        Escanea el QR, crea tu usuario y deja listo tu pronóstico del campeón.
+        Escanea el QR, crea tu usuario y prepárate para la siguiente pregunta.
       </p>
       {parts && (
         <p className="mt-8 font-title text-6xl font-extrabold tabular-nums text-bone">
