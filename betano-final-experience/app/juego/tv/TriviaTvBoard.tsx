@@ -76,11 +76,20 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
 
   return (
     <main
-      className={`mx-auto flex w-full max-w-5xl flex-1 flex-col pb-8 ${idle ? "cursor-none" : ""}`}
+      // 'fixed inset-0' saca este nodo del flujo del shell de /juego
+      // (layout.tsx usa min-h-dvh, que crece con el contenido y scrollea):
+      // acá se necesita lo opuesto, clavado al viewport real sin scroll
+      // posible, porque esto se proyecta o se espeja tal cual se ve.
+      // El padding repite el del shell (que ya no hereda al salir del flujo).
+      className={`fixed inset-0 mx-auto flex w-full max-w-5xl flex-col overflow-hidden px-5 ${idle ? "cursor-none" : ""}`}
+      style={{
+        paddingTop: "calc(env(safe-area-inset-top) + 1.1rem)",
+        paddingBottom: "calc(env(safe-area-inset-bottom) + 1.1rem)",
+      }}
     >
       {/* Header proyector */}
-      <header className="flex items-center justify-between pb-8 pt-2">
-        <h1 className="font-title text-5xl font-extrabold uppercase leading-none tracking-tight text-bone">
+      <header className="flex shrink-0 items-center justify-between pb-4 pt-2">
+        <h1 className="font-title text-[clamp(1.5rem,4.2dvh,2.75rem)] font-extrabold uppercase leading-none tracking-tight text-bone">
           Trivia <span className="text-wither">Mundialera</span>
         </h1>
         <div className="flex items-center gap-3">
@@ -133,7 +142,7 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
       </header>
 
       {featured ? (
-        <div className="flex flex-1 flex-col justify-center">
+        <div className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${featured.id}-${featured.status}`}
@@ -142,45 +151,45 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
               exit={{ opacity: 0, y: -14 }}
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
             >
-              <div className="flex items-center gap-4">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ember/50 bg-ember/15 font-title text-2xl font-extrabold tabular-nums text-wither">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-ember/50 bg-ember/15 font-title text-xl font-extrabold tabular-nums text-wither">
                   {featured.orden}
                 </span>
                 {featured.premio_label && (
-                  <span className="rounded-full border border-[#FFD24A]/30 bg-[#FFD24A]/10 px-4 py-2 text-lg font-bold uppercase tracking-wider text-[#FFD24A]">
+                  <span className="rounded-full border border-[#FFD24A]/30 bg-[#FFD24A]/10 px-3 py-1.5 text-base font-bold uppercase tracking-wider text-[#FFD24A]">
                     🎁 {featured.premio_label}
                   </span>
                 )}
               </div>
 
-              <h2 className="mt-6 font-title text-6xl font-extrabold uppercase leading-[1.05] tracking-tight text-bone">
+              <h2 className="mt-3 line-clamp-3 font-title text-[clamp(1.75rem,4.4dvh,3rem)] font-extrabold uppercase leading-[1.1] tracking-tight text-bone">
                 {featured.texto}
               </h2>
 
-              <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-3">
                 {featured.options.map((o, i) => {
                   const isCorrect = !featuredOpen && correctId === o.id;
                   return (
                     <div
                       key={o.id}
-                      className={`flex min-h-20 items-center gap-4 rounded-2xl border px-6 py-4 ${
+                      className={`flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-2.5 ${
                         isCorrect
                           ? "border-[#3ddc84]/60 bg-[#3ddc84]/12"
                           : "border-smoke bg-char/55"
                       }`}
                     >
                       <span
-                        className={`font-title text-3xl font-extrabold ${
+                        className={`shrink-0 font-title text-[clamp(1.1rem,2.6dvh,1.75rem)] font-extrabold ${
                           isCorrect ? "text-[#3ddc84]" : "text-bone-dim"
                         }`}
                       >
                         {String.fromCharCode(65 + i)}
                       </span>
-                      <span className="min-w-0 flex-1 text-2xl font-semibold text-bone">
+                      <span className="line-clamp-2 min-w-0 flex-1 text-[clamp(0.9rem,2.2dvh,1.4rem)] font-semibold text-bone">
                         {o.etiqueta}
                       </span>
                       {isCorrect && (
-                        <span className="text-lg font-bold uppercase tracking-wider text-[#3ddc84]">
+                        <span className="shrink-0 text-sm font-bold uppercase tracking-wider text-[#3ddc84]">
                           ✓ Correcta
                         </span>
                       )}
@@ -190,24 +199,24 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
               </div>
 
               {/* Cronómetro + contador */}
-              <div className="mt-10 flex items-center gap-8">
+              <div className="mt-5 flex items-center gap-6">
                 {featuredOpen && secondsLeft != null && (
-                  <div className="flex items-center gap-5">
+                  <div className="flex items-center gap-4">
                     <span
-                      className={`font-title text-8xl font-extrabold tabular-nums leading-none ${
+                      className={`font-title text-[clamp(2.5rem,7dvh,4.5rem)] font-extrabold tabular-nums leading-none ${
                         secondsLeft <= 10 ? "animate-pulse text-[#ff6b4a]" : "j-text-fire"
                       }`}
                       role="timer"
                     >
                       {secondsLeft}
                     </span>
-                    <span className="text-2xl font-bold uppercase tracking-widest text-bone-dim">
+                    <span className="text-lg font-bold uppercase tracking-widest text-bone-dim">
                       seg
                     </span>
                   </div>
                 )}
                 {featuredOpen && (
-                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-smoke/80">
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-smoke/80">
                     <div
                       className="h-full rounded-full transition-[width] duration-300 ease-linear"
                       style={{
@@ -225,17 +234,17 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
                   </div>
                 )}
                 {timeUp && (
-                  <div className="flex items-center gap-4">
-                    <span className="j-live-dot inline-block h-3.5 w-3.5 rounded-full bg-[#FFD24A]" />
-                    <span className="font-title text-3xl font-extrabold uppercase tracking-wide text-[#FFD24A]">
+                  <div className="flex items-center gap-3">
+                    <span className="j-live-dot inline-block h-3 w-3 rounded-full bg-[#FFD24A]" />
+                    <span className="font-title text-xl font-extrabold uppercase tracking-wide text-[#FFD24A]">
                       Esperando respuestas…
                     </span>
                   </div>
                 )}
                 {typeof total === "number" && (
-                  <p className="shrink-0 text-2xl font-bold tabular-nums text-bone">
+                  <p className="shrink-0 text-xl font-bold tabular-nums text-bone">
                     {total}
-                    <span className="ml-2 text-lg font-semibold uppercase tracking-wider text-bone-dim">
+                    <span className="ml-2 text-sm font-semibold uppercase tracking-wider text-bone-dim">
                       respuestas
                     </span>
                   </p>
@@ -243,11 +252,11 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
               </div>
 
               {featured.status === "sorteada" && featuredDraw?.winner && (
-                <p className="mt-8 text-3xl font-bold text-bone">
+                <p className="mt-4 text-xl font-bold text-bone">
                   🎰 Ganador:{" "}
                   <span className="text-[#FFD24A]">{featuredDraw.winner.alias}</span>
                   {featuredDraw.es_consuelo && (
-                    <span className="ml-3 text-xl font-semibold uppercase tracking-wider text-bone-dim">
+                    <span className="ml-3 text-base font-semibold uppercase tracking-wider text-bone-dim">
                       · premio de consuelo
                     </span>
                   )}
