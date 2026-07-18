@@ -92,12 +92,21 @@ test("abrir la siguiente saca al tablero de la espera", () => {
   assert.equal(f?.id, "q2");
 });
 
-test("la anclada al kickoff (Q10) nunca se destaca", () => {
+test("la anclada al kickoff (Q10) no se destaca mientras está abierta", () => {
   const q10 = mk("q10", "abierta", { openedMin: -5, closesMin: +60, anclada: true });
   assert.equal(pickFeaturedQuestion([q10], draws()), undefined);
 
   const q1 = mk("q1", "cerrada", { openedMin: -3, closesMin: -1 });
   assert.equal(pickFeaturedQuestion([q10, q1], draws())?.id, "q1");
+});
+
+test("la anclada CERRADA sí se destaca (el host la cierra tras el kickoff)", () => {
+  // Q10 se abrió horas antes que Q9, pero se cerró después: gana el spot
+  // aunque el sorteo de Q9 ya esté revelado.
+  const q9 = mk("q9", "sorteada", { openedMin: -10, closesMin: -8 });
+  const q10 = mk("q10", "cerrada", { openedMin: -120, closesMin: 0, anclada: true });
+  const f = pickFeaturedQuestion([q9, q10], draws(["q9", "revealed"]));
+  assert.equal(f?.id, "q10");
 });
 
 test("una pregunta 'abierta' con el reloj vencido sigue destacada (esperando que el admin cierre)", () => {

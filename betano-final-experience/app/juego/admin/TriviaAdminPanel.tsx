@@ -179,13 +179,28 @@ export default function TriviaAdminPanel() {
     );
   }
 
+  async function quitarCorrecta(q: AdminQuestion) {
+    if (
+      !window.confirm(
+        `¿Quitar la respuesta correcta de la pregunta ${q.orden}?\n\nVuelve a "sin resolver" (no toca las respuestas de la gente). Útil si se marcó por error.`
+      )
+    )
+      return;
+    await call(
+      "preguntas",
+      { questionId: q.id, correctOptionId: null },
+      `Pregunta ${q.orden}: correcta quitada, queda sin resolver.`,
+      "PATCH"
+    );
+  }
+
   async function sortear(q: AdminQuestion) {
     const aciertos = q.options.filter((o) => o.es_correcta).reduce((s, o) => s + o.respuestas, 0);
     const consuelo = aciertos === 0;
     if (
       !window.confirm(
         consuelo
-          ? `🎰 Pregunta ${q.orden}: NADIE acertó.\n\nEl premio se sorteará entre TODOS los jugadores registrados (modo consuelo).\n\nLa ruleta arranca AL INSTANTE en todas las pantallas. ¿Continuar?`
+          ? `🎰 Pregunta ${q.orden}: según el panel nadie acertó.\n\nEl servidor decide con datos frescos de la DB: si alguien acertó, sortea entre ellos; si nadie, modo consuelo entre TODOS los registrados.\n\nLa ruleta arranca AL INSTANTE en todas las pantallas. ¿Continuar?`
           : `🎰 ¿Sortear la pregunta ${q.orden} entre ${aciertos} que acertaron?\n\nEl resultado se decide en el servidor (semilla auditable) y la ruleta arranca AL INSTANTE en todas las pantallas.`
       )
     )
@@ -333,6 +348,7 @@ export default function TriviaAdminPanel() {
                 onAbrir={() => abrir(q)}
                 onCerrar={() => cerrar(q)}
                 onSetearCorrecta={(oid) => setearCorrecta(q, oid)}
+                onQuitarCorrecta={() => quitarCorrecta(q)}
                 onSortear={() => sortear(q)}
                 onRevelar={() => revelar(q)}
                 onDeshacer={() => deshacer(q)}
@@ -353,6 +369,7 @@ function QuestionRow({
   onAbrir,
   onCerrar,
   onSetearCorrecta,
+  onQuitarCorrecta,
   onSortear,
   onRevelar,
   onDeshacer,
@@ -364,6 +381,7 @@ function QuestionRow({
   onAbrir: () => void;
   onCerrar: () => void;
   onSetearCorrecta: (optionId: string) => void;
+  onQuitarCorrecta: () => void;
   onSortear: () => void;
   onRevelar: () => void;
   onDeshacer: () => void;
@@ -427,6 +445,12 @@ function QuestionRow({
             {q.requiere_resolucion_manual && q.status === "cerrada" && !o.es_correcta && (
               <button onClick={() => onSetearCorrecta(o.id)} disabled={busy} style={miniBtn}>
                 ✓ es la correcta
+              </button>
+            )}
+            {/* Quitar una correcta marcada por error (cualquier estado salvo sorteada). */}
+            {q.requiere_resolucion_manual && q.status !== "sorteada" && o.es_correcta && (
+              <button onClick={onQuitarCorrecta} disabled={busy} style={miniBtnDanger}>
+                ✕ quitar
               </button>
             )}
           </div>
@@ -686,6 +710,7 @@ const miniBtn: React.CSSProperties = {
   fontSize: 11,
   cursor: "pointer",
 };
+const miniBtnDanger: React.CSSProperties = { ...miniBtn, color: "#ef4444", border: "1px solid #7f1d1d" };
 const msgBox: React.CSSProperties = {
   border: "1px solid",
   borderRadius: 8,

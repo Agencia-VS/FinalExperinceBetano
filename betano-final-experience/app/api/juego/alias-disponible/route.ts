@@ -9,7 +9,11 @@ export const dynamic = "force-dynamic";
 // GET /api/juego/alias-disponible?alias=...  (con debounce desde el cliente)
 export async function GET(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(ip, 60)) {
+  // Mismo criterio NAT que /api/juego/registro: se llama varias veces por
+  // persona (una por pausa al tipear) durante la misma ventana de registro
+  // compartida por pocas IPs del venue — un límite bajo acá cortaría el
+  // registro antes de llegar siquiera al submit.
+  if (!rateLimit(`alias:${ip}`, 1000)) {
     return NextResponse.json({ available: false, reason: "Demasiados intentos." }, { status: 429 });
   }
 

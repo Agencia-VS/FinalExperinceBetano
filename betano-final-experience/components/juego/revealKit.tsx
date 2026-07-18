@@ -92,6 +92,7 @@ export function SpinStage({
   target,
   sz,
   onDone,
+  hidePoints = false,
 }: {
   eyebrow: string;
   title: string;
@@ -99,6 +100,7 @@ export function SpinStage({
   target: TieBreakerPlayer;
   sz: Sizes;
   onDone: () => void;
+  hidePoints?: boolean;
 }) {
   return (
     <motion.div {...phaseAnim} className="text-center">
@@ -113,6 +115,7 @@ export function SpinStage({
           rowHeight={sz.row}
           durationMs={T.spin}
           onDone={onDone}
+          hidePoints={hidePoints}
         />
       </div>
     </motion.div>

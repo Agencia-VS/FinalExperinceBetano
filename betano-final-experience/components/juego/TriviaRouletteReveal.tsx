@@ -102,6 +102,7 @@ export default function TriviaRouletteReveal({
               target={winner}
               sz={sz}
               onDone={() => setPhase("reveal")}
+              hidePoints
             />
           )}
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServer, createAdmin } from "@/lib/supabase";
+import { createServer, createAdmin, fetchAllRows } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -21,17 +21,19 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
 
   const admin = createAdmin();
-  const [qRes, oRes, aRes, dRes, cRes] = await Promise.all([
+  const [qRes, oRes, aRows, dRes, cRes] = await Promise.all([
     admin.from("juego_trivia_questions").select("*").order("orden"),
     admin.from("juego_trivia_options").select("*").order("orden"),
-    admin.from("juego_trivia_answers").select("question_id, option_id"),
+    fetchAllRows<{ question_id: string; option_id: string }>((from, to) =>
+      admin.from("juego_trivia_answers").select("question_id, option_id").order("id").range(from, to)
+    ),
     admin.from("juego_trivia_draws").select("*"),
     admin.from("juego_trivia_config").select("kickoff_at").eq("id", 1).maybeSingle(),
   ]);
 
   const counts = new Map<string, number>(); // por opción
   const totals = new Map<string, number>(); // por pregunta
-  for (const a of aRes.data ?? []) {
+  for (const a of aRows) {
     counts.set(a.option_id, (counts.get(a.option_id) ?? 0) + 1);
     totals.set(a.question_id, (totals.get(a.question_id) ?? 0) + 1);
   }
@@ -159,7 +161,15 @@ export async function PATCH(req: Request) {
     );
   }
 
-  if (body.correctOptionId != null) {
+  if (body.correctOptionId === null) {
+    // Quitar la correcta: la pregunta vuelve a "sin resolver" (Q9/Q10
+    // marcadas por error en pruebas o en vivo). No toca las respuestas.
+    const { error } = await admin
+      .from("juego_trivia_options")
+      .update({ es_correcta: false })
+      .eq("question_id", questionId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  } else if (body.correctOptionId != null) {
     const correctOptionId = String(body.correctOptionId);
     const { data: opt } = await admin
       .from("juego_trivia_options")

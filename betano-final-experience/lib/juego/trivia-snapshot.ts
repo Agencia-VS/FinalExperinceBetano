@@ -1,4 +1,4 @@
-import type { createAdmin } from "@/lib/supabase";
+import { fetchAllRows, type createAdmin } from "@/lib/supabase";
 
 /**
  * Snapshot público de la trivia — compartido por el SSR de /juego/trivia,
@@ -12,7 +12,7 @@ import type { createAdmin } from "@/lib/supabase";
  *    cronómetro de 90s sea consistente en toda la sala.
  */
 export async function getTriviaSnapshot(admin: ReturnType<typeof createAdmin>) {
-  const [qRes, oRes, dRes, cRes, aRes] = await Promise.all([
+  const [qRes, oRes, dRes, cRes, aRows] = await Promise.all([
     admin
       .from("juego_trivia_questions")
       .select(
@@ -27,11 +27,15 @@ export async function getTriviaSnapshot(admin: ReturnType<typeof createAdmin>) {
         "question_id, status, seed, pool_snapshot, winner, es_consuelo, executed_at, revealed_at"
       ),
     admin.from("juego_trivia_config").select("kickoff_at").eq("id", 1).maybeSingle(),
-    admin.from("juego_trivia_answers").select("question_id"),
+    // El contador es cosmético: ante un error transitorio preferimos 0 por un
+    // ciclo de poll antes que tirar abajo el SSR/estado de toda la sala.
+    fetchAllRows<{ question_id: string }>((from, to) =>
+      admin.from("juego_trivia_answers").select("question_id").order("id").range(from, to)
+    ).catch(() => [] as { question_id: string }[]),
   ]);
 
   const totals = new Map<string, number>();
-  for (const a of aRes.data ?? []) {
+  for (const a of aRows) {
     totals.set(a.question_id, (totals.get(a.question_id) ?? 0) + 1);
   }
 

@@ -11,7 +11,11 @@ const AVATARES = Array.from({ length: 12 }, (_, i) => `avatar-${i + 1}.png`);
 // POST /api/juego/registro  { nombre, apellido, alias, avatar? }
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(ip)) {
+  // Mismo criterio que /api/juego/trivia/responder: los ~250 asistentes del
+  // evento salen por la NAT del venue (pocas IPs compartidas) y todos se
+  // registran en la misma ventana de minutos al arrancar. El límite real por
+  // dispositivo ya lo da el unique(device_token).
+  if (!rateLimit(`registro:${ip}`, 1000)) {
     return NextResponse.json(
       { error: "Demasiados intentos. Espera un momento e intenta de nuevo." },
       { status: 429 }

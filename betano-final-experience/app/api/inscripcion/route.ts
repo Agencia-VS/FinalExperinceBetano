@@ -10,7 +10,7 @@ const DOC_TYPES = ["RUT", "DNI_EXTRANJERO", "PASAPORTE"];
 export async function POST(req: Request) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(ip)) {
+  if (!rateLimit(`inscripcion:${ip}`)) {
     return NextResponse.json(
       { error: "Demasiados intentos. Espera un momento e intenta de nuevo." },
       { status: 429 }

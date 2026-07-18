@@ -34,3 +34,21 @@ export function createAdmin() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
+
+// PostgREST corta TODA lectura en 1000 filas (db-max-rows), también con
+// service role. Para tablas que crecen con el evento (juego_trivia_answers:
+// jugadores × preguntas supera 1000 a mitad de la trivia) hay que paginar.
+// `page` recibe el rango inclusivo y DEBE ordenar por una columna estable
+// (p. ej. .order("id")) para que las páginas no se solapen ni salten filas.
+export async function fetchAllRows<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>
+): Promise<T[]> {
+  const PAGE = 1000;
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await page(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...(data ?? []));
+    if ((data?.length ?? 0) < PAGE) return rows;
+  }
+}

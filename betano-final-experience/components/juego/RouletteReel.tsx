@@ -50,12 +50,14 @@ export default function RouletteReel({
   rowHeight,
   durationMs,
   onDone,
+  hidePoints = false,
 }: {
   pool: TieBreakerPlayer[];
   target: TieBreakerPlayer;
   rowHeight: number;
   durationMs: number;
   onDone: () => void;
+  hidePoints?: boolean;
 }) {
   const reduced = useReducedMotion();
   const dur = reduced ? 800 : durationMs;
@@ -107,12 +109,14 @@ export default function RouletteReel({
               >
                 {p.alias}
               </span>
-              <span
-                className="shrink-0 font-title font-bold tabular-nums text-bone-dim"
-                style={{ fontSize: rowHeight * 0.26 }}
-              >
-                {p.puntos} pts
-              </span>
+              {!hidePoints && (
+                <span
+                  className="shrink-0 font-title font-bold tabular-nums text-bone-dim"
+                  style={{ fontSize: rowHeight * 0.26 }}
+                >
+                  {p.puntos} pts
+                </span>
+              )}
             </motion.div>
           );
         })}

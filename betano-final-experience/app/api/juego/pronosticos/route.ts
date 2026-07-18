@@ -12,7 +12,9 @@ import { readDeviceToken } from "@/lib/juego/device-token";
  */
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(ip, 60)) {
+  // Mismo criterio NAT que registro/responder: autosave = un POST por tap,
+  // ~250 personas por pocas IPs compartidas del venue.
+  if (!rateLimit(`pronosticos:${ip}`, 1000)) {
     return NextResponse.json({ error: "Demasiados intentos." }, { status: 429 });
   }
 

@@ -66,6 +66,11 @@ export function isQuestionOpen(
  * el reloj); si no hay, la última con actividad (cerrada/sorteada), con la
  * correcta pintada para que el host la comente.
  *
+ * La anclada al kickoff (Q10) se excluye SOLO mientras está 'abierta': vive
+ * abierta todo el pre-show y acapararía el proyector. Una vez cerrada entra
+ * al flujo normal — el host la cierra tras el kickoff y la sala ve la
+ * pregunta/resultado como con cualquier otra.
+ *
  * Cuando el host revela el sorteo de esa última, el bloque terminó y el
  * tablero cae a la pantalla de espera. Sólo se mira la ÚLTIMA: buscar hacia
  * atrás una sin revelar resucitaría en pantalla alguna que se cerró sin
@@ -75,7 +80,7 @@ export function pickFeaturedQuestion(
   questions: TriviaQuestion[],
   draws: Map<string, Pick<TriviaDraw, "status">>
 ): TriviaQuestion | undefined {
-  const rest = questions.filter((q) => !q.cierra_con_kickoff);
+  const rest = questions.filter((q) => !(q.cierra_con_kickoff && q.status === "abierta"));
 
   // Cualquier 'abierta' manda, tenga o no tiempo restante: hasta que el host
   // la cierre sigue siendo el tema del show — el tiempo agotado solo cambia
@@ -84,10 +89,15 @@ export function pickFeaturedQuestion(
   const current = rest.find((q) => q.status === "abierta");
   if (current) return current;
 
+  // "Última actividad" = cuándo se cerró, no cuándo se abrió: la anclada al
+  // kickoff se abre horas antes que las demás pero se cierra al final del
+  // pre-show, y ahí debe ganar el spot.
   const last = [...rest]
     .filter((q) => q.status === "cerrada" || q.status === "sorteada")
     .sort(
-      (a, b) => new Date(b.opened_at ?? 0).getTime() - new Date(a.opened_at ?? 0).getTime()
+      (a, b) =>
+        new Date(b.closes_at ?? b.opened_at ?? 0).getTime() -
+        new Date(a.closes_at ?? a.opened_at ?? 0).getTime()
     )[0];
 
   if (last && draws.get(last.id)?.status === "revealed") return undefined;

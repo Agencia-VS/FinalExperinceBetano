@@ -146,6 +146,19 @@ export async function POST(req: Request) {
     // ── Resetear trivia: preguntas, respuestas, sorteos y config ──
     // Respuestas de los jugadores (se borran todas).
     await admin.from("juego_trivia_answers").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    // Correctas seteadas en vivo (Q9/Q10, resolución manual): vuelven a
+    // "sin definir" — si sobreviven al reset, el próximo evento arrancaría
+    // con una correcta marcada de la prueba anterior.
+    const { data: manuales } = await admin
+      .from("juego_trivia_questions")
+      .select("id")
+      .eq("requiere_resolucion_manual", true);
+    if (manuales && manuales.length > 0) {
+      await admin
+        .from("juego_trivia_options")
+        .update({ es_correcta: false })
+        .in("question_id", manuales.map((m) => m.id));
+    }
     // Preguntas: volver a su estado inicial.
     // Q1–Q9 → borrador, Q10 → abierta (cierra con kickoff).
     await admin
