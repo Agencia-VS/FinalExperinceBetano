@@ -46,19 +46,8 @@ export async function POST(req: Request) {
 
   const admin = createAdmin();
 
-  // Corte de inscripción (trivia): el kickoff de la final es el límite.
-  // Si la fila/tabla no existe (juego de pronósticos sin trivia), no gatea.
-  const { data: triviaCfg } = await admin
-    .from("juego_trivia_config")
-    .select("kickoff_at")
-    .eq("id", 1)
-    .maybeSingle();
-  if (triviaCfg?.kickoff_at && Date.now() >= new Date(triviaCfg.kickoff_at).getTime()) {
-    return NextResponse.json(
-      { error: "Las inscripciones cerraron: ¡ya arrancó la final!" },
-      { status: 423 }
-    );
-  }
+  // Las inscripciones quedan siempre abiertas: el kickoff solo cierra la
+  // pregunta anclada (Q10), no el registro de nuevos jugadores.
 
   const deviceToken = await ensureDeviceToken();
 

@@ -14,11 +14,11 @@ async function requireAdmin() {
 /**
  * POST /api/juego/admin/trivia/config  { kickoffAt: string | null }
  *
- * El kickoff es UN solo instante con dos efectos:
- *   1. corte de inscripción (lo chequea /api/juego/registro), y
- *   2. cierre automático de las preguntas con cierra_con_kickoff (Q10):
- *      acá se les sincroniza closes_at para que el trigger de la DB las
- *      cierre por reloj del servidor sin intervención del admin.
+ * El kickoff tiene UN solo efecto: cierre automático de las preguntas con
+ * cierra_con_kickoff (Q10): acá se les sincroniza closes_at para que el
+ * trigger de la DB las cierre por reloj del servidor sin intervención del
+ * admin. Las inscripciones NO se cierran con el kickoff (quedan abiertas
+ * durante todo el evento).
  */
 export async function POST(req: Request) {
   const user = await requireAdmin();
