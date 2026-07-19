@@ -23,11 +23,50 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
   const [isFs, setIsFs] = useState(false);
   const [idle, setIdle] = useState(false);
   const [now, setNow] = useState(() => Date.now() + serverOffsetMs);
+  // Modo compacto: para la pantalla secundaria gigante 4:3 (tipo 1024×768).
+  // Renderiza la vista como un "stage" de diseño 4:3 (1440×1080) escalado para
+  // LLENAR esa pantalla sin barras negras, con el texto al mismo tamaño
+  // relativo que en la principal. Se alterna con la tecla 's' y se recuerda en
+  // localStorage por si la pantalla se recarga durante el evento.
+  const [compact, setCompact] = useState(false);
+  const [fit, setFit] = useState(1);
 
   useEffect(() => {
     const iv = setInterval(() => setNow(Date.now() + serverOffsetMs), 250);
     return () => clearInterval(iv);
   }, [serverOffsetMs]);
+
+  // Restaura el modo compacto guardado (solo cliente).
+  useEffect(() => {
+    setCompact(localStorage.getItem("tvCompact") === "1");
+  }, []);
+
+  // Tecla 's': alterna el modo compacto y lo persiste.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "s" || e.key === "S") {
+        setCompact((c) => {
+          const next = !c;
+          localStorage.setItem("tvCompact", next ? "1" : "0");
+          return next;
+        });
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Factor de escala del stage compacto: el mayor que hace caber la caja de
+  // diseño 4:3 (1440×1080) dentro de la pantalla real. En una pantalla 4:3
+  // (p.ej. 1024×768) llena exacto, sin barras. Solo importa en modo compacto.
+  useEffect(() => {
+    if (!compact) return;
+    const recalc = () =>
+      setFit(Math.min(window.innerWidth / 1440, window.innerHeight / 1080));
+    recalc();
+    window.addEventListener("resize", recalc);
+    return () => window.removeEventListener("resize", recalc);
+  }, [compact]);
 
   // Pantalla completa (kiosco de proyector): oculta el chrome del navegador.
   // Los navegadores exigen un gesto del usuario, por eso es un botón manual.
@@ -76,21 +115,44 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
   const featuredDraw = featured ? draws.get(featured.id) : undefined;
 
   return (
-    <main
-      // 'fixed inset-0' saca este nodo del flujo del shell de /juego
-      // (layout.tsx usa min-h-dvh, que crece con el contenido y scrollea):
-      // acá se necesita lo opuesto, clavado al viewport real sin scroll
-      // posible, porque esto se proyecta o se espeja tal cual se ve.
-      // El padding repite el del shell (que ya no hereda al salir del flujo).
-      className={`fixed inset-0 mx-auto flex w-full max-w-5xl flex-col overflow-hidden px-5 ${idle ? "cursor-none" : ""}`}
-      style={{
-        paddingTop: "calc(env(safe-area-inset-top) + 1.1rem)",
-        paddingBottom: "calc(env(safe-area-inset-bottom) + 1.1rem)",
-      }}
+    // 'stage': nodo clavado al viewport (sin scroll, porque esto se proyecta o
+    // se espeja tal cual se ve). 'container-type: size' hace que las unidades
+    // 'cqh' de dentro se midan contra la ALTURA del stage (no del viewport) y
+    // fija el bloque contenedor de los hijos 'fixed' (la ruleta) en ambos modos.
+    //  · Normal: llena el viewport ⇒ cqh == altura del viewport (== el dvh de
+    //    antes) ⇒ idéntico a la pantalla principal 1920×1080.
+    //  · Compacto (tecla 's', pantalla gigante 4:3 tipo 1024×768): caja de
+    //    diseño 4:3 (1440×1080, misma altura que la principal) escalada para
+    //    LLENAR la pantalla 4:3 sin barras. El texto queda del mismo tamaño
+    //    relativo que en la principal; el layout del brand (fixed inset-0)
+    //    rellena cualquier borde si la pantalla no fuera exactamente 4:3.
+    <div
+      className="fixed overflow-hidden"
+      style={
+        compact
+          ? {
+              left: "50%",
+              top: "50%",
+              width: 1440,
+              height: 1080,
+              transform: `translate(-50%, -50%) scale(${fit})`,
+              transformOrigin: "center",
+              containerType: "size",
+            }
+          : { inset: 0, containerType: "size" }
+      }
     >
+      <main
+        // El padding repite el del shell (que ya no hereda al salir del flujo).
+        className={`absolute inset-0 mx-auto flex w-full max-w-5xl flex-col overflow-hidden px-5 ${idle ? "cursor-none" : ""}`}
+        style={{
+          paddingTop: "calc(env(safe-area-inset-top) + 1.1rem)",
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 1.1rem)",
+        }}
+      >
       {/* Header proyector */}
       <header className="flex shrink-0 items-center justify-between pb-4 pt-2">
-        <h1 className="font-title text-[clamp(1.5rem,4.2dvh,2.75rem)] font-extrabold uppercase leading-none tracking-tight text-bone">
+        <h1 className="font-title text-[clamp(1.5rem,4.2cqh,2.75rem)] font-extrabold uppercase leading-none tracking-tight text-bone">
           Trivia <span className="text-wither">Mundialera</span>
         </h1>
         <div className="flex items-center gap-3">
@@ -163,7 +225,7 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
                 )}
               </div>
 
-              <h2 className="mt-3 line-clamp-3 font-title text-[clamp(1.75rem,4.4dvh,3rem)] font-extrabold uppercase leading-[1.1] tracking-tight text-bone">
+              <h2 className="mt-3 line-clamp-3 font-title text-[clamp(1.75rem,4.4cqh,3rem)] font-extrabold uppercase leading-[1.1] tracking-tight text-bone">
                 {featured.texto}
               </h2>
 
@@ -180,13 +242,13 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
                       }`}
                     >
                       <span
-                        className={`shrink-0 font-title text-[clamp(1.1rem,2.6dvh,1.75rem)] font-extrabold ${
+                        className={`shrink-0 font-title text-[clamp(1.1rem,2.6cqh,1.75rem)] font-extrabold ${
                           isCorrect ? "text-[#3ddc84]" : "text-bone-dim"
                         }`}
                       >
                         {String.fromCharCode(65 + i)}
                       </span>
-                      <span className="line-clamp-2 min-w-0 flex-1 text-[clamp(0.9rem,2.2dvh,1.4rem)] font-semibold text-bone">
+                      <span className="line-clamp-2 min-w-0 flex-1 text-[clamp(0.9rem,2.2cqh,1.4rem)] font-semibold text-bone">
                         {o.etiqueta}
                       </span>
                       {isCorrect && (
@@ -204,7 +266,7 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
                 {featuredOpen && secondsLeft != null && (
                   <div className="flex items-center gap-4">
                     <span
-                      className={`font-title text-[clamp(2.5rem,7dvh,4.5rem)] font-extrabold tabular-nums leading-none ${
+                      className={`font-title text-[clamp(2.5rem,7cqh,4.5rem)] font-extrabold tabular-nums leading-none ${
                         secondsLeft <= 10 ? "animate-pulse text-[#ff6b4a]" : "j-text-fire"
                       }`}
                       role="timer"
@@ -286,7 +348,8 @@ export default function TriviaTvBoard({ initial }: { initial: TriviaSnapshot | n
           />
         )}
       </AnimatePresence>
-    </main>
+      </main>
+    </div>
   );
 }
 
@@ -324,7 +387,7 @@ function WaitingScreen({ kickoffAt, now }: { kickoffAt: string | null; now: numb
         alt="Betano — Promotor Oficial de la Copa Mundial de la FIFA 2026™"
         width={1440}
         height={810}
-        className="mt-[clamp(1.25rem,3.5dvh,2.5rem)] h-auto w-full max-w-[clamp(140px,22dvh,220px)] opacity-90"
+        className="mt-[clamp(1.25rem,3.5cqh,2.5rem)] h-auto w-full max-w-[clamp(250px,30.5cqh,325px)] opacity-95"
       />
     </div>
   );

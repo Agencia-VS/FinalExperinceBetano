@@ -167,6 +167,14 @@ export default function TriviaAdminPanel() {
     await call("estado", { questionId: q.id, action: "cerrar" }, `Pregunta ${q.orden} cerrada.`);
   }
 
+  async function extender(q: AdminQuestion) {
+    await call(
+      "estado",
+      { questionId: q.id, action: "extender", seconds: 20 },
+      `Pregunta ${q.orden} +20s. Se reabrió la ventana en teléfonos y TV.`
+    );
+  }
+
   async function setearCorrecta(q: AdminQuestion, optionId: string) {
     const opt = q.options.find((o) => o.id === optionId);
     if (!opt) return;
@@ -347,6 +355,7 @@ export default function TriviaAdminPanel() {
                 busy={busy}
                 onAbrir={() => abrir(q)}
                 onCerrar={() => cerrar(q)}
+                onExtender={() => extender(q)}
                 onSetearCorrecta={(oid) => setearCorrecta(q, oid)}
                 onQuitarCorrecta={() => quitarCorrecta(q)}
                 onSortear={() => sortear(q)}
@@ -368,6 +377,7 @@ function QuestionRow({
   busy,
   onAbrir,
   onCerrar,
+  onExtender,
   onSetearCorrecta,
   onQuitarCorrecta,
   onSortear,
@@ -380,6 +390,7 @@ function QuestionRow({
   busy: boolean;
   onAbrir: () => void;
   onCerrar: () => void;
+  onExtender: () => void;
   onSetearCorrecta: (optionId: string) => void;
   onQuitarCorrecta: () => void;
   onSortear: () => void;
@@ -484,9 +495,14 @@ function QuestionRow({
           </>
         )}
         {q.status === "abierta" && (
-          <button onClick={onCerrar} disabled={busy} style={btnDangerSm}>
-            🔒 Cerrar ahora
-          </button>
+          <>
+            <button onClick={onExtender} disabled={busy} style={btnPrimarySm} title="Suma 20s a la ventana (reabre en teléfonos y TV)">
+              ⏱ +20s
+            </button>
+            <button onClick={onCerrar} disabled={busy} style={btnDangerSm}>
+              🔒 Cerrar ahora
+            </button>
+          </>
         )}
         {q.status === "cerrada" && (
           <>
