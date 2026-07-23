@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 import CountdownTimer from "@/components/juego/CountdownTimer";
 import Image from "next/image";
@@ -16,30 +17,49 @@ const item: Variants = {
 };
 
 export default function JuegoHome() {
-  const [isReturningPlayer, setIsReturningPlayer] = useState(false);
+  const router = useRouter();
 
+  // Jugador reconocido (localStorage o, si se borró, la cookie httpOnly del
+  // dispositivo) → directo a la trivia, sin re-inscribirse ni ver la landing.
   useEffect(() => {
-    const raw = localStorage.getItem("juego_player");
-    if (raw) {
+    let cancelled = false;
+
+    async function checkIdentity() {
       try {
-        const p = JSON.parse(raw);
-        if (p.playerId) {
-          // Optimista: mostrar botón de inmediato, validar en segundo plano.
-          setIsReturningPlayer(true);
-          fetch(`/api/juego/pronosticos?playerId=${encodeURIComponent(p.playerId)}`)
-            .then((r) => {
-              if (!r.ok) throw new Error("not-found");
-            })
-            .catch(() => {
-              // Jugador borrado del servidor → limpiar caché local.
-              localStorage.removeItem("juego_player");
-              localStorage.removeItem(`juego_picks_${p.playerId}`);
-              setIsReturningPlayer(false);
-            });
+        const raw = localStorage.getItem("juego_player");
+        if (raw) {
+          const p = JSON.parse(raw);
+          if (p.playerId) {
+            const res = await fetch(`/api/juego/trivia/responder?playerId=${encodeURIComponent(p.playerId)}`);
+            if (res.ok) {
+              if (!cancelled) router.replace("/juego/trivia");
+              return;
+            }
+            // Jugador borrado del servidor (ej. RESET de admin) → limpiar.
+            localStorage.removeItem("juego_player");
+            localStorage.removeItem(`juego_trivia_picks_${p.playerId}`);
+          }
         }
-      } catch { /* ignore malformed */ }
+      } catch { /* localStorage inaccesible o corrupto: seguir al fallback */ }
+
+      try {
+        const res = await fetch("/api/juego/registro");
+        if (res.ok) {
+          const d = await res.json();
+          localStorage.setItem(
+            "juego_player",
+            JSON.stringify({ playerId: d.playerId, alias: d.alias, avatar: d.avatar })
+          );
+          if (!cancelled) router.replace("/juego/trivia");
+        }
+      } catch { /* sin conexión: se queda en la landing */ }
     }
-  }, []);
+
+    checkIdentity();
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   return (
     <motion.main
@@ -126,17 +146,6 @@ export default function JuegoHome() {
             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
-        {isReturningPlayer && (
-          <Link
-            href="/juego/ranking"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-smoke bg-char/40 py-3.5 text-sm font-semibold text-bone transition-colors hover:bg-char/60 active:bg-char/80"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M3 22h18M8 17V9m4 8V3m4 14v-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Ir al ranking
-          </Link>
-        )}
         <p className="text-center text-xs text-bone-dim">
           Gratis · menos de un minuto · sin descargas
         </p>

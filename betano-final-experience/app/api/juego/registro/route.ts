@@ -3,7 +3,28 @@ import { createAdmin } from "@/lib/supabase";
 import { rateLimit } from "@/lib/rate-limit";
 import { normalizeAlias, validateAliasShape, aliasCandidates } from "@/lib/juego/alias";
 import { isProfane } from "@/lib/juego/profanity-filter";
-import { ensureDeviceToken } from "@/lib/juego/device-token";
+import { ensureDeviceToken, readDeviceToken } from "@/lib/juego/device-token";
+
+/**
+ * GET /api/juego/registro — "¿quién soy?" por cookie de dispositivo.
+ * La cookie juego_device (httpOnly, 45 días) sobrevive aunque se borre el
+ * localStorage: permite reconocer al jugador y saltarse el formulario al
+ * volver a entrar desde el mismo navegador.
+ */
+export async function GET() {
+  const device = await readDeviceToken();
+  if (!device) return NextResponse.json({ error: "Sin sesión." }, { status: 404 });
+
+  const admin = createAdmin();
+  const { data } = await admin
+    .from("juego_players")
+    .select("id, alias, avatar")
+    .eq("device_token", device)
+    .maybeSingle();
+  if (!data) return NextResponse.json({ error: "Sin sesión." }, { status: 404 });
+
+  return NextResponse.json({ ok: true, playerId: data.id, alias: data.alias, avatar: data.avatar });
+}
 
 // Lista de avatares válidos (nombres de archivo).
 const AVATARES = Array.from({ length: 12 }, (_, i) => `avatar-${i + 1}.png`);

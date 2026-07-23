@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import AliasField from "./AliasField";
@@ -35,6 +35,27 @@ export default function RegistroForm() {
     apellido.trim().length >= 2 &&
     aliasOk &&
     !submitting;
+
+  // Este dispositivo ya tiene jugador (cookie juego_device) → nada que
+  // llenar, directo al juego. Cubre entrar acá por atrás/bookmark estando
+  // ya inscrito.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/juego/registro")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (cancelled || !d?.ok) return;
+        localStorage.setItem(
+          "juego_player",
+          JSON.stringify({ playerId: d.playerId, alias: d.alias, avatar: d.avatar })
+        );
+        router.replace("/juego/trivia");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

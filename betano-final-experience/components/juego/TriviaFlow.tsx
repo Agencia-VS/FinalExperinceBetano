@@ -40,51 +40,82 @@ export default function TriviaFlow({ initial }: { initial: TriviaSnapshot | null
   } = useTriviaState(initial);
 
   // Identidad: optimista desde localStorage, validación server en background.
-  // Si el jugador fue borrado (RESET de admin) → limpiar y volver a registro.
+  // Si no hay nada en localStorage (o el jugador fue borrado por un RESET de
+  // admin), se prueba por la cookie de dispositivo (juego_device, 45 días)
+  // ANTES de rendirse — así recargar/limpiar caché o volver desde otro tab no
+  // obliga a re-inscribirse. Recién si ninguna de las dos identifica al
+  // jugador se manda a /juego/registro.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("juego_player");
-      if (!raw) {
-        router.replace("/juego/registro");
-        return;
-      }
-      const p = JSON.parse(raw);
+    let cancelled = false;
+
+    function applyIdentity(p: { playerId: string; alias: string; avatar: string | null }) {
+      localStorage.setItem("juego_player", JSON.stringify(p));
       setPlayerId(p.playerId);
       setAliasName(p.alias ?? "");
       setAvatarUrl(p.avatar ?? null);
-      const saved = localStorage.getItem(`juego_trivia_picks_${p.playerId}`);
-      if (saved) setPicks(JSON.parse(saved));
-
-      fetch(`/api/juego/trivia/responder?playerId=${encodeURIComponent(p.playerId)}`)
-        .then((r) => {
-          if (!r.ok) throw new Error("not-found");
-          return r.json();
-        })
-        .then((d) => {
-          // La verdad del servidor pisa el espejo local (recarga, otro clima
-          // de red, etc.). Lo optimista solo sobrevive si está pendiente.
-          const serverPicks: Record<string, string> = {};
-          for (const a of d.answers ?? []) {
-            serverPicks[a.question_id] = a.option_id;
-            confirmed.current.set(a.question_id, a.option_id);
-          }
-          setPicks((prev) => ({ ...serverPicks, ...prev }));
-          setStatus((prev) => {
-            const next = { ...prev };
-            for (const qid of Object.keys(serverPicks)) {
-              if (!pending.current.has(qid)) next[qid] = "saved";
-            }
-            return next;
-          });
-        })
-        .catch(() => {
-          localStorage.removeItem("juego_player");
-          localStorage.removeItem(`juego_trivia_picks_${p.playerId}`);
-          router.replace("/juego/registro");
-        });
-    } catch {
-      router.replace("/juego/registro");
     }
+
+    async function hydrateAnswers(playerId: string) {
+      const res = await fetch(`/api/juego/trivia/responder?playerId=${encodeURIComponent(playerId)}`);
+      if (!res.ok) throw new Error("not-found");
+      const d = await res.json();
+      // La verdad del servidor pisa el espejo local (recarga, otro clima de
+      // red, etc.). Lo optimista solo sobrevive si está pendiente.
+      const serverPicks: Record<string, string> = {};
+      for (const a of d.answers ?? []) {
+        serverPicks[a.question_id] = a.option_id;
+        confirmed.current.set(a.question_id, a.option_id);
+      }
+      setPicks((prev) => ({ ...serverPicks, ...prev }));
+      setStatus((prev) => {
+        const next = { ...prev };
+        for (const qid of Object.keys(serverPicks)) {
+          if (!pending.current.has(qid)) next[qid] = "saved";
+        }
+        return next;
+      });
+    }
+
+    async function hydrate() {
+      try {
+        const raw = localStorage.getItem("juego_player");
+        if (raw) {
+          const p = JSON.parse(raw);
+          setPlayerId(p.playerId);
+          setAliasName(p.alias ?? "");
+          setAvatarUrl(p.avatar ?? null);
+          const saved = localStorage.getItem(`juego_trivia_picks_${p.playerId}`);
+          if (saved) setPicks(JSON.parse(saved));
+
+          try {
+            await hydrateAnswers(p.playerId);
+            return;
+          } catch {
+            // Jugador huérfano (ej. RESET de admin): limpiar antes de
+            // intentar el fallback por cookie de dispositivo.
+            localStorage.removeItem("juego_player");
+            localStorage.removeItem(`juego_trivia_picks_${p.playerId}`);
+          }
+        }
+
+        // Fallback: cookie httpOnly del dispositivo, sobrevive borrar
+        // localStorage (cambio de navegador con el mismo perfil no aplica,
+        // pero recargar/limpiar caché en el mismo sí).
+        const res = await fetch("/api/juego/registro");
+        if (!res.ok) throw new Error("no-device");
+        const d = await res.json();
+        if (cancelled) return;
+        applyIdentity({ playerId: d.playerId, alias: d.alias, avatar: d.avatar });
+        await hydrateAnswers(d.playerId);
+      } catch {
+        if (!cancelled) router.replace("/juego/registro");
+      }
+    }
+
+    hydrate();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   const save = useCallback(async (pid: string, questionId: string, optionId: string) => {
